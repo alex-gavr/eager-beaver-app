@@ -1,8 +1,8 @@
-import { useWindowSize } from '@/utils/use-window-size';
 import { YMaps, Map, Placemark, GeolocationControl, ZoomControl } from '@pbe/react-yandex-maps';
 import { FC, useState } from 'react';
 import Skeleton from 'react-loading-skeleton';
 import styled from 'styled-components';
+import { useWindowSize } from 'usehooks-ts';
 
 const Wrapper = styled.div({
     position: 'relative',
@@ -42,16 +42,16 @@ const SchoolLocationMap: FC<IProps> = ({ style, widthMobile, widthDesktop, heigh
             <Wrapper style={style}>
                 {!mapLoaded && (
                     <Skeleton
-                        width={width && width < 900 ? widthMobile : widthDesktop}
-                        height={width && width < 900 ? heightMobile : heightDesktop}
+                        width={width < 900 ? widthMobile : widthDesktop}
+                        height={width < 900 ? heightMobile : heightDesktop}
                         style={{ zIndex: 888, position: 'absolute', top: 0, left: 0 }}
                     />
                 )}
                 <Map
                     onLoad={() => setMapLoaded(true)}
                     style={{
-                        width: width && width < 900 ? widthMobile : widthDesktop,
-                        height: width && width < 900 ? heightMobile : heightDesktop,
+                        width: width < 900 ? widthMobile : widthDesktop,
+                        height: width < 900 ? heightMobile : heightDesktop,
                     }}
                     defaultState={{
                         center: [latitude ? latitude : 48.699778, longitude ? longitude : 44.505735],
