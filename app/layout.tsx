@@ -1,5 +1,5 @@
-export const runtime = 'nodejs'
-// export const preferredRegion = 'fra1';
+export const runtime = 'edge'
+export const preferredRegion = 'fra1';
 
 import YMetrikaImg from '@/components/Metrika/YMetrikaImg';
 import Providers from '@/components/Providers';
