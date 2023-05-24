@@ -1,13 +1,12 @@
 'use client';
 import styled from 'styled-components';
 import dynamic from 'next/dynamic';
-import { AnimatePresence } from 'framer-motion';
 import { useAppDispatch, useAppSelector } from '../services/hook';
 import { onCloseModal } from '../services/modalSlice';
 import { Analytics } from '@vercel/analytics/react';
 import Skeleton from 'react-loading-skeleton';
 import Header from './menus/header/header';
-import { KoskoBold, KoskoRegular } from '@/fonts/Fonts';
+import { KoskoBold, KoskoRegular } from '@/Fonts/Fonts';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { deleteCookie, setCookie } from 'cookies-next';
