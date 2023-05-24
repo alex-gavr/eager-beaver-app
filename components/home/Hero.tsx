@@ -116,7 +116,7 @@ const Hero = () => {
           <Image
             loading='eager'
             style={{ objectFit: 'cover', width: '100%', height: '100%' }}
-            src={width < 400 ? heroMobile : hero}
+            src={width < 500 ? heroMobile : hero}
             alt='hero image'
           />
         </m.div>
