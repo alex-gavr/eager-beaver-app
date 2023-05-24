@@ -1,3 +1,4 @@
+'use client'
 import { YMaps, Map, Placemark, GeolocationControl, ZoomControl } from '@pbe/react-yandex-maps';
 import { FC, useState } from 'react';
 import Skeleton from 'react-loading-skeleton';

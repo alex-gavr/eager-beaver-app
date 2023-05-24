@@ -5,10 +5,13 @@ import { AnimatePresence } from 'framer-motion';
 import { useAppDispatch, useAppSelector } from '../services/hook';
 import { onCloseModal } from '../services/modalSlice';
 import { Analytics } from '@vercel/analytics/react';
-import type { NextRouter } from 'next/router';
 import Skeleton from 'react-loading-skeleton';
 import Header from './menus/header/header';
 import { KoskoBold, KoskoRegular } from '@/fonts/Fonts';
+import { usePathname, useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { deleteCookie, setCookie } from 'cookies-next';
+import production from '@/utils/isProd';
 
 const Footer = dynamic(() => import('@/components/menus/footer/footer'), {
   ssr: false,
@@ -69,9 +72,6 @@ const PolicyText = dynamic(() => import('@/components/policy/PolicyText'), {
   ),
 });
 const YMetrika = dynamic(() => import('@/components/Metrika/YMetrika'));
-const ErrorBoundary = dynamic(() => import('@/components/ErrorBoundary/ErrorBoundary'), {
-  ssr: false,
-});
 
 const Wrapper = styled.div({
   display: 'flex',
@@ -85,18 +85,36 @@ const Wrapper = styled.div({
 
 interface IProps {
   children: React.ReactNode;
-  toggleTheme: () => void;
-  isDarkMode: boolean;
-  router: NextRouter;
+  theme: 'light' | 'dark';
 }
 
-const Layout = ({ children, toggleTheme, isDarkMode, router }: IProps) => {
+const Layout = ({ children, theme }: IProps) => {
+  const pathname = usePathname();
+  const router = useRouter();
   const dispatch = useAppDispatch();
   const { isModalOpen, submitSuccess, formFromModal, formFutureEvents, showPolicy } = useAppSelector(
     (state) => state.modal,
   );
   const { showLoader } = useAppSelector((state) => state.homeLoader);
   const { error } = useAppSelector((state) => state.error);
+  const [currentTheme, setCurrentTheme] = useState<'light' | 'dark'>(theme);
+  const isDarkMode = theme === 'dark';
+
+  const toggleTheme = () => {
+    if (currentTheme === 'light') {
+      deleteCookie('theme');
+      setCookie('theme', 'dark', { path: '/', maxAge: 60 * 60 * 24 * 365 });
+      setCurrentTheme('dark');
+      router.refresh();
+    }
+    if (currentTheme === 'dark') {
+      deleteCookie('theme');
+      setCookie('theme', 'light', { path: '/', maxAge: 60 * 60 * 24 * 365 });
+      setCurrentTheme('light');
+      router.refresh();
+    }
+  };
+
   const handleCloseModal = () => {
     dispatch(onCloseModal());
   };
@@ -105,19 +123,11 @@ const Layout = ({ children, toggleTheme, isDarkMode, router }: IProps) => {
       {/* Vercel Analytics */}
       <Analytics />
       {/* Yandex Metrika Analytics */}
-      <YMetrika />
+      {production && <YMetrika />}
       <Header />
-      {router.pathname === '/reviews' || router.pathname === '/contact' ? null : <FixedSocialMedia />}
-      <ErrorBoundary>
-        {/* This div is makes animation show in footer, but not in header */}
-        <AnimatePresence
-          mode='wait'
-          initial={false}
-          onExitComplete={() => document.querySelector('body')?.scrollTo(0, 0)}
-        >
-          {children}
-        </AnimatePresence>
-      </ErrorBoundary>
+      {pathname === '/reviews' || pathname === '/contact' ? null : <FixedSocialMedia />}
+      {/* This div is makes animation show in footer, but not in header */}
+      {children}
       {!showLoader ? <Footer /> : false}
       {/* Theme Toggler */}
       <DayNightToggle onChange={toggleTheme} checked={isDarkMode} size={30} />

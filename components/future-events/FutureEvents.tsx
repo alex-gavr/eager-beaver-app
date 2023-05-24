@@ -1,20 +1,17 @@
 import AnimatedTextWords from '../AnimatedTextWords/AnimatedTextWords';
-import EventCard from './event-card/EventCard';
 import cloud from '@/images/clouds/5.svg';
 import cloud2 from '@/images/clouds/3.svg';
 import cloud3 from '@/images/clouds/1.svg';
 import cloud4 from '@/images/clouds/2.svg';
 import styled from 'styled-components';
-import { IFutureEvents } from '@/types/data';
 import Image from 'next/image';
 import { CloudContainer } from '../CloudsContainer';
 import dynamic from 'next/dynamic';
 import { m } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
-import contentful from '@/lib/contentful';
 import { FlexCCC } from '@/styles/StyledMain';
-import { use } from 'react';
-import getFutureEvents from '@/utils/getFutureEvents';
+import EventCard from './event-card/EventCard';
+import { TFutureEvents } from '@/db/schemas';
 
 const BeaverSleeps = dynamic(() => import('./BeaverSleeps'));
 
@@ -63,15 +60,11 @@ const BeaverContainer = styled(FlexCCC)((props) => ({
 }));
 
 interface IProps {
-  futureEvents?: IFutureEvents[];
+  futureEvents?: TFutureEvents[];
   layoutId?: string;
 }
 
-
-const FutureEvents = ({ layoutId }: IProps) => {
-  const futureEvents = use(getFutureEvents()) as IFutureEvents[];
-  // const { data, error, isLoading } = useSWR('futureEvents', fetcher);
-
+const FutureEvents = ({ layoutId, futureEvents }: IProps) => {
   const { ref, inView } = useInView({
     triggerOnce: true,
   });
@@ -97,17 +90,17 @@ const FutureEvents = ({ layoutId }: IProps) => {
                 futureEvents &&
                 futureEvents.map((event) => (
                   <EventCard
-                    title={event.fields.title}
-                    description={event.fields.description}
-                    age={event.fields.age}
-                    participants={event.fields.participants}
-                    total_spots={event.fields.totalSpots}
-                    price={event.fields.price}
-                    durationLongerThanDay={event.fields.durationLongerThanDay}
-                    start={event.fields.dateStart}
-                    end={event.fields.dateFinish}
-                    entryId={event.entryId}
-                    key={event.fields.id}
+                    key={event.id}
+                    eventName={event.eventName}
+                    description={event.description}
+                    age={event.age}
+                    participants={event.participants}
+                    totalSpots={event.totalSpots}
+                    price={event.price}
+                    durationLongerThanDay={event.durationLongerThanDay}
+                    eventStart={event.eventStart}
+                    eventEnd={event.eventEnd}
+                    // entryId={event.entryId}
                   />
                 ))
               )}

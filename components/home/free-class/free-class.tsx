@@ -4,7 +4,6 @@ import { AnimatePresence, m } from 'framer-motion';
 import { list, toUp, opacity } from '@/utils/motion-animations';
 import styled from 'styled-components';
 import Image from 'next/image';
-import { IDeviceType } from '@/types/data';
 import { useInView } from 'react-intersection-observer';
 import { FlexCCC } from '@/styles/StyledMain';
 
@@ -47,7 +46,8 @@ const BeaverContainer = styled(FlexCCC)((props) => ({
   },
 }));
 
-const FreeClass = ({ isMobileOnly, isTablet, isDesktop }: IDeviceType) => {
+const FreeClass = () => {
+
   const { ref, inView } = useInView({
     triggerOnce: true,
   });

@@ -9,6 +9,7 @@ import ActionButtons from '../buttons/action-buttons-page-end/ActionButtons';
 import { useAppSelector } from '@/services/hook';
 import { FlexCCC } from '@/styles/StyledMain';
 import { getCookie } from 'cookies-next';
+import { useWindowSize } from 'usehooks-ts';
 
 const MainContent = styled(FlexCCC)({
   width: '100%',
@@ -85,10 +86,8 @@ const Wrapper = styled.section({
   },
 });
 
-interface IProps {
-  isMobileOnly: boolean;
-}
-const Hero: FC<IProps> = ({ isMobileOnly }): JSX.Element => {
+const Hero = () => {
+  const { width } = useWindowSize();
   const { showLoader } = useAppSelector((state) => state.homeLoader);
   const [name, setName] = useState<string | undefined>('');
 
@@ -117,7 +116,7 @@ const Hero: FC<IProps> = ({ isMobileOnly }): JSX.Element => {
           <Image
             loading='eager'
             style={{ objectFit: 'cover', width: '100%', height: '100%' }}
-            src={isMobileOnly ? heroMobile : hero}
+            src={width < 400 ? heroMobile : hero}
             alt='hero image'
           />
         </m.div>

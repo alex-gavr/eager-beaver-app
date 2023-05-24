@@ -1,6 +1,6 @@
 
 import styled from 'styled-components';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/navigation';
 import { FlexCCC } from '@/styles/StyledMain';
 import { useAppDispatch } from '@/services/hook';
 import { resetError } from '@/services/errorSlice';
@@ -28,7 +28,7 @@ const ImageLoadingError = () => {
     const dispatch = useAppDispatch();
     const handleClick = () => {
         dispatch(resetError());
-        router.reload();
+        router.refresh();
     };
 
     return (

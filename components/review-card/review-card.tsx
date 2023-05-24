@@ -113,7 +113,7 @@ export const ReviewCard: FC<IProps> = ({ image, name, parent, relationToChild, r
               <Skeleton circle style={{ zIndex: '20', position: 'absolute', top: '0', height: '100%' }} />
             )}
             <Image
-              src={`https:${image}`}
+              src={image}
               alt=''
               onLoadingComplete={handleImageLoaded}
               width={500}

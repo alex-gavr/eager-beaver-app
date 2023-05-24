@@ -1,4 +1,4 @@
-const workWithDate = (date: string) => {
+const workWithDate = (date: Date) => {
   const time = new Date(date).toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' });
   const day = new Date(date).toLocaleString('ru-RU', { day: 'numeric' });
   // writes just month -- june

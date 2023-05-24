@@ -4,17 +4,17 @@ import { useWindowSize } from 'usehooks-ts';
 
 
 interface IStyledDiv {
-    leftArrow: boolean;
+    $leftArrow: boolean;
     width: number;
     height: number;
     bottom: number | string;
     left?: number | string;
     right?: number | string;
-    marginLeft?: string;
-    marginRight?: string;
+    $marginLeft?: string;
+    $marginRight?: string;
 }
 
-const StyledDiv = styled.div<any>(({ width, height, bottom, leftArrow, marginLeft, marginRight, left, right }) => ({
+const StyledDiv = styled.div<any>(({ width, height, bottom, $leftArrow, $marginLeft, $marginRight, left, right }) => ({
     height: width,
     width: height,
     bottom: bottom,
@@ -28,10 +28,10 @@ const StyledDiv = styled.div<any>(({ width, height, bottom, leftArrow, marginLef
     padding: '0.5rem',
     userSelect: 'none',
     zIndex: 10,
-    marginLeft: leftArrow === true ? marginLeft : undefined,
-    marginRight: leftArrow === true ? undefined : marginRight,
-    left: leftArrow === true ? left : undefined,
-    right: leftArrow === true ? undefined : right,
+    marginLeft: $leftArrow === true ? $marginLeft : undefined,
+    marginRight: $leftArrow === true ? undefined : $marginRight,
+    left: $leftArrow === true ? left : undefined,
+    right: $leftArrow === true ? undefined : right,
 }));
 
 export const LeftArrow = ({ onClick, alwaysBottom, ...rest }: any) => {
@@ -43,12 +43,12 @@ export const LeftArrow = ({ onClick, alwaysBottom, ...rest }: any) => {
     return (
         <StyledDiv
             onClick={() => onClick()}
-            leftArrow
+            $leftArrow
             width={width < 800 ? 45 : 60}
             height={width < 800 ? 45 : 60}
             bottom={width < 800 ? '5px' : alwaysBottom ? '5px' : '50%'}
             left={0}
-            marginLeft={width < 500 ? '1rem' : '3rem'}>
+            $marginLeft={width < 500 ? '1rem' : '3rem'}>
             <Image src={'/downArrow.svg'} width={30} height={20} alt='' style={{rotate: '90deg'}} />
         </StyledDiv>
     );
@@ -63,13 +63,13 @@ export const RightArrow = ({ onClick, alwaysBottom, ...rest }: any) => {
     } = rest;
     return (
         <StyledDiv
-            leftArrow={false}
+            $leftArrow={false}
             onClick={() => onClick()}
             width={width < 800 ? 45 : 60}
             height={width < 800 ? 45 : 60}
             bottom={width < 800 ? '5px' : alwaysBottom ? '5px' : '50%'}
             right={0}
-            marginRight={width < 500 ? '1rem' : '3rem'}>
+            $marginRight={width < 500 ? '1rem' : '3rem'}>
             <Image src={'/downArrow.svg'} width={30} height={20} alt='' style={{rotate: '-90deg'}} />
         </StyledDiv>
     );

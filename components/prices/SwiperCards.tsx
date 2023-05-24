@@ -5,8 +5,8 @@ import 'swiper/css/effect-cards';
 import Image from 'next/image';
 import styled from 'styled-components';
 import { SlideButtons } from '@/components/custom-arrows/leftAndRightButtons';
-import { IPrices } from '@/types/data';
 import { FlexCCC } from '@/styles/StyledMain';
+import { TPrices } from '@/db/schemas';
 
 const StyledSwiper = styled(Swiper)({
   display: 'flex',
@@ -92,7 +92,7 @@ const ContainerForBulletPoint = styled(FlexCCC)((props) => ({
 }));
 
 interface IProps {
-  prices: IPrices[];
+  prices: TPrices[];
 }
 
 const SwiperCards = ({ prices }: IProps) => {
@@ -106,7 +106,7 @@ const SwiperCards = ({ prices }: IProps) => {
               <StyledCard>
                 <NameContainer color={color}>
                   <FlexContainer color={color}>
-                    <h2>{price.name}</h2>
+                    <h2>{price.priceName}</h2>
                     <p>{price.price}</p>
                   </FlexContainer>
                 </NameContainer>

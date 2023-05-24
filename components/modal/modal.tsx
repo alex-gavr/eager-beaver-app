@@ -68,7 +68,7 @@ const Modal: FC<Props> = ({ children, closeButton, onClose }): JSX.Element | nul
         <StyledModalOverlay onClick={onClose}>
             <ModalContainer
                 $closeButton={closeButton}
-                onClick={(e) => {
+                onClick={(e: any) => {
                     e.stopPropagation();
                 }}>
                 {closeButton && (

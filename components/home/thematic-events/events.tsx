@@ -1,13 +1,12 @@
 import { TwoColumns } from './two-columns';
-import { FC } from 'react';
-import { eventsData } from './thematic-events-data';
 import { AnimatePresence, m } from 'framer-motion';
 import { list, toUp } from '@/utils/motion-animations';
 import AnimatedTextWords from '@/components/AnimatedTextWords/AnimatedTextWords';
 import styled from 'styled-components';
-import { IDeviceType } from '@/types/data';
 import { useInView } from 'react-intersection-observer';
 import { FlexCCC } from '@/styles/StyledMain';
+import { IEventsData } from '@/db/schemas';
+
 
 const Wrapper = styled(FlexCCC)({
   gap: '3rem',
@@ -29,7 +28,11 @@ const WelcomeTextContainer = styled(FlexCCC)((props) => ({
   },
 }));
 
-const Events: FC<IDeviceType> = ({ isMobileOnly, isTablet, isDesktop }): JSX.Element => {
+interface IProps {
+  themeEvents: IEventsData[];
+}
+
+const Events = ({themeEvents}: IProps) => {
   const { ref, inView } = useInView({
     triggerOnce: true,
   });
@@ -59,17 +62,14 @@ const Events: FC<IDeviceType> = ({ isMobileOnly, isTablet, isDesktop }): JSX.Ele
                 частью образования.
               </m.p>
             </WelcomeTextContainer>
-            {eventsData.map((event) => (
+            {themeEvents.map((event) => (
               <TwoColumns
                 key={event.id}
                 images={event.images}
-                alt={event.subHeading}
+                alt={event.heading}
                 imageSide={event.imageSide}
-                subHeading={event.subHeading}
+                heading={event.heading}
                 paragraph={event.paragraph}
-                isDesktop={isDesktop}
-                isTablet={isTablet}
-                isMobileOnly={isMobileOnly}
               />
             ))}
           </>

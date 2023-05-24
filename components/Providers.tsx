@@ -1,8 +1,9 @@
+'use client'
+import { Provider } from 'react-redux';
 import { DefaultTheme, ThemeProvider } from 'styled-components';
 import { SkeletonTheme } from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import { LazyMotion } from 'framer-motion';
-import { Provider } from 'react-redux';
 import { store } from '@/services/store';
 
 

@@ -1,4 +1,4 @@
-import { configureStore } from "@reduxjs/toolkit";
+import { configureStore } from '@reduxjs/toolkit';
 import modalReducer from './modalSlice';
 import futureEventDetailsReducer from './futureEventSignUpData';
 import navigationVisibilityReducer from './navigationVisibilitySlice';

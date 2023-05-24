@@ -30,6 +30,8 @@ export const ImageWithSkeleton = ({ src, alt, visibleByDefault, className }: IPr
       <Image
         src={src}
         alt={alt}
+        width={500}
+        height={500}
         className={className}
         onLoadingComplete={() => setIsLoading(false)}
         onError={() => dispatch(initError())}

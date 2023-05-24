@@ -17,53 +17,45 @@ import {
   TogglerContainer,
 } from './EventCardsStyles';
 import { convertH2M, minutesEachHourInOneDay, TimeDiff } from '@/utils/timeCalcHelpers';
-import { addParticipant } from '@/lib/addParticipant';
-import { publishChange } from '@/lib/publishChange';
+// import { addParticipant } from '@/lib/addParticipant';
+// import { publishChange } from '@/lib/publishChange';
 import declOfNum from '@/utils/declOfNum';
 import workWithDate from '@/utils/workWithDate';
 import { FlexCCC } from '@/styles/StyledMain';
+import { TFutureEvents } from '@/db/schemas';
 
-interface IProps {
-  title: string;
-  description: string;
-  age: string;
-  participants: number;
-  total_spots: number;
-  price: string;
-  durationLongerThanDay: boolean;
-  start: string;
-  end: string;
-  entryId: string;
-}
+const millisecondsPerDay = 1000 * 60 * 60 * 24;
+const daysPerMonth = 31;
+const minutesEachHour = 60;
+const secondsEachMinute = 60;
 
 const EventCard = ({
-  title,
+  eventName,
   description,
   age,
   participants: participantsData,
-  total_spots,
+  totalSpots,
   price,
   durationLongerThanDay,
-  start,
-  end,
-  entryId,
-}: IProps) => {
+  eventStart,
+  eventEnd,
+}: Omit<TFutureEvents, 'id'>) => {
   const [participants, setParticipants] = useState<number>(participantsData);
   const { shouldChangeMember, futureEventDetails } = useAppSelector((state) => state.futureEventDetails);
   const [enrolled, setEnrolled] = useState(false);
   const [interested, setInterested] = useState(false);
   const dispatch = useAppDispatch();
 
-  const { day, month, monthFull, time: timeStart, dateFull } = workWithDate(start);
-  const { day: dayEnd, month: monthEnd, monthFull: monthEndFull, time: timeEnd } = workWithDate(end);
+  const { day, month, monthFull, time: timeStart, dateFull } = workWithDate(eventStart);
+  const { day: dayEnd, month: monthEnd, monthFull: monthEndFull, time: timeEnd } = workWithDate(eventEnd);
 
   // Calculate days difference between ending date and starting date
-  const daysDiff = Math.floor((Date.parse(end) - Date.parse(start)) / 86400000) + 1;
+  const daysDiff = Math.floor((eventEnd.getTime() - eventStart.getTime()) / millisecondsPerDay) + 1;
   const daysWord = declOfNum(daysDiff, ['день', 'дня', 'дней']);
   // is Less than a Month
-  const lessThanMonth = daysDiff <= 31;
+  const lessThanMonth = daysDiff <= daysPerMonth;
   // is more than a month
-  const moreThanMonth = daysDiff > 31;
+  const moreThanMonth = daysDiff > daysPerMonth;
 
   // Calculate difference between ending time and starting time
   const duration2 = TimeDiff(timeStart, timeEnd);
@@ -71,8 +63,8 @@ const EventCard = ({
   const diff = convertH2M(duration2);
 
   const isFullHour = minutesEachHourInOneDay.some((i) => i === diff);
-  const hours = Math.floor(diff / 60);
-  const minutes = diff % 60;
+  const hours = Math.floor(diff / minutesEachHour);
+  const minutes = diff % secondsEachMinute;
   const durationName = declOfNum(hours, ['час', 'часа', 'часов']);
 
   let duration = null;
@@ -85,26 +77,20 @@ const EventCard = ({
   }
 
   // Spots Left
-  const spotsLeft = total_spots - participants;
+  const spotsLeft = totalSpots - participants;
   // Spots Word
   const spotsWord = declOfNum(spotsLeft, ['место', 'места', 'мест']);
 
   const [open, setOpen] = useState(false);
 
-  // OPENS FORM AND PREPARES DATA
-  const handleClick = async (
-    title: string,
-    age: string,
-    dateFull: string,
-    participants: number,
-    entryId: string,
-  ) => {
+  // TODO: WE NEED TO PASS DATA TO DB
+
+  const handleClick = async (eventName: string, age: string, dateFull: string, participants: number) => {
     const values = {
-      title,
+      eventName,
       age,
       dateFull,
       participants,
-      entryId,
     };
 
     dispatch(onOpenModalFormFutureEvents());
@@ -122,9 +108,9 @@ const EventCard = ({
 
     const members = participantsFromRedux + 1;
 
-    const result = await addParticipant(entryId, members).then((response) => publishChange(response.sys.id));
+    // const result = await addParticipant(entryId, members).then((response) => publishChange(response.sys.id));
 
-    setParticipants(result.fields.participants['en-US']);
+    // setParticipants(result.fields.participants['en-US']);
     dispatch(resetMemberCountChange());
   };
 
@@ -160,7 +146,7 @@ const EventCard = ({
       </MonthAndTimeContainer>
       <FlexCCC>
         <TitleAndAgeContainer>
-          <h2>{title}</h2>
+          <h2>{eventName}</h2>
           {open ? null : <p>{age}</p>}
         </TitleAndAgeContainer>
         <AnimatePresence initial={false} mode={'wait'}>
@@ -186,7 +172,7 @@ const EventCard = ({
                 ) : (
                   <p> Длительность - {duration}</p>
                 )}
-                <p> Количество мест - {total_spots}</p>
+                <p> Количество мест - {totalSpots}</p>
                 <p>
                   Стоимость - <span>{price}</span>
                 </p>
@@ -200,7 +186,7 @@ const EventCard = ({
                   typeHTML='submit'
                   padding='0.5rem 0.9rem'
                   fontFamily='var(--ff-body)'
-                  onClick={() => handleClick(title, age, dateFull, participants, entryId)}
+                  onClick={() => handleClick(eventName, age, dateFull, participants)}
                   disabled={enrolled || spotsLeft === 0}
                 >
                   {enrolled ? 'Ждем вас!' : spotsLeft === 0 ? 'Мест больше нет' : 'Приведу ребенка'}
