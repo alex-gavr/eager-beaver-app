@@ -1,5 +1,4 @@
-'use client';
-import styled from 'styled-components';
+'use client'
 import dynamic from 'next/dynamic';
 import { useRef } from 'react';
 import { ReviewCard } from '@/components/review-card/review-card';
@@ -7,10 +6,7 @@ import 'react-multi-carousel-18/lib/styles.css';
 import { usePreventVerticalScroll } from '@/utils/usePreventVerticalScroll';
 import { LeftArrow, RightArrow } from '@/components/custom-arrows/CustomArrows';
 import Carousel from 'react-multi-carousel-18';
-import { useAppSelector } from '@/services/hook';
 import Loader from '@/components/Loader';
-import { m } from 'framer-motion';
-import { FlexCCC, StyledMain, StyledSection } from '@/styles/StyledMain';
 import { TReviews } from '@/db/schemas';
 
 const ActionButtons = dynamic(() => import('@/components/buttons/action-buttons-page-end/ActionButtons'), {
@@ -18,64 +14,11 @@ const ActionButtons = dynamic(() => import('@/components/buttons/action-buttons-
 });
 const PageAnimation = dynamic(() => import('@/components/page-animation/PageAnimation'));
 
-const StyledHeading = styled(m.h1)((props) => ({
-  color: props.theme.colors.secondaryDark,
-  width: '80%',
-  textAlign: 'center',
-}));
-const YellowBackground = styled.span((props) => ({
-  position: 'absolute',
-  height: '100%',
-  width: '100vw',
-  top: 0,
-  backgroundColor: props.theme.colors.primaryLight,
-}));
-
-const Accent = styled.span((props) => ({
-  backgroundColor: props.theme.colors.secondaryDark,
-  padding: '0.1rem 1rem',
-  borderRadius: '1.5rem',
-  color: props.theme.colors.title,
-  transition: 'all 0.5s ease-in-out',
-}));
-const CarouselContainer = styled(FlexCCC)((props) => ({
-  width: '100vw',
-  position: 'relative',
-  padding: '1rem',
-  // That's dots in Carousel
-  '& > ul': {
-    zIndex: 3,
-    width: '40%',
-    flexFlow: 'row wrap',
-    left: '50% !important',
-    bottom: '2% !important',
-    transform: 'translateX(-50%)',
-    '@media only screen and (min-width:1050px)': {
-      width: '100%',
-      bottom: '2% !important',
-      left: '0 !important',
-      transform: 'none',
-    },
-  },
-}));
-const StyledCarousel = styled(Carousel)({
-  width: '100vw',
-  zIndex: 1,
-  marginBottom: '1rem',
-  '& > ul > li': {
-    padding: '1rem 1rem 3.5rem 1rem',
-    userSelect: 'none',
-    '@media only screen and (min-width: 80em)': {
-      padding: '1rem 2rem 2rem 2rem',
-    },
-  },
-});
 
 interface IProps {
   reviews: TReviews[];
 }
 const Reviews = ({ reviews }: IProps) => {
-  const { showLoader } = useAppSelector((state) => state.homeLoader);
   const ref = useRef(null);
   const slider = usePreventVerticalScroll(ref);
 
@@ -97,16 +40,25 @@ const Reviews = ({ reviews }: IProps) => {
     },
   };
 
+  const dotStyles =
+    'w-[40%] flex flex-row flex-wrap z-10 !bottom-2 !left-[50%] !-translate-x-[50%] lg:w-full lg:bottom-2 lg:left-0 transform-none';
+
   return (
     <>
-      {showLoader && <Loader title='Наши Ученики' layoutId='kids' />}
-      <StyledMain>
-        <StyledSection ref={ref} style={{ minHeight: '100vh' }}>
-          <StyledHeading layoutId='kids' transition={{ duration: 0.6, ease: 'easeOut' }}>
-            Наши <Accent>ученики</Accent>
-          </StyledHeading>
-          <CarouselContainer>
-            <StyledCarousel
+      <Loader title='Наши Ученики' />
+      <main className='flex min-h-[80vh] w-full flex-col items-center justify-center overflow-hidden'>
+        <section
+          className='relative flex min-h-screen max-w-[1500px] flex-col items-center justify-start gap-8 px-2 py-8 xl:p-16'
+          ref={ref}
+        >
+          <h1 className='z-10 text-center text-accent-800 dark:text-accent-800 text-4xl md:text-5xl xl:text-5xl'>
+            Наши{' '}
+            <span className='rounded-xl bg-accent-800 px-4 py-1 text-slate-900 dark:bg-accent-800 dark:text-slate-900'>
+              ученики
+            </span>
+          </h1>
+          <div className='relative flex w-screen flex-col items-center justify-center p-4'>
+            <Carousel
               showDots={true}
               responsive={responsive}
               infinite={true}
@@ -117,11 +69,14 @@ const Reviews = ({ reviews }: IProps) => {
               customTransition='transform 400ms ease-in-out'
               transitionDuration={1000}
               renderDotsOutside={true}
+              className='w-screen z-[1] mb-4'
+              dotListClass={dotStyles}
+              itemClass='pt-4 px-4 pb-4 select-none xl:pt-4 xl:pb-4 xl:px-4'
             >
               {reviews &&
                 reviews.map((review) => (
                   <ReviewCard
-                    key={review.id}
+                    key={review.uuid}
                     image={review.image}
                     name={review.childName}
                     parent={review.parentName}
@@ -129,18 +84,18 @@ const Reviews = ({ reviews }: IProps) => {
                     review={review.review}
                   />
                 ))}
-            </StyledCarousel>
-          </CarouselContainer>
+            </Carousel>
+          </div>
           {Carousel ? (
             <ActionButtons
-              primaryButtonStyle='secondary'
-              secondaryButtonStyle='emptySecondary'
+              variantPrimary='secondary'
+              variantBack='defaultGhost'
               showBackButton={true}
             />
           ) : null}
-          <YellowBackground />
-        </StyledSection>
-      </StyledMain>
+          <span className='absolute top-0 h-full w-screen bg-primary-200 dark:bg-slate-900' />
+        </section>
+      </main>
     </>
   );
 };

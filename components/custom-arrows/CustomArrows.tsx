@@ -1,76 +1,47 @@
-import styled from 'styled-components';
 import Image from 'next/image';
 import { useWindowSize } from 'usehooks-ts';
+import { cn } from '@/utils/cn';
 
-
-interface IStyledDiv {
-    $leftArrow: boolean;
-    width: number;
-    height: number;
-    bottom: number | string;
-    left?: number | string;
-    right?: number | string;
-    $marginLeft?: string;
-    $marginRight?: string;
-}
-
-const StyledDiv = styled.div<any>(({ width, height, bottom, $leftArrow, $marginLeft, $marginRight, left, right }) => ({
-    height: width,
-    width: height,
-    bottom: bottom,
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'absolute',
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    borderRadius: '50%',
-    padding: '0.5rem',
-    userSelect: 'none',
-    zIndex: 10,
-    marginLeft: $leftArrow === true ? $marginLeft : undefined,
-    marginRight: $leftArrow === true ? undefined : $marginRight,
-    left: $leftArrow === true ? left : undefined,
-    right: $leftArrow === true ? undefined : right,
-}));
+const baseStyles =
+  'flex flex-col items-center justify-center absolute rounded-full p-2 select-none bg-slate-950 bg-opacity-50 dark:bg-slate-800 dark:bg-opacity-50 ';
 
 export const LeftArrow = ({ onClick, alwaysBottom, ...rest }: any) => {
-    const { width } = useWindowSize();
-    const {
-        onMove,
-        carouselState: { currentSlide, deviceType },
-    } = rest;
-    return (
-        <StyledDiv
-            onClick={() => onClick()}
-            $leftArrow
-            width={width < 800 ? 45 : 60}
-            height={width < 800 ? 45 : 60}
-            bottom={width < 800 ? '5px' : alwaysBottom ? '5px' : '50%'}
-            left={0}
-            $marginLeft={width < 500 ? '1rem' : '3rem'}>
-            <Image src={'/downArrow.svg'} width={30} height={20} alt='' style={{rotate: '90deg'}} />
-        </StyledDiv>
-    );
+  const { width } = useWindowSize();
+  const left = 'left-0';
+  const sizeStyles = width < 800 ? 'w-[45px] h-[45px] bottom-[5px]' : 'w-[60px] h-[60px] bottom-[50%]';
+  const alwaysBottomStyle = alwaysBottom === true ? 'bottom-[5px]' : 'bottom-[50%]';
+  const marginLeft = width < 500 ? 'ml-[1rem]' : 'ml-[3rem]';
+  const {
+    onMove,
+    carouselState: { currentSlide, deviceType },
+  } = rest;
+  return (
+    <div
+      className={cn(baseStyles, left, sizeStyles, alwaysBottomStyle, marginLeft)}
+      onClick={() => onClick()}
+    >
+      <Image src={'/downArrow.svg'} width={30} height={20} alt='' style={{ rotate: '90deg' }} />
+    </div>
+  );
 };
 
-
 export const RightArrow = ({ onClick, alwaysBottom, ...rest }: any) => {
-    const { width } = useWindowSize();
-    const {
-        onMove,
-        carouselState: { currentSlide, deviceType },
-    } = rest;
-    return (
-        <StyledDiv
-            $leftArrow={false}
-            onClick={() => onClick()}
-            width={width < 800 ? 45 : 60}
-            height={width < 800 ? 45 : 60}
-            bottom={width < 800 ? '5px' : alwaysBottom ? '5px' : '50%'}
-            right={0}
-            $marginRight={width < 500 ? '1rem' : '3rem'}>
-            <Image src={'/downArrow.svg'} width={30} height={20} alt='' style={{rotate: '-90deg'}} />
-        </StyledDiv>
-    );
+  const { width } = useWindowSize();
+
+  const right = 'right-0';
+  const sizeStyles = width < 800 ? 'w-[45px] h-[45px] bottom-[5px]' : 'w-[60px] h-[60px] bottom-[50%]';
+  const alwaysBottomStyle = alwaysBottom === true ? 'bottom-[5px]' : 'bottom-[50%]';
+  const marginReft = width < 500 ? 'mr-[1rem]' : 'mr-[3rem]';
+  const {
+    onMove,
+    carouselState: { currentSlide, deviceType },
+  } = rest;
+  return (
+    <div
+      className={cn(baseStyles, right, sizeStyles, alwaysBottomStyle, marginReft)}
+      onClick={() => onClick()}
+    >
+      <Image src={'/downArrow.svg'} width={30} height={20} alt='' style={{ rotate: '-90deg' }} />
+    </div>
+  );
 };

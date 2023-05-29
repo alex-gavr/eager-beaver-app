@@ -1,22 +1,20 @@
-'use client';
 import Hero from '@/components/home/Hero';
 import dynamic from 'next/dynamic';
-import { useAppSelector } from '@/services/hook';
 import Loader from '@/components/Loader';
-import { StyledMain, StyledSection } from '@/styles/StyledMain';
 import { IEventsData, TFutureEvents } from '@/db/schemas';
+import Form from './form/Form';
+// import LazyForm from './LazyForm';
 
 const TeachProcess = dynamic(() => import('@/components/home/teach-process/teach-process'), {
+  ssr: false,
+});
+const LazyForm = dynamic(() => import('./LazyForm'), {
   ssr: false,
 });
 const FutureEvents = dynamic(() => import('@/components/future-events/FutureEvents'), {
   ssr: false,
 });
 const Events = dynamic(() => import('@/components/home/thematic-events/events'));
-const FreeClass = dynamic(() => import('@/components/home/free-class/free-class'), {
-  ssr: false,
-});
-const PageAnimation = dynamic(() => import('@/components/page-animation/PageAnimation'));
 const FlyingBeaver = dynamic(() => import('@/components/FlyingBeaver/FlyingBeaver'));
 
 interface IProps {
@@ -25,25 +23,21 @@ interface IProps {
 }
 
 const Home = ({ futureEvents, themeEvents }: IProps) => {
-  const { showLoader } = useAppSelector((state) => state.homeLoader);
-
   return (
     <>
-      {showLoader ? (
-        <Loader title='Eager Beaver Language School' layoutId='eagerBeaverLanguageSchool' />
-      ) : (
-        false
-      )}
-      <StyledMain>
+      <Loader title='Eager Beaver Language School' layoutId='eagerBeaverLanguageSchool' />
+      <main className='flex min-h-[80vh] w-full flex-col items-center justify-center overflow-hidden'>
         <FlyingBeaver />
         <Hero />
         <TeachProcess />
         <Events themeEvents={themeEvents} />
-        <StyledSection style={{ width: '100vw' }}>
+        <section className='relative flex w-screen max-w-[1500px] flex-col items-center justify-start gap-8 px-2 py-8 xl:p-16'>
           <FutureEvents futureEvents={futureEvents} />
-        </StyledSection>
-        <FreeClass />
-      </StyledMain>
+        </section>
+        <LazyForm>
+          <Form event={false} />
+        </LazyForm>
+      </main>
     </>
   );
 };

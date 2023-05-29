@@ -1,74 +1,8 @@
-import { FC, useState } from 'react';
-import Skeleton from 'react-loading-skeleton';
 import Image from 'next/image';
-import styled from 'styled-components';
-import { useAppDispatch } from '@/services/hook';
-import { initError } from '@/services/errorSlice';
-import { FlexCCC } from '@/styles/StyledMain';
+import { cn } from '@/utils/cn';
+import { ImageWithSkeleton } from '../image-with-skeleton/img-with-skeleton';
 
-const StyledContainer = styled(FlexCCC)({
-  justifyContent: 'flex-start',
-  gap: '1rem',
-  height: 'auto',
-  width: '90%',
-  maxWidth: 600,
-  position: 'relative',
-  overflow: 'hidden',
-  '@media only screen and (max-width: 500px)': {
-    width: '95%',
-  },
-  '@media only screen and (min-width: 501px) and (max-width: 960px)': {
-    width: '80%',
-  },
-});
-const ImageAndSpanContainer = styled.div((props) => ({
-  marginTop: '1rem',
-  borderRadius: '50%',
-  width: 'clamp(12.5rem, 8.8362rem + 17.2414vw, 25rem)',
-  height: 'clamp(12.5rem, 8.8362rem + 17.2414vw, 25rem)',
-  backgroundColor: props.theme.colors.background,
-  position: 'relative',
-  boxShadow: `8px -3px 1px ${props.theme.colors.secondaryDark}, -8px -5px 1px ${props.theme.colors.secondaryLight}`,
-}));
-
-const ImageContainer = styled.div((props) => ({
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-  borderRadius: '50%',
-  width: 'clamp(12.5rem, 8.8362rem + 17.2414vw, 25rem)',
-  height: 'clamp(12.5rem, 8.8362rem + 17.2414vw, 25rem)',
-  backgroundColor: props.theme.colors.background,
-  overflow: 'hidden',
-  position: 'relative',
-}));
-const TextContainer = styled(FlexCCC)((props) => ({
-  width: '100%',
-  overflow: 'hidden',
-  '& > h2': {
-    textAlign: 'center',
-    color: props.theme.colors.title,
-  },
-  '& > p': {
-    textAlign: 'center',
-  },
-}));
-
-const TeacherPhoto = styled(Image)({
-  width: '100%',
-  height: '100%',
-  objectFit: 'cover',
-});
-const PlayIcon = styled(Image)({
-  position: 'absolute',
-  zIndex: 21,
-  bottom: 0,
-  right: 0,
-  width: 'clamp(3.125rem, 2.3922rem + 3.4483vw, 5.625rem)',
-  height: 'clamp(3.125rem, 2.3922rem + 3.4483vw, 5.625rem)',
-});
-
-interface Props {
+interface IProps {
   image: string;
   alt: string;
   name: string;
@@ -76,40 +10,36 @@ interface Props {
   includePlay: boolean;
 }
 
-const TeacherCard: FC<Props> = ({ image, alt, name, description, includePlay }) => {
-  const dispatch = useAppDispatch();
+const TeacherCard = ({ image, alt, name, description, includePlay }: IProps) => {
 
-  const [isImgLoaded, setIsImgLoaded] = useState(false);
-
-  const handleImageLoaded = () => {
-    setIsImgLoaded(true);
-  };
+  const sizeStyle = 'w-52 h-52 sm:h-56 sm:w-56 md:w-64 md:h-64 lg:w-80 lg:h-80 xl:w-96 xl:h-96';
 
   return (
-    <StyledContainer>
-      <ImageAndSpanContainer>
-        <ImageContainer>
-          {!isImgLoaded && (
-            <Skeleton circle style={{ zIndex: '20', position: 'absolute', top: '0', height: '100%' }} />
-          )}
-          <TeacherPhoto
-            src={image}
-            alt={alt}
-            width={705}
-            height={1125}
-            onLoadingComplete={handleImageLoaded}
-            onError={() => dispatch(initError())}
+    <div className='relative flex w-full max-w-[600px] flex-col items-center justify-start gap-4 overflow-hidden'>
+      <div className={cn('relative mt-4 rounded-full', sizeStyle, 'teachersShadow')}>
+        <div
+          className={cn('relative flex items-center justify-center overflow-hidden rounded-full', sizeStyle)}
+        >
+          <ImageWithSkeleton className='object-cover' src={image} alt={alt} />
+        </div>
+        {includePlay && (
+          <Image
+            src={'/play.svg'}
+            className='absolute bottom-0 right-0 z-30 h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 lg:h-20 lg:w-20'
+            width={50}
+            height={50}
+            alt=''
+            priority
           />
-        </ImageContainer>
-        {includePlay && isImgLoaded && <PlayIcon src={'/play.svg'} width={50} height={50} alt='' priority />}
-      </ImageAndSpanContainer>
-      <TextContainer>
-        <h2>{isImgLoaded ? name : <Skeleton height={40} width={200} />}</h2>
-      </TextContainer>
-      <TextContainer>
-        <p>{isImgLoaded ? description : <Skeleton height={15} width={800} count={5} />}</p>
-      </TextContainer>
-    </StyledContainer>
+        )}
+      </div>
+      <div className='flex w-full flex-col items-center justify-center overflow-hidden'>
+        <h2 className='text-center text-slate-900 dark:text-slate-100'>{name}</h2>
+      </div>
+      <div className='flex w-full flex-col items-center justify-center overflow-hidden'>
+        <p className='text-center'>{description}</p>
+      </div>
+    </div>
   );
 };
 export default TeacherCard;

@@ -1,86 +1,51 @@
-import { useEffect, FC, KeyboardEvent } from 'react';
-import { createPortal } from 'react-dom';
-import { useAppSelector } from '../../services/hook';
-import { CloseIcon } from '../icons';
-import { PreloaderSmall } from '../preloader/preloader-small';
-import styled from 'styled-components';
-import { FlexCCC } from '@/styles/StyledMain';
+'use client';
+import { useCallback, useRef, useEffect, ReactNode, MouseEvent } from 'react';
+import { useRouter } from 'next/navigation';
+import { useLockedBody } from 'usehooks-ts';
 
-
-interface IModalContainer {
-    $closeButton: boolean;
+interface IModelProps {
+  children: ReactNode;
 }
 
-const StyledModalOverlay = styled(FlexCCC)({
-    backgroundColor: 'rgba(0, 0, 0, .6)',
-    position: 'fixed',
-    overflow: 'hidden',
-    zIndex: 1000,
-    top: 0,
-    left: 0,
-    right: 0,
-    bottom: 0,
-});
-const ModalContainer = styled(FlexCCC)<IModalContainer>((props) => ({
-    width: '90%',
-    maxWidth: '650px',
-    backgroundColor: props.theme.colors.componentBackground,
-    backgroundImage: props.$closeButton ? props.theme.colors.modalGradient : 'none',
-    position: 'relative',
-    borderRadius: '2rem',
-    zIndex: 1001,
-    overflow: 'hidden',
-    padding: props.$closeButton ? '4rem 1rem 1rem 1rem' : '2rem 0.5rem',
-}));
+const Modal = ({ children }: IModelProps) => {
+  const overlay = useRef<HTMLDivElement>(null);
+  const wrapper = useRef<HTMLDivElement>(null);
+  const router = useRouter();
+  useLockedBody(true, 'root');
 
-const IconContainer = styled.div({
-    padding: '1.5rem',
-    zIndex: 1001,
-    position: 'absolute',
-    top: 0,
-    right: 0,
-});
+  const onDismiss = useCallback(() => {
+    router.back();
+  }, [router]);
 
-interface Props {
-    children: React.ReactNode;
-    closeButton: boolean;
-    onClose: () => void;
-}
+  const handleClick = useCallback(
+    (e: MouseEvent<HTMLDivElement>) => {
+      if (e.target === overlay.current || e.target === wrapper.current) {
+        if (onDismiss) onDismiss();
+      }
+    },
+    [onDismiss, overlay, wrapper],
+  );
 
-const Modal: FC<Props> = ({ children, closeButton, onClose }): JSX.Element | null => {
-    const { isModalOpen } = useAppSelector((state) => state.modal);
+  const onKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onDismiss();
+    },
+    [onDismiss],
+  );
 
-    // CLOSE IF ESCAPE KEY PRESSED
-    useEffect(() => {
-        const closeOnEscapeKey = (e: KeyboardEvent) => (e.key === 'Escape' ? onClose() : null);
+  useEffect(() => {
+    document.addEventListener('keydown', onKeyDown);
+    return () => document.removeEventListener('keydown', onKeyDown);
+  }, [onKeyDown]);
 
-        if (isModalOpen) {
-            document.body.addEventListener('keydown', closeOnEscapeKey as () => void);
-            return () => {
-                document.body.removeEventListener('keydown', closeOnEscapeKey as () => void);
-            };
-        }
-    }, [isModalOpen]);
-
-    if (!isModalOpen) return null;
-
-    return createPortal(
-        <StyledModalOverlay onClick={onClose}>
-            <ModalContainer
-                $closeButton={closeButton}
-                onClick={(e: any) => {
-                    e.stopPropagation();
-                }}>
-                {closeButton && (
-                    <IconContainer onClick={onClose}>
-                        <CloseIcon type='primary' />
-                    </IconContainer>
-                )}
-                {children ? children : <PreloaderSmall />}
-            </ModalContainer>
-        </StyledModalOverlay>,
-        document.getElementById('modal') as HTMLElement
-    );
+  return (
+    <div
+      className='fixed bottom-0 left-0 right-0 top-0 z-[999] flex flex-col items-center justify-center bg-black/60 px-4'
+      onClick={handleClick}
+      ref={overlay}
+    >
+      {children}
+    </div>
+  );
 };
-
 export default Modal;

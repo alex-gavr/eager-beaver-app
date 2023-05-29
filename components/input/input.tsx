@@ -1,217 +1,138 @@
-import React, { useCallback, useMemo, useRef } from 'react';
-import { useState } from 'react';
-import * as Icons from '../icons';
-import { TICons } from '../icons';
-import styled from 'styled-components';
+'use client';
 
-const StyledPlaceholder = styled.label((props) => ({
-    display: 'block',
-    position: 'absolute',
-    cursor: 'inherit',
-    top: '18px',
-    textAlign: 'left',
-    color: props.theme.colors.paragraph,
-    transition: '0.3s',
-    // '&:focus, &:active, &:hover': {
-    //     top: 0,
-    //     border: `2px solid ${props.theme.colors.textYellowDark}`,
-    //     backgroundColor: 'white',
-    //     padding: '0.2rem',
-    //     transform: 'translateY(-20px)',
-    //     color: props.theme.colors.textGreenDark,
-    // },
-}));
-const InputContainer = styled.div((props) => ({
-    width: 'fit-content',
-    textAlign: 'left',
-}));
-const StyledInput = styled.input((props) => ({
-    display: 'block',
-    cursor: 'inherit',
-    backgroundColor: 'transparent',
-    border: 'none',
-    width: '100%',
-    color: props.theme.colors.title,
-    marginTop: '16px',
-    letterSpacing: '0.07rem',
-    '&:focus-within': {
-        outline: 'none',
-    },
-    '&:-webkit-autofill': {
-        boxShadow: `0 0 0 30px ${props.theme.colors.primaryLight} inset !important`,
-    },
-    '&:-webkit-autofill:hover': {
-        boxShadow: `0 0 0 30px ${props.theme.colors.primaryLight} inset !important`,
-    },
-    '&:-webkit-autofill:focus': {
-        boxShadow: `0 0 0 30px r${props.theme.colors.primaryLight}ed inset !important`,
-    },
-}));
-const InputInnerContainer = styled.div<any>((props) => ({
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    boxSizing: 'border-box',
-    backgroundColor: props.theme.colors.background,
-    border: `2px solid ${props.theme.colors.primaryDark}`,
-    borderRadius: '1rem',
-    transition: '0.3s',
-    position: 'relative',
-    boxShadow: '2px 2px 20px 5px rgba(0, 0, 0, 0.2)',
-    fontFamily: 'var(--ff-heading)',
-    minHeight: '64px',
-    width: 'clamp(16.875rem, 12.8205rem + 19.6581vw, 31.25rem);',
-    paddingInline: '1rem',
-    '&:hover, &:focus-within, &active': {
-        paddingInline: '1rem',
-        boxShadow: `0 0 0 2px ${props.theme.colors.primaryDark} inset`,
-    },
-    '&:focus-within, &:hover': {
-        // @ts-ignore
-        [StyledPlaceholder]: {
-            top: 0,
-            border: `2px solid ${props.theme.colors.primaryDark}`,
-            backgroundColor: props.theme.colors.background,
-            padding: '0.2rem',
-            transform: 'translateY(-20px)',
-            color: props.theme.colors.secondaryDark,
-        },
-    },
-    // @ts-ignore
-    [StyledPlaceholder]: props.value && {
-        top: 0,
-        border: `2px solid ${props.theme.colors.primaryDark}`,
-        backgroundColor: props.theme.colors.background,
-        padding: '0.2rem',
-        transform: 'translateY(-20px)',
-        color: props.theme.colors.secondaryDark,
-    },
-}));
+import { cn } from '@/utils/cn';
+import { formatPhoneNumber } from '@/utils/format-phone-number';
+import { PhoneIcon, UserIcon } from '@heroicons/react/24/outline';
+import { ChangeEvent, InputHTMLAttributes, useCallback, useEffect, useRef, useState } from 'react';
+import { z } from 'zod';
+import Button from '../buttons/button';
+import { experimental_useFormStatus } from 'react-dom';
+import { PreloaderSmall } from '../preloader/preloader-small';
 
-const ErrorMessage = styled.p((props) => ({
-    marginLeft: '24px',
-    marginTop: '5px',
-    color: props.theme.colors.error,
-}));
+const mobile = z.string().length(15).startsWith('(9');
 
-export interface TInputInterface extends Omit<React.HTMLProps<HTMLInputElement>, 'size'> {
-    value: string;
-    type?: 'text' | 'email' | 'password' | 'tel';
-    placeholder?: string;
-    success?: boolean;
-    error?: boolean | null;
-    disabled?: boolean;
-    icon?: keyof TICons;
-    errorText?: string;
-    extraClass?: string;
-    onChange(e: React.ChangeEvent<HTMLInputElement>): void;
-    onIconClick?(e: React.MouseEvent<HTMLDivElement>): void;
-    onBlur?(e?: React.FocusEvent<HTMLInputElement>): void;
-    onFocus?(e?: React.FocusEvent<HTMLInputElement>): void;
+interface IInputNewProps extends InputHTMLAttributes<HTMLInputElement> {
+  label: string;
+  index: number;
 }
 
-function useCombinedRefs<T = HTMLElement>(...refs: Array<React.MutableRefObject<T> | React.LegacyRef<T>>): React.MutableRefObject<T | null> {
-    const targetRef = React.useRef<T>(null);
-    React.useEffect(() => {
-        refs.forEach((ref) => {
-            if (typeof ref === 'function') {
-                ref(targetRef.current);
-            } else if (ref != null) {
-                (ref as React.MutableRefObject<T | null>).current = targetRef.current;
-            }
-        });
-    }, [refs]);
-    return targetRef;
-}
+const Input = ({ id, type, className, name, placeholder, label, index }: IInputNewProps) => {
+  const [value, setValue] = useState<string>('');
+  const [error, setError] = useState<boolean | null>(null);
+  const [focus, setFocus] = useState<boolean>(false);
+  const { pending } = experimental_useFormStatus();
+  const ref = useRef<HTMLInputElement | null>(null);
 
-export const Input = React.forwardRef<HTMLInputElement, TInputInterface>(
-    (
-        { type, placeholder, onChange, icon, onIconClick, success, error, value, errorText, disabled, onBlur, onFocus, extraClass = '', name },
-        forwardedRef
-    ) => {
-        const [focus, setFocus] = useState(false);
-        const innerRef = useRef<HTMLInputElement | null>(null);
-        const ref = useCombinedRefs<HTMLInputElement>(innerRef, forwardedRef);
-
-        const handleInputFocus = useCallback(
-            (e?: React.FocusEvent<HTMLInputElement>) => {
-                setFocus(true);
-                if (typeof onFocus === 'function') {
-                    onFocus(e);
-                }
-            },
-            [setFocus, onFocus]
-        );
-
-        const forceFocus = useCallback(() => {
-            ref?.current?.focus();
-        }, [ref]);
-
-        const handleInputBlur = useCallback(
-            (e?: React.FocusEvent<HTMLInputElement>) => {
-                setFocus(false);
-                if (typeof onBlur === 'function') {
-                    onBlur(e);
-                }
-            },
-            [setFocus, onBlur]
-        );
-
-        const onIconClickProxy = useCallback(
-            (e: React.MouseEvent<HTMLDivElement>) => {
-                e.stopPropagation();
-                if (typeof onIconClick === 'function') {
-                    onIconClick(e);
-                } else {
-                    forceFocus();
-                }
-            },
-            [onIconClick, forceFocus]
-        );
-
-        const iconToRender = useMemo(() => {
-            const Icon = icon && Icons[icon];
-            const hasAction = typeof onIconClick === 'function';
-            const dumbIcon = disabled && !hasAction;
-
-            return Icon ? (
-                <div onClick={onIconClickProxy}>
-                    <Icon type={dumbIcon ? 'secondary' : 'primary'} />
-                </div>
-            ) : null;
-        }, [icon, onIconClickProxy, disabled, onIconClick]);
-
-        const onWrapperClick = useCallback(() => {
-            forceFocus();
-        }, [forceFocus]);
-
-        const errorToRender = useMemo(() => error && errorText && <ErrorMessage>{errorText}</ErrorMessage>, [error, errorText]);
-
-        return (
-            <InputContainer>
-                <InputInnerContainer onClick={onWrapperClick} value={value}>
-                    <StyledPlaceholder htmlFor={type}>{placeholder}</StyledPlaceholder>
-                    <StyledInput
-                        minLength={2}
-                        required
-                        maxLength={30}
-                        onFocus={handleInputFocus}
-                        onBlur={handleInputBlur}
-                        onChange={onChange}
-                        type={type}
-                        name={name}
-                        aria-label={name}
-                        aria-required
-                        ref={ref}
-                        value={value}
-                        disabled={disabled}
-                    />
-                    {iconToRender}
-                </InputInnerContainer>
-                {errorToRender}
-            </InputContainer>
-        );
+  const handleValidatePhone = () => {
+    if (type !== 'tel') {
+      return;
     }
-);
+    if (value.length < 1) {
+      setError(null);
+      return;
+    }
+    if (value.length > 0) {
+      const result = mobile.safeParse(value);
+      if (!result.success) {
+        setError(true);
+        return;
+      }
+      if (result.success) {
+        setError(false);
+        return;
+      }
+    }
+  };
 
-Input.displayName = 'Input';
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    // setError(null);
+    if (event.target.type === 'tel') {
+      const formattedPhoneNumber = formatPhoneNumber(event.target.value);
+      setValue(formattedPhoneNumber);
+      if (value.length === 15) {
+        handleValidatePhone();
+      }
+      if (value.length < 15) {
+        setError(null);
+      }
+    } else {
+      setValue(event.target.value);
+    }
+    // setPhonePlaceholderText('Телефон без +7');
+  };
+
+  const handleInputFocus = useCallback(
+    (e?: React.FocusEvent<HTMLInputElement>) => {
+      setFocus(true);
+    },
+    [setFocus],
+  );
+
+  const handleInputBlur = (e?: React.FocusEvent<HTMLInputElement>) => {
+    setFocus(false);
+    if (value.length === 0) {
+      setError(null);
+    }
+    if (e?.target.type === 'tel') {
+      handleValidatePhone();
+    }
+  };
+
+  useEffect(() => {
+    if (value.length === 15 && ref.current?.type === 'tel') {
+      handleValidatePhone();
+    }
+  }, [value, ref]);
+
+  const baseStyles =
+    'peer border-0 block w-full rounded-md py-2 pl-4 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400  focus:ring-1 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 lg:text-2xl';
+
+  const invalidInputStyles = 'text-pink-600 ring-pink-500 focus:text-pink-600 focus:ring-pink-500';
+  const validInputStyles = 'text-emerald-600 ring-emerald-500 focus:text-emerald-600 focus:ring-emerald-500';
+  return (
+    <>
+      <div>
+        <label
+          htmlFor={name}
+          className='block text-base leading-6 text-gray-900 dark:text-gray-100 md:text-base lg:text-2xl'
+        >
+          {label}
+        </label>
+        <div className='relative mt-2 rounded-md shadow-sm'>
+          <input
+            ref={ref}
+            onChange={handleChange}
+            type={type}
+            name={name}
+            id={id}
+            required
+            minLength={2}
+            onFocus={handleInputFocus}
+            onBlur={handleInputBlur}
+            value={value}
+            className={cn(
+              baseStyles,
+              error === true ? invalidInputStyles : error === false ? validInputStyles : '',
+            )}
+            placeholder={placeholder}
+          />
+          <div className='pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3'>
+            {name === 'name' ? (
+              <UserIcon className='h-5 w-5 text-gray-400' aria-hidden='true' />
+            ) : name === 'phone' ? (
+              <PhoneIcon className='h-5 w-5 text-gray-400' aria-hidden='true' />
+            ) : null}
+          </div>
+        </div>
+        {error && <p className='mt-2 text-sm text-red-500'>Please enter a valid phone number</p>}
+      </div>
+      {index === 1 && (
+        <Button type='submit' disabled={error === true || error === null}>
+          {pending ? <PreloaderSmall /> : error === true || error === null ? 'заполните форму' : 'Записаться'}
+        </Button>
+      )}
+    </>
+  );
+};
+
+export default Input;

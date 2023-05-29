@@ -1,66 +1,10 @@
 import Button from '@/components/buttons/button';
 import { useState } from 'react';
 import { useWindowSize } from 'usehooks-ts';
-import styled, { useTheme } from 'styled-components';
-import { FlexCCC } from '@/styles/StyledMain';
+import { m } from 'framer-motion';
 // import ym from 'react-yandex-metrika';
 
-const Wrapper = styled(FlexCCC)({
-  gap: '1rem',
-  width: '100%',
-});
-
-const StepsContainer = styled(FlexCCC)({
-  position: 'relative',
-  width: '100%',
-});
-const TheStepContainer = styled(FlexCCC)((props) => ({
-  justifyContent: 'flex-start',
-  alignItems: 'flex-start',
-  position: 'absolute',
-  top: 0,
-  left: 0,
-  width: '100%',
-  minWidth: '300px',
-  height: 'fit-content',
-  backgroundColor: props.theme.colors.secondaryLight,
-  padding: '1rem',
-  borderRadius: '2rem',
-  gap: '0.5rem',
-  boxShadow: '1px 1px 10px 5px rgba(0, 0, 0, 0.2)',
-  '& > p': {
-    color: props.theme.colors.black,
-  },
-}));
-
-const TheStepHead = styled.div((props) => ({
-  display: 'flex',
-  flexFlow: 'row nowrap',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  width: '100%',
-  '& > h2': {
-    color: props.theme.colors.black,
-    backgroundColor: props.theme.colors.primaryMedium,
-    padding: '0.2rem 1rem',
-    borderRadius: '2rem',
-    textTransform: 'uppercase',
-    '@media only screen and (min-width: 50em)': {
-      fontSize: props.theme.fontSize.subSubHeading,
-      padding: '0rem 1rem',
-    },
-  },
-  '& > p': {
-    color: props.theme.colors.black,
-    fontSize: '0.8rem',
-    '@media only screen and (min-width: 50em)': {
-      fontSize: '1rem',
-    },
-  },
-}));
-
 const TeachingSteps = () => {
-  const theme = useTheme();
   const { width } = useWindowSize();
   const [step, setStep] = useState<number>(1);
   const [buttonText, setButtonText] = useState('так, и что дальше?');
@@ -136,8 +80,9 @@ const TeachingSteps = () => {
   };
 
   return (
-    <Wrapper>
-      <StepsContainer
+    <div className='flex w-full flex-col items-center justify-center gap-4'>
+      <div
+        className='relative flex w-full flex-col items-center justify-center'
         style={
           width < 400
             ? {
@@ -181,17 +126,10 @@ const TeachingSteps = () => {
       >
         {data.map((data, index) => {
           return (
-            <TheStepContainer
+            <m.div
+              className='absolute top-0 flex h-fit w-full min-w-[300px] max-w-[450px] flex-col items-start justify-start gap-2 rounded-3xl border border-primary-800 bg-accent-200 p-4 shadow-md dark:border dark:border-primary-200 dark:bg-slate-950'
               key={index}
               onClick={() => handleChangeStep(data.step)}
-              style={{
-                backgroundColor:
-                  buttonText === 'Ждем Вас ❤️'
-                    ? theme?.colors.secondaryLight
-                    : step === index + 1
-                    ? theme?.colors.secondaryLight
-                    : theme?.colors.primaryDark,
-              }}
               animate={
                 step > index
                   ? {
@@ -212,19 +150,21 @@ const TeachingSteps = () => {
                 ease: 'easeInOut',
               }}
             >
-              <TheStepHead>
-                <h2>Шаг {index + 1}</h2>
+              <div className='flex w-full flex-row flex-nowrap items-center justify-between'>
+                <h2 className='rounded-xl bg-primary-500 px-6 py-1 text-2xl dark:bg-slate-900 md:text-3xl'>
+                  Шаг {index + 1}
+                </h2>
                 <p>{step === 5 ? data.title : step === index + 1 ? null : data.title}</p>
-              </TheStepHead>
+              </div>
               <p>{data.description}</p>
-            </TheStepContainer>
+            </m.div>
           );
         })}
-      </StepsContainer>
-      <Button type='primary' typeHTML='button' disabled={false} onClick={handleClick}>
+      </div>
+      <Button type='button' variant='secondaryGhost' disabled={false} onClick={handleClick}>
         {buttonText}
       </Button>
-    </Wrapper>
+    </div>
   );
 };
 

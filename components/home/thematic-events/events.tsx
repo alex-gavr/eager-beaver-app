@@ -1,48 +1,29 @@
+'use client'
 import { TwoColumns } from './two-columns';
 import { AnimatePresence, m } from 'framer-motion';
 import { list, toUp } from '@/utils/motion-animations';
 import AnimatedTextWords from '@/components/AnimatedTextWords/AnimatedTextWords';
-import styled from 'styled-components';
 import { useInView } from 'react-intersection-observer';
-import { FlexCCC } from '@/styles/StyledMain';
 import { IEventsData } from '@/db/schemas';
-
-
-const Wrapper = styled(FlexCCC)({
-  gap: '3rem',
-  minHeight: '80vh',
-  position: 'relative',
-  padding: '0 1rem',
-  maxWidth: '1500px',
-  marginBottom: '2rem',
-  '@media only screen and (min-width: 50em)': {
-    padding: '2rem',
-  },
-});
-const WelcomeTextContainer = styled(FlexCCC)((props) => ({
-  maxWidth: '95%',
-  gap: '1rem',
-  '& > p': {
-    textAlign: 'center',
-    padding: '0 1rem',
-  },
-}));
 
 interface IProps {
   themeEvents: IEventsData[];
 }
 
-const Events = ({themeEvents}: IProps) => {
+const Events = ({ themeEvents }: IProps) => {
   const { ref, inView } = useInView({
     triggerOnce: true,
   });
 
   return (
     <AnimatePresence>
-      <Wrapper ref={ref}>
+      <div
+        className='relative flex min-h-[80vh] max-w-[1500px] flex-col items-center justify-center gap-12 px-2 py-4 md:p-8'
+        ref={ref}
+      >
         {inView ? (
           <>
-            <WelcomeTextContainer variants={list} whileInView='visible' initial='hidden'>
+            <m.div className='flex flex-col items-center justify-center w-full gap-4' variants={list} whileInView='visible' initial='hidden'>
               <h1>
                 <AnimatedTextWords
                   title={true}
@@ -51,6 +32,7 @@ const Events = ({themeEvents}: IProps) => {
                 />
               </h1>
               <m.p
+              className='text-center py-4'
                 variants={toUp}
                 whileInView='visible'
                 initial='hidden'
@@ -61,10 +43,10 @@ const Events = ({themeEvents}: IProps) => {
                 регулярно проводим тематические праздники и мастер-классы, что является для нас неотъемлемой
                 частью образования.
               </m.p>
-            </WelcomeTextContainer>
+            </m.div>
             {themeEvents.map((event) => (
               <TwoColumns
-                key={event.id}
+                key={event.uuid}
                 images={event.images}
                 alt={event.heading}
                 imageSide={event.imageSide}
@@ -74,7 +56,7 @@ const Events = ({themeEvents}: IProps) => {
             ))}
           </>
         ) : null}
-      </Wrapper>
+      </div>
     </AnimatePresence>
   );
 };

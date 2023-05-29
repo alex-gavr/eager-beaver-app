@@ -1,48 +1,10 @@
 import { useState } from 'react';
 import { AnimatePresence, m } from 'framer-motion';
-import styled from 'styled-components';
 import Image from 'next/image';
-import { FlexCCC } from '@/styles/StyledMain';
 import { toggleHeight } from '@/utils/motion-animations';
 import { TFaq } from '@/db/schemas';
 
-const WrapperContainer = styled(FlexCCC)((props) => ({
-  borderRadius: '2rem',
-  width: '100%',
-  padding: '2rem',
-  backgroundColor: props.theme.colors.componentBackground,
-  boxShadow: '1px 1px 20px 10px rgba(0, 0, 0, 0.2)',
-  ' & > p': {
-    letterSpacing: '0.03rem',
-    color: props.theme.colors.paragraph,
-    textTransform: 'lowercase',
-  },
-}));
-
-const QuestionContainer = styled(FlexCCC)((props) => ({
-  flexFlow: 'row nowrap',
-  alignItems: 'center',
-  justifyContent: 'space-between',
-  width: '100%',
-  '& > h3': {
-    textAlign: 'center',
-    width: '90%',
-    color: props.theme.colors.title,
-    '@media only screen and (min-width:50em)': {
-      textAlign: 'left',
-      width: '100%',
-    },
-  },
-}));
-const IconContainer = styled.div({
-  marginLeft: '1rem',
-  padding: '0.2rem',
-  '@media only screen and (min-width:50em)': {
-    padding: '1rem',
-  },
-});
-
-const FAQComponent = ({ question, description }: Omit<TFaq, 'id'>) => {
+const FAQComponent = ({ question, description }: Omit<TFaq, 'uuid'>) => {
   const [open, setOpen] = useState(false);
 
   const handleToggle = () => {
@@ -50,10 +12,15 @@ const FAQComponent = ({ question, description }: Omit<TFaq, 'id'>) => {
   };
 
   return (
-    <WrapperContainer onClick={handleToggle}>
-      <QuestionContainer>
-        <h3>{question}</h3>
-        <IconContainer>
+    <div
+      className=' flex w-full flex-col items-center justify-center rounded-3xl border border-slate-300 bg-slate-50 p-8 shadow-2xl dark:border-slate-500 dark:bg-slate-950'
+      onClick={handleToggle}
+    >
+      <div className='flex w-full flex-row flex-nowrap items-center justify-between'>
+        <h3 className='w-[90%] text-center text-lg tracking-wider dark:text-slate-300 md:text-xl lg:w-full lg:text-left lg:text-2xl'>
+          {question}
+        </h3>
+        <div className='ml-4 p-1 lg:p-4'>
           <Image
             src={'/downArrow.svg'}
             width={30}
@@ -64,11 +31,12 @@ const FAQComponent = ({ question, description }: Omit<TFaq, 'id'>) => {
               transition: 'transform 0.5s ease-in-out',
             }}
           />
-        </IconContainer>
-      </QuestionContainer>
+        </div>
+      </div>
       <AnimatePresence mode='wait'>
         {open && (
           <m.p
+            className='text-lg tracking-wider lg:text-2xl'
             variants={toggleHeight}
             initial={toggleHeight.hidden}
             animate={toggleHeight.visible}
@@ -78,7 +46,7 @@ const FAQComponent = ({ question, description }: Omit<TFaq, 'id'>) => {
           </m.p>
         )}
       </AnimatePresence>
-    </WrapperContainer>
+    </div>
   );
 };
 export default FAQComponent;

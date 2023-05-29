@@ -1,33 +1,15 @@
 import React, { FC } from 'react';
 import { m } from 'framer-motion';
-import styled from 'styled-components';
 
-const Toggle = styled.button((props) => ({
-    outline: 'none',
-    border: 'none',
-    cursor: 'inherit',
-    width: '100%',
-    height: '100%',
-    background: 'transparent',
-    transform: 'translate(1px, 1px)',
-    '& > svg ': {
-        width: '30px',
-        height: '30px',
-    },
-    '& > svg > path': {
-        stroke: props.theme.colors.title,
-    },
-}));
-
-const Path = (props: any) => <m.path fill='transparent' strokeWidth='3' stroke='hsl(0, 0%, 18%)' strokeLinecap='round' {...props} />;
+const Path = (props: any) => <m.path fill='transparent' className='stroke-black dark:stroke-white' strokeWidth='3' stroke='hsl(0, 0%, 18%)' strokeLinecap='round' {...props} />;
 
 interface Props {
     toggle: () => void;
 }
 
 export const MenuToggle: FC<Props> = ({ toggle }) => (
-    <Toggle onClick={toggle} type='button' aria-label="menu toggler">
-        <svg width='23' height='23' viewBox='0 0 23 23'>
+    <button className='outline-none w-full h-full bg-transparent translate-x-[1px] translate-y-[1px]' onClick={toggle} type='button' aria-label="menu toggler">
+        <svg width='30' height='30' viewBox='0 0 23 23'>
             <Path
                 variants={{
                     closed: { d: 'M 2 2.5 L 20 2.5' },
@@ -49,5 +31,5 @@ export const MenuToggle: FC<Props> = ({ toggle }) => (
                 }}
             />
         </svg>
-    </Toggle>
+    </button>
 );

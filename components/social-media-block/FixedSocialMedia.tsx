@@ -1,25 +1,9 @@
-import styled from 'styled-components';
 import SocialMediaIcons from './SocialMediaIcons';
 import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import { FlexCCC } from '@/styles/StyledMain';
 import { useAppSelector } from '@/services/hook';
 import { useWindowSize } from 'usehooks-ts';
-
-const StyledDiv = styled(FlexCCC)({
-  position: 'fixed',
-  zIndex: 800,
-});
-
-const StyledDivDesktop = styled(StyledDiv)({
-  gap: '2rem',
-  top: '50%',
-  transform: 'translateY(-50%)',
-});
-const StyledDivMobile = styled(StyledDiv)({
-  bottom: 10,
-  zIndex: 800,
-});
+import { m } from 'framer-motion';
 
 const FixedSocialMedia = () => {
   const { width } = useWindowSize();
@@ -27,7 +11,8 @@ const FixedSocialMedia = () => {
   return (
     <AnimatePresence>
       {width > 700 ? (
-        <StyledDivDesktop
+        <m.div
+          className='fixed top-[50%] z-[800] flex -translate-y-[50%] flex-col items-center justify-center gap-8'
           initial={{ right: '-10%', opacity: 0 }}
           animate={
             footerVisible || headerVisible ? { right: '-10%', opacity: 0 } : { right: '2%', opacity: 1 }
@@ -35,9 +20,9 @@ const FixedSocialMedia = () => {
           transition={{ ease: 'easeInOut', duration: 1 }}
         >
           <SocialMediaIcons />
-        </StyledDivDesktop>
+        </m.div>
       ) : (
-        <StyledDivMobile
+        <m.div className='fixed z-[800] flex flex-col items-center justify-center bottom-4'
           initial={{ right: '-15%' }}
           animate={headerVisible ? { right: '-15%' } : { right: '4%' }}
           transition={{ ease: 'easeInOut', duration: 1 }}
@@ -45,7 +30,7 @@ const FixedSocialMedia = () => {
           <a href='https://wa.me/79093809657' aria-label='WhatsApp' target='_blank' rel='noopener noreferrer'>
             <Image src={'/whatsapp.svg'} width={50} height={50} alt='' />
           </a>
-        </StyledDivMobile>
+        </m.div>
       )}
     </AnimatePresence>
   );

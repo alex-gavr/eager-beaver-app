@@ -1,3 +1,4 @@
+'use client'
 import { initError } from '@/services/errorSlice';
 import { useAppDispatch } from '@/services/hook';
 import Image from 'next/image';

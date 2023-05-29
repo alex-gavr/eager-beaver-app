@@ -26,11 +26,10 @@ export interface IModalState {
 
 export interface IFutureEventDetailsState {
     futureEventDetails: {
-        title: string;
+        eventName: string;
         age: string;
         dateFull: string;
         participants: number;
-        entryId: string;
     } | null;
     shouldChangeMember: boolean;
 }

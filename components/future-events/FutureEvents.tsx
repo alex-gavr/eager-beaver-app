@@ -1,63 +1,19 @@
+'use client';
 import AnimatedTextWords from '../AnimatedTextWords/AnimatedTextWords';
 import cloud from '@/images/clouds/5.svg';
 import cloud2 from '@/images/clouds/3.svg';
 import cloud3 from '@/images/clouds/1.svg';
 import cloud4 from '@/images/clouds/2.svg';
-import styled from 'styled-components';
 import Image from 'next/image';
-import { CloudContainer } from '../CloudsContainer';
+import { baseClassName } from '../CloudsContainer';
 import dynamic from 'next/dynamic';
 import { m } from 'framer-motion';
 import { useInView } from 'react-intersection-observer';
-import { FlexCCC } from '@/styles/StyledMain';
 import EventCard from './event-card/EventCard';
 import { TFutureEvents } from '@/db/schemas';
+import { cn } from '@/utils/cn';
 
 const BeaverSleeps = dynamic(() => import('./BeaverSleeps'));
-
-const Wrapper = styled(FlexCCC)((props) => ({
-  width: '100%',
-  gap: '6rem',
-  zIndex: 100,
-  maxWidth: '1500px',
-  '& > h1': {
-    textAlign: 'center',
-    backgroundColor: props.theme.colors.secondaryDark,
-    padding: '0.5rem 2rem',
-    borderRadius: '2rem',
-    fontSize: 'clamp(2.5rem, 2.0189rem + 2.2642vw, 4rem)',
-  },
-}));
-const YellowBG = styled.span((props) => ({
-  position: 'absolute',
-  top: 0,
-  width: '100vw',
-  height: '100%',
-  background: props.theme.colors.eventsGradient,
-}));
-
-const EventsContainer = styled(FlexCCC)((props) => ({
-  width: '100%',
-  height: '100%',
-  rowGap: '5rem',
-  columnGap: '2rem',
-  '& > h2': {
-    color: props.theme.colors.paragraph,
-  },
-  '@media only screen and (max-width: 30em)': {
-    rowGap: '4rem',
-  },
-  '@media only screen and (min-width: 20em)': {
-    flexFlow: 'row wrap',
-  },
-}));
-
-const BeaverContainer = styled(FlexCCC)((props) => ({
-  width: '80%',
-  '@media only screen and (min-width: 50em)': {
-    width: '40%',
-  },
-}));
 
 interface IProps {
   futureEvents?: TFutureEvents[];
@@ -71,26 +27,33 @@ const FutureEvents = ({ layoutId, futureEvents }: IProps) => {
 
   return (
     <>
-      <Wrapper ref={ref}>
+      <div
+        className='z-50 flex w-full max-w-[1500px] flex-col items-center justify-center gap-20 px-2 py-4 md:p-8'
+        ref={ref}
+      >
         {inView ? (
           <>
-            <m.h1 layoutId={layoutId} transition={{ duration: 0.6, ease: 'easeOut' }}>
-              <AnimatedTextWords text='Предстоящие мероприятия' title={true} textAnimation='fromBottomLeft' />
+            <m.h1
+              className='rounded-3xl bg-accent-800 px-8 py-2 text-center dark:bg-accent-800'
+              layoutId={layoutId}
+              transition={{ duration: 0.6, ease: 'easeOut' }}
+            >
+              <AnimatedTextWords
+                className='dark:text-neutral-950'
+                text='Предстоящие мероприятия'
+                title={true}
+                textAnimation='fromBottomLeft'
+              />
             </m.h1>
-            <EventsContainer>
+            <div className='flex w-full flex-col items-center justify-center gap-x-16 gap-y-20 md:flex-row md:flex-wrap lg:gap-x-8 '>
               {futureEvents && futureEvents?.length === 0 ? (
-                <h2
-                  style={{
-                    textAlign: 'center',
-                  }}
-                >
-                  Планируем будущие мероприятия для ваших деток...
-                </h2>
+                <h2 className='text-center'>Планируем будущие мероприятия для ваших деток...</h2>
               ) : (
                 futureEvents &&
                 futureEvents.map((event) => (
                   <EventCard
-                    key={event.id}
+                    uuid={event.uuid}
+                    key={event.uuid}
                     eventName={event.eventName}
                     description={event.description}
                     age={event.age}
@@ -100,30 +63,29 @@ const FutureEvents = ({ layoutId, futureEvents }: IProps) => {
                     durationLongerThanDay={event.durationLongerThanDay}
                     eventStart={event.eventStart}
                     eventEnd={event.eventEnd}
-                    // entryId={event.entryId}
                   />
                 ))
               )}
-            </EventsContainer>
-            <BeaverContainer>
+            </div>
+            <div className='flex w-[80%] max-w-[400px] flex-col items-center justify-center sm:w-[70%] md:w-[60%] lg:w-[40%]'>
               <BeaverSleeps />
-            </BeaverContainer>
+            </div>
           </>
         ) : null}
-      </Wrapper>
-      <CloudContainer top={'2%'} left={0}>
+      </div>
+      <span className={cn(baseClassName, 'left-20 top-[30%]')}>
         <Image src={cloud} alt='' />
-      </CloudContainer>
-      <CloudContainer top={'5%'} left={'20%'}>
+      </span>
+      <span className={cn(baseClassName, 'left-[20%] top-[5%]')}>
         <Image src={cloud2} alt='' />
-      </CloudContainer>
-      <CloudContainer top={0} right={0}>
+      </span>
+      <span className={cn(baseClassName, 'right-20 top-[50%]')}>
         <Image src={cloud3} alt='' />
-      </CloudContainer>
-      <CloudContainer top={'10%'} right={'10%'}>
+      </span>
+      <span className={cn(baseClassName, 'right-[10%] top-[10%]')}>
         <Image src={cloud4} alt='' />
-      </CloudContainer>
-      <YellowBG />
+      </span>
+      <span className='eventsGradient absolute top-0 h-full w-screen' />
     </>
   );
 };

@@ -1,44 +1,23 @@
 import { useSwiper } from 'swiper/react';
-import styled from 'styled-components';
 import Image from 'next/image';
 
-
-const Wrapper = styled.div`
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        width: 40%;
-        height: 100%;
-        @media only screen and (max-width: 500px) {
-            width: 80%;
-        }
-    `;
-
-    const PointerContainer = styled.span`
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        border-radius: 50%;
-        padding: 0.3rem;
-        width: 50px;
-        height: 50px;
-        background-color: rgba(0, 0, 0, 0.5);
-        user-select: none;
-    `;
-
 export const SlideButtons = () => {
-    const swiper = useSwiper();
+  const swiper = useSwiper();
 
-    return (
-        <Wrapper>
-            <PointerContainer
-                onClick={() => swiper.slidePrev()}>
-                <Image src={'/downArrow.svg'} width={25} height={15} alt='' style={{rotate: '90deg'}} />
-            </PointerContainer>
-            <PointerContainer
-                onClick={() => swiper.slideNext()}>
-                <Image src={'/downArrow.svg'} width={25} height={15} alt='' style={{rotate: '-90deg'}} />
-            </PointerContainer>
-        </Wrapper>
-    );
+  return (
+    <div className='flex h-full w-4/5 items-center justify-between sm:w-2/5'>
+      <span
+        className='flex h-[50px] w-[50px] select-none flex-col items-center justify-center rounded-full bg-slate-950 bg-opacity-50 p-1 dark:bg-slate-950 dark:bg-opacity-50'
+        onClick={() => swiper.slidePrev()}
+      >
+        <Image src={'/downArrow.svg'} width={25} height={15} alt='' style={{ rotate: '90deg' }} />
+      </span>
+      <div
+        className='flex h-[50px] w-[50px] select-none flex-col items-center justify-center rounded-full bg-slate-950 bg-opacity-50 p-1 dark:bg-slate-950 dark:bg-opacity-50'
+        onClick={() => swiper.slideNext()}
+      >
+        <Image src={'/downArrow.svg'} width={25} height={15} alt='' style={{ rotate: '-90deg' }} />
+      </div>
+    </div>
+  );
 };

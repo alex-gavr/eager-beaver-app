@@ -1,4 +1,4 @@
-export const revalidate = '60';
+// export const revalidate = '60';
 import { Metadata } from 'next';
 import Home from './home';
 import { db } from '@/db/db';
@@ -11,7 +11,7 @@ export const metadata: Metadata = {
 };
 
 const Page = async () => {
-  const futureEventsData = (await db.select().from(futureEvents)) as TFutureEvents[];
+  const futureEventsData = (await db.select().from(futureEvents).limit(1)) as TFutureEvents[];
 
   const themeEventsData = (await db.select().from(thematicEvents)) as TThematicEvents[];
 

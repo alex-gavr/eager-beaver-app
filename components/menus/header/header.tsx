@@ -1,101 +1,81 @@
+'use client';
 import { m } from 'framer-motion';
 import MobileMenu from './mobile-menu';
 import { MenuToggle } from './menu-toggle';
-import styled from 'styled-components';
 import { header } from '../links';
 import { list, mobileHeaderAni } from '@/utils/motion-animations';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useInView } from 'react-intersection-observer';
-import { FlexCCC } from '@/styles/StyledMain';
 import { useAppDispatch, useAppSelector } from '@/services/hook';
 import { headerVisibilityStatus } from '@/services/navigationVisibilitySlice';
 import { Logo } from '@/components/logo/logo';
 import { useWindowSize } from 'usehooks-ts';
 
-const Wrapper = styled(FlexCCC)({
-    marginBlock: '2rem',
-    flexFlow: 'row nowrap',
-    justifyContent: 'space-between',
-});
-
-const DesktopNavigation = styled(m.ul)((props) => ({
-    display: 'flex',
-    flexFlow: 'row nowrap',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: '2rem 1rem',
-    '& > li': {
-        color: props.theme.colors.paragraph,
-        fontSize: props.theme.fontSize.header,
-        fontFamily: 'var(--ff-heading)',
-    },
-}));
-const NavigationButton = styled(Link)((props) => ({
-    padding: '1rem',
-    letterSpacing: '0.03rem',
-    '&:hover': {
-        color: props.theme.colors.title,
-        backgroundColor: props.theme.colors.secondaryDark,
-        borderRadius: '2rem',
-    },
-}));
-
-const IconContainer = styled(FlexCCC)((props) => ({
-    backgroundColor: props.theme.colors.primaryLight,
-    borderRadius: '50%',
-    padding: '1.4rem 1.3rem 1.2rem 1.4rem',
-    zIndex: 999,
-}));
-
 const Header = () => {
-    const { showLoader } = useAppSelector((state) => state.homeLoader);
-    const { width } = useWindowSize();
-    const dispatch = useAppDispatch();
-    const [isOpen, setIsOpen] = useState(false);
+  const { width } = useWindowSize();
+  const dispatch = useAppDispatch();
+  const [isOpen, setIsOpen] = useState(false);
 
-    const handleToggle = () => {
-        setIsOpen(!isOpen);
-    };
+  const handleToggle = () => {
+    setIsOpen(!isOpen);
+  };
 
-    const { ref, inView } = useInView({});
+  const { ref, inView } = useInView({});
 
-    useEffect(() => {
-        dispatch(headerVisibilityStatus(inView));
-    }, [inView]);
+  useEffect(() => {
+    dispatch(headerVisibilityStatus(inView));
+  }, [inView]);
 
-    return (
-        <header ref={ref}>
-            <Wrapper>
-                {/* Logo */}
-                <Logo />
-                {/* NAVIGATION DESKTOP */}
-                {!showLoader && width > 1000 ? (
-                    <nav>
-                        <DesktopNavigation variants={list} initial='hidden' animate='visible'>
-                            {header.map((link) => (
-                                <m.li
-                                    variants={mobileHeaderAni}
-                                    whileHover={{ scale: 1.2 }}
-                                    whileTap={{ scale: 0.9 }}
-                                    transition={{ type: 'spring', stiffness: 500 }}
-                                    key={link.id}>
-                                    <NavigationButton href={link.to}>{link.name}</NavigationButton>
-                                </m.li>
-                            ))}
-                        </DesktopNavigation>
-                    </nav>
-                ) : (
-                    <>
-                        <MobileMenu header={header} isOpen={isOpen} toggle={handleToggle} />
-                        <IconContainer initial={false} animate={isOpen ? 'open' : 'closed'} onClick={handleToggle}>
-                            <MenuToggle toggle={handleToggle} />
-                        </IconContainer>
-                    </>
-                )}
-            </Wrapper>
-        </header>
-    );
+  return (
+    <header className='w-full px-2 py-3' ref={ref}>
+      <div className='flex w-full flex-row flex-nowrap items-center justify-between px-2'>
+        {/* Logo */}
+        <Logo />
+        {/* NAVIGATION DESKTOP */}
+        {width > 1000 ? (
+          <nav>
+            <m.ul
+              className='flex flex-row flex-nowrap items-center justify-center gap-x-8 gap-y-4'
+              variants={list}
+              initial='hidden'
+              animate='visible'
+            >
+              {header.map((link) => (
+                <m.li
+                  className='koskoBold'
+                  variants={mobileHeaderAni}
+                  whileHover={{ scale: 1.2 }}
+                  whileTap={{ scale: 0.9 }}
+                  transition={{ type: 'spring', stiffness: 500 }}
+                  key={link.id}
+                >
+                  <Link
+                    className='p-4 text-sm tracking-wider hover:rounded-2xl hover:bg-accent-800 hover:text-slate-50 xl:text-base'
+                    href={link.to}
+                  >
+                    {link.name}
+                  </Link>
+                </m.li>
+              ))}
+            </m.ul>
+          </nav>
+        ) : (
+          <>
+            <MobileMenu header={header} isOpen={isOpen} toggle={handleToggle} />
+            <m.div
+              className='z-[999] flex items-center justify-center rounded-full bg-primary-200 p-4 px-5 dark:bg-slate-900'
+              initial={false}
+              animate={isOpen ? 'open' : 'closed'}
+              onClick={handleToggle}
+            >
+              <MenuToggle toggle={handleToggle} />
+            </m.div>
+          </>
+        )}
+      </div>
+    </header>
+  );
 };
 
 export default Header;

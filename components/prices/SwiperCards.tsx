@@ -1,138 +1,100 @@
+'use client';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { EffectCards } from 'swiper';
 import 'swiper/css';
 import 'swiper/css/effect-cards';
 import Image from 'next/image';
-import styled from 'styled-components';
 import { SlideButtons } from '@/components/custom-arrows/leftAndRightButtons';
-import { FlexCCC } from '@/styles/StyledMain';
 import { TPrices } from '@/db/schemas';
-
-const StyledSwiper = styled(Swiper)({
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  alignItems: 'center',
-  width: 'clamp(12.5rem, 4.8077rem + 61.5385vw, 62.5rem)',
-  height: 'auto',
-  marginLeft: '0 !important',
-  marginRight: '0 !important',
-});
-
-const StyledSwiperSlide = styled(SwiperSlide)({
-  padding: '1rem',
-  overflow: 'inherit !important',
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  alignItems: 'center',
-  '& > div:last-child': {
-    display: 'none',
-  },
-});
-
-const StyledCard = styled(FlexCCC)((props) => ({
-  padding: '1rem 0.2rem',
-  gap: '2rem',
-  borderRadius: '2rem',
-  boxShadow: '5px 5px 20px rgba(0, 0, 0, 0.25), -5px -5px 20px rgba(0, 0, 0, 0.15)',
-  backgroundColor: props.theme.colors.componentBackground,
-  width: 270,
-  height: 'auto',
-  '@media only screen and (min-width: 50em)': {
-    width: 350,
-    padding: '1rem',
-  },
-}));
-const NameContainer = styled(FlexCCC)((props) => ({
-  backgroundColor:
-    props.color === 'yellow' ? props.theme.colors.primaryDark : props.theme.colors.secondaryDark,
-  width: '90%',
-  padding: '1rem',
-  borderRadius: '1rem',
-  '@media only screen and (min-width: 50em)': {
-    width: '100%',
-  },
-}));
-const FlexContainer = styled(FlexCCC)((props) => ({
-  gap: '0.4rem',
-  '& > h2': {
-    color: props.theme.colors.title,
-    opacity: 0.7,
-    textAlign: 'center',
-    lineHeight: '1.2',
-  },
-  '& > p': {
-    fontSize: props.theme.fontSize.subHeading,
-    color: props.color === 'yellow' ? props.theme.colors.secondaryDark : props.theme.colors.primaryDark,
-  },
-  '@media only screen and (min-width: 50em)': {
-    gap: '0.7rem',
-  },
-}));
-
-const StyledDescription = styled(FlexCCC)({
-  gap: '1rem',
-  width: '90%',
-});
-
-const ContainerForBulletPoint = styled(FlexCCC)((props) => ({
-  flexDirection: 'row',
-  justifyContent: 'flex-start',
-  alignItems: 'flex-start',
-  width: '100%',
-  gap: '1rem',
-  '& > img': {
-    width: '20px',
-    height: '20px',
-  },
-  '& > li': {
-    color: props.theme.colors.paragraph,
-  },
-}));
+import { cn } from '@/utils/cn';
 
 interface IProps {
   prices: TPrices[];
+  disabled?: boolean;
 }
 
-const SwiperCards = ({ prices }: IProps) => {
+const SwiperCards = ({ prices, disabled }: IProps) => {
   return (
-    <StyledSwiper effect={'cards'} modules={[EffectCards]}>
+    <Swiper
+      className='!ml-0 !mr-0 !flex w-screen flex-col !items-center !justify-center'
+      effect={'cards'}
+      modules={[EffectCards]}
+    >
       {prices &&
         prices.map((price) => {
           const color = price.cardColor;
           return (
-            <StyledSwiperSlide key={price.id}>
-              <StyledCard>
-                <NameContainer color={color}>
-                  <FlexContainer color={color}>
-                    <h2>{price.priceName}</h2>
-                    <p>{price.price}</p>
-                  </FlexContainer>
-                </NameContainer>
-                <StyledDescription as='ul'>
+            <SwiperSlide
+              className='disableShadow !flex flex-col !items-center !justify-center p-4'
+              key={price.uuid}
+            >
+              <div className='flex w-60 flex-col items-center justify-center gap-4 rounded-2xl border border-slate-600 bg-slate-50 px-1 py-4 shadow-md dark:border-slate-500 dark:bg-slate-950 sm:w-72 lg:w-80 lg:p-4'>
+                <div
+                  className={cn(
+                    'flex w-11/12 flex-col items-center justify-center rounded-lg p-4 lg:w-full',
+                    color === 'yellow' ? 'bg-primary-800' : 'bg-accent-800',
+                  )}
+                >
+                  <div className='flex flex-col items-center justify-center gap-2 rounded-lg'>
+                    <h2 className='text-center text-2xl text-gray-100 dark:text-slate-900 sm:text-3xl'>
+                      {price.priceName}
+                    </h2>
+                    <p
+                      className={cn(
+                        'text-center text-lg sm:text-xl md:text-2xl xl:text-3xl',
+                        color === 'yellow'
+                          ? 'text-accent-800 dark:text-accent-800'
+                          : 'text-primary-800 dark:text-primary-800',
+                      )}
+                    >
+                      {price.price}
+                    </p>
+                  </div>
+                </div>
+                <div className='flex flex-col items-center justify-center gap-4 p-2'>
                   {/* First feature */}
-                  <ContainerForBulletPoint>
-                    <Image src={'/checkMark.svg'} width={50} height={50} alt='check mark' priority />
+                  <ul className='flex w-full flex-row items-start justify-start gap-4'>
+                    <Image
+                      src={'/checkMark.svg'}
+                      className='h-5 w-5'
+                      width={50}
+                      height={50}
+                      alt='check mark'
+                      priority
+                    />
                     <li>{price.feature1}</li>
-                  </ContainerForBulletPoint>
+                  </ul>
                   {/* Second feature */}
-                  <ContainerForBulletPoint>
-                    <Image src={'/checkMark.svg'} width={50} height={50} alt='check mark' priority />
+                  <ul className='flex w-full flex-row items-start justify-start gap-4'>
+                    <Image
+                      src={'/checkMark.svg'}
+                      className='h-5 w-5'
+                      width={50}
+                      height={50}
+                      alt='check mark'
+                      priority
+                    />
                     <li>{price.feature2}</li>
-                  </ContainerForBulletPoint>
+                  </ul>
                   {/* Third feature */}
-                  <ContainerForBulletPoint>
-                    <Image src={'/checkMark.svg'} width={50} height={50} alt='check mark' priority />
+                  <ul className='flex w-full flex-row items-start justify-start gap-4'>
+                    <Image
+                      src={'/checkMark.svg'}
+                      className='h-5 w-5'
+                      width={50}
+                      height={50}
+                      alt='check mark'
+                      priority
+                    />
                     <li>{price.feature3}</li>
-                  </ContainerForBulletPoint>
-                </StyledDescription>
-              </StyledCard>
-            </StyledSwiperSlide>
+                  </ul>
+                </div>
+              </div>
+            </SwiperSlide>
           );
         })}
-      <SlideButtons />
-    </StyledSwiper>
+      {disabled ? null : <SlideButtons />}
+    </Swiper>
   );
 };
 

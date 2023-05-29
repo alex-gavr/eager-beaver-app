@@ -1,42 +1,18 @@
+'use client'
 import { FC } from 'react';
 import TeachingSteps from './teaching-steps/TeachingSteps';
 import { AnimatePresence, m } from 'framer-motion';
 import { list, opacity, toLeft, toRight } from '@/utils/motion-animations';
 import AnimatedTextWords from '@/components/AnimatedTextWords/AnimatedTextWords';
-import styled from 'styled-components';
 import Image from 'next/image';
-import { CloudContainer } from '@/components/CloudsContainer';
+import { baseClassName } from '@/components/CloudsContainer';
 import dynamic from 'next/dynamic';
 import { useInView } from 'react-intersection-observer';
 import cloud from '@/images/clouds/5.svg';
 import cloud2 from '@/images/clouds/2.svg';
-import { FlexCCC, StyledSection } from '@/styles/StyledMain';
+import { cn } from '@/utils/cn';
 
 const BeaverHiOptimized = dynamic(() => import('./BeaverHi'));
-
-const EvenColumns = styled(m.div)({
-  zIndex: 100,
-  display: 'grid',
-  gridTemplateColumns: '1fr',
-  justifyContent: 'center',
-  marginBottom: '5rem',
-  width: '100%',
-  maxWidth: '1100px',
-  gap: '1rem',
-  '@media only screen and (min-width: 70em)': {
-    gridTemplateColumns: 'repeat(2, 1fr)',
-    width: '100vw',
-    gap: '2rem',
-  },
-});
-const Background = styled.span((props) => ({
-  position: 'absolute',
-  height: '100%',
-  width: '200vw',
-  borderRadius: '50%',
-  top: 0,
-  backgroundColor: props.theme.colors.primaryLight,
-}));
 
 const TeachProcess: FC = (): JSX.Element => {
   const { ref, inView } = useInView({
@@ -44,9 +20,9 @@ const TeachProcess: FC = (): JSX.Element => {
   });
   return (
     <AnimatePresence>
-      <StyledSection
+      <m.section
+        className='relative mt-12 flex w-full max-w-[1500px] flex-col items-center justify-start gap-8 px-2 py-8 xl:p-16'
         ref={ref}
-        style={{ marginTop: '3rem' }}
         variants={list}
         whileInView='visible'
         initial='hidden'
@@ -55,38 +31,39 @@ const TeachProcess: FC = (): JSX.Element => {
         <h1>
           <AnimatedTextWords title={true} text='Как проходит обучение?' textAnimation='fromBottomLeft' />
         </h1>
-        <EvenColumns variants={opacity}>
+        <m.div
+          className='z-[100] mb-20 grid w-full max-w-6xl grid-cols-1 justify-center gap-4 md:w-screen md:grid-cols-2 md:gap-8'
+          variants={opacity}
+        >
           <TeachingSteps />
-          <FlexCCC>
+          <div className='flex flex-col items-center justify-start'>
             <BeaverHiOptimized />
-          </FlexCCC>
-        </EvenColumns>
+          </div>
+        </m.div>
         {inView ? (
           <>
-            <Background />
-            <CloudContainer
-              top={'10%'}
-              left={0}
+            <span className='absolute top-0 h-full w-[200vw] rounded-[50%] bg-primary-200 dark:bg-neutral-900' />
+            <m.span
+              className={cn(baseClassName, 'left-0 top-[10%]')}
               variants={toRight}
               whileInView='visible'
               initial='hidden'
               viewport={{ once: true, margin: '-10% 0px -10% 0px' }}
             >
               <Image src={cloud} alt='' />
-            </CloudContainer>
-            <CloudContainer
-              bottom={'1%'}
-              left={'30%'}
+            </m.span>
+            <m.span
+              className={cn(baseClassName, 'bottom-[1%] left-[30%]')}
               variants={toLeft}
               whileInView='visible'
               initial='hidden'
               viewport={{ once: true, margin: '-10% 0px -10% 0px' }}
             >
               <Image src={cloud2} alt='cloud2' />
-            </CloudContainer>
+            </m.span>
           </>
         ) : null}
-      </StyledSection>
+      </m.section>
     </AnimatePresence>
   );
 };

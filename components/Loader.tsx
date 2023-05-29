@@ -1,73 +1,12 @@
+'use client';
 import Image from 'next/image';
 import { AnimatePresence, m } from 'framer-motion';
-import styled from 'styled-components';
 import { usePathname } from 'next/navigation';
-import { useAppDispatch } from '@/services/hook';
+import { useAppDispatch, useAppSelector } from '@/services/hook';
 import { resetHomeLoader } from '@/services/homeLoaderSlice';
 import { toDown, toUp } from '@/utils/motion-animations';
-import logo from '@/images/logo.svg'
-
-const Wrapper = styled(m.div)({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  background: 'rgb(248, 236, 155)',
-  zIndex: 1999,
-  position: 'fixed',
-  top: 0,
-  left: 0,
-  right: 0,
-  bottom: 0,
-  gap: '2rem',
-});
-const ImageContainer = styled(m.div)({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  width: '40%',
-  height: 'auto',
-  overflow: 'hidden',
-  boxShadow: '1px 0px 20px 2px rgba(0,0,0,0.2)',
-  '@media only screen and (max-width: 500px)': {
-    width: '50%',
-  },
-  '& > img': {
-    width: '100%',
-    height: '100%',
-  },
-});
-const EagerBeaverContainer = styled(m.div)({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  justifyContent: 'center',
-  width: '100%',
-  height: 'auto',
-  overflow: 'hidden',
-  position: 'absolute',
-  top: '2%',
-});
-const Title = styled(m.h2)({
-  fontSize: '1rem',
-  textAlign: 'center',
-  color: '#000',
-  letterSpacing: '2px',
-  position: 'absolute',
-  bottom: '5%',
-  width: '95%',
-});
-const TitlePages = styled(m.h2)({
-  fontSize: '2rem',
-  textAlign: 'center',
-  color: 'rgb(248, 236, 155)',
-  letterSpacing: '2px',
-  backgroundColor: 'rgb(101, 164, 111)',
-  padding: '1rem',
-  borderRadius: '0.5rem',
-  marginInline: '1rem',
-});
+import logo from '@/images/logo.svg';
+import { useEffect } from 'react';
 
 const container = {
   visible: {
@@ -102,30 +41,55 @@ interface IProps {
 }
 
 const Loader = ({ title, layoutId }: IProps) => {
+  const { showLoader } = useAppSelector((state) => state.homeLoader);
+  
   const pathname = usePathname();
   const dispatch = useAppDispatch();
-  const handleDisableHomeAni = () => {
-    dispatch(resetHomeLoader());
-  };
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      dispatch(resetHomeLoader());
+    }, 2000);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
-    <AnimatePresence mode='popLayout'>
-      <Wrapper
-        variants={container}
-        initial='hidden'
-        animate='visible'
-        exit='exit'
-        onAnimationComplete={handleDisableHomeAni}
-      >
-        <TitlePages variants={imageAni} layoutId={layoutId}>
-          {title}
-        </TitlePages>
-        <EagerBeaverContainer variants={toDown}>
-          <Image src={logo} alt='heroBeaver' />
-        </EagerBeaverContainer>
-        {pathname !== '/' && <Title variants={toUp}>Eager Beaver Language School</Title>}
-      </Wrapper>
-    </AnimatePresence>
+    <>
+      {showLoader ? (
+        <AnimatePresence>
+          <m.div
+            className='fixed bottom-0 left-0 right-0 top-0 z-[1999] flex flex-col items-center justify-center gap-8 bg-primary-200 dark:bg-slate-950'
+            variants={container}
+            initial='hidden'
+            animate='visible'
+            exit='exit'
+            // onAnimationComplete={handleDisableHomeAni}
+          >
+            <m.h2
+              className='mx-2 rounded-2xl bg-accent-800 p-4 text-center text-3xl lowercase tracking-widest text-primary-200 dark:bg-accent-800 dark:text-primary-200 md:text-4xl'
+              variants={imageAni}
+              layoutId={layoutId}
+            >
+              {title}
+            </m.h2>
+            <m.div
+              className='absolute top-5 flex w-full flex-col items-center justify-center overflow-hidden'
+              variants={toDown}
+            >
+              <Image src={logo} alt='heroBeaver' />
+            </m.div>
+            {pathname !== '/' && (
+              <m.h2
+                className='absolute bottom-5 w-full text-center text-base tracking-wider text-slate-950 dark:text-slate-500 md:text-lg'
+                variants={toUp}
+              >
+                Eager Beaver Language School
+              </m.h2>
+            )}
+          </m.div>
+        </AnimatePresence>
+      ) : false}
+    </>
   );
 };
 

@@ -1,8 +1,5 @@
-'use client';
 import dynamic from 'next/dynamic';
 import Loader from '@/components/Loader';
-import { useAppSelector } from '@/services/hook';
-import { StyledMain, StyledSection } from '@/styles/StyledMain';
 import { TFutureEvents } from '@/db/schemas';
 
 const FutureEvents = dynamic(() => import('@/components/future-events/FutureEvents'));
@@ -13,15 +10,14 @@ interface IProps {
 }
 
 const Schedule = ({ futureEvents }: IProps) => {
-  const { showLoader } = useAppSelector((state) => state.homeLoader);
   return (
     <>
-      {showLoader && <Loader title='Предстоящие мероприятия' layoutId='futureEvents' />}
-      <StyledMain>
-        <StyledSection style={{ width: '100vw' }}>
+      <Loader title='Предстоящие мероприятия' layoutId='futureEvents' />
+      <main className='flex min-h-[80vh] w-full flex-col items-center justify-center overflow-hidden'>
+        <section className='relative flex w-screen max-w-[1500px] flex-col items-center justify-start gap-8 px-2 py-8 xl:p-16'>
           <FutureEvents layoutId='futureEvents' futureEvents={futureEvents} />
-        </StyledSection>
-      </StyledMain>
+        </section>
+      </main>
     </>
   );
 };

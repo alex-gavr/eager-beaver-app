@@ -169,8 +169,9 @@ export const popUp = {
 export const beaver = {
     visible: {
         opacity: 1,
-        y: 0,
-        x: 0,
+        y: -55,
+        x: -75,
+        rotate: '140deg',
         transition: {
             duration: 1,
             delay: 2,
@@ -178,8 +179,9 @@ export const beaver = {
     },
     hidden: {
         opacity: 0,
-        y: 125,
-        x: 75,
+        y: -155,
+        x: -175,
+        rotate: '140deg',
         transition: {
             duration: 1,
         },

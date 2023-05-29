@@ -1,6 +1,6 @@
-export const runtime = 'edge'
-import { ourFileRouter } from './core';
+export const runtime = 'nodejs'
 import { createNextRouteHandler } from 'uploadthing/next';
+import { ourFileRouter } from './core';
 
 // Export routes for Next App Router
 export const { GET, POST } = createNextRouteHandler({

@@ -1,101 +1,16 @@
-import { FC, useRef } from 'react';
+'use client';
+import { useRef } from 'react';
 import { ImageWithSkeleton } from '@/components/image-with-skeleton/img-with-skeleton';
 import { AnimatePresence, m } from 'framer-motion';
 import Carousel from 'react-multi-carousel-18';
 import 'react-multi-carousel-18/lib/styles.css';
 import { usePreventVerticalScroll } from '@/utils/usePreventVerticalScroll';
 import { LeftArrow, RightArrow } from '@/components/custom-arrows/CustomArrows';
-import styled from 'styled-components';
-import { FlexCCC } from '@/styles/StyledMain';
 import { useWindowSize } from 'usehooks-ts';
 import { IEventsData } from '@/db/schemas';
+import { cn } from '@/utils/cn';
 
-const EvenColumns = styled(m.div)({
-  display: 'grid',
-  gridTemplateColumns: '1fr',
-  gap: '3rem',
-  justifyItems: 'center',
-  alignItems: 'center',
-  minHeight: '25rem',
-  borderRadius: '2rem',
-  '@media only screen and (min-width: 1050px)': {
-    gridTemplateColumns: '1fr 1fr',
-    columnGap: '1rem',
-  },
-});
-const ImageContainer = styled(FlexCCC)({
-  borderRadius: '2rem',
-  width: 'clamp(18.75rem, 13.6783rem + 24.5902vw, 37.5rem)',
-  height: 'clamp(18.75rem, 13.6783rem + 24.5902vw, 37.5rem)',
-  overflow: 'hidden',
-  position: 'relative',
-  willChange: 'transform',
-  boxShadow: '0px -5px 10px rgba(50, 50, 93, 0.25), 0px 5px 10px rgba(50, 50, 93, 0.25)',
-  pointerEvents: 'none',
-  userSelect: 'none',
-  '& > img': {
-    width: '100%',
-    height: '100%',
-    objectFit: 'cover',
-  },
-});
-
-const TextContainer = styled(FlexCCC)<any>((props) => ({
-  gap: '2rem',
-  order: props.order,
-  '& > p': {
-    textAlign: 'center',
-  },
-}));
-const SubHeading = styled(m.h2)((props) => ({
-  backgroundColor: props.theme.colors.primaryDark,
-  padding: '0.5rem 1rem',
-  borderRadius: '1.5rem',
-  color: props.theme.colors.title,
-  textTransform: 'uppercase',
-  letterSpacing: '0.07rem',
-  textAlign: 'center',
-}));
-
-const CarouselContainer = styled(FlexCCC)<any>(({ order }) => ({
-  width: '100%',
-  position: 'relative',
-  overflow: 'hidden',
-  order: order,
-  // That's dots in Carousel
-  '& > ul': {
-    width: '40%',
-    flexFlow: 'row wrap',
-    left: '50% !important',
-    bottom: '2% !important',
-    transform: 'translateX(-50%)',
-    '@media only screen and (min-width:1050px)': {
-      width: '100%',
-      bottom: '2% !important',
-      left: '0 !important',
-      transform: 'none',
-    },
-  },
-}));
-
-const StyledCarousel = styled(Carousel)({
-  width: '100%',
-  height: '100%',
-  position: 'relative',
-  paddingTop: '1rem',
-  paddingBottom: '4rem',
-  // Carousel item
-  '& > ul > li': {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  '@media only screen and (min-width:1050px)': {
-    paddingBottom: '5rem',
-  },
-});
-
-interface IProps extends Omit<IEventsData, 'id'> {
+interface IProps extends Omit<IEventsData, 'uuid'> {
   alt: string;
 }
 
@@ -126,7 +41,8 @@ export const TwoColumns = ({ images, alt, imageSide, heading, paragraph }: IProp
 
   return (
     <AnimatePresence mode='wait'>
-      <EvenColumns
+      <m.div
+        className='grid min-h-[25rem] grid-cols-1 items-center justify-center gap-12 gap-x-4 rounded-3xl lg:grid-cols-2'
         whileInView={{ x: 0, opacity: 1 }}
         initial={{
           x: rndInt === 1 ? -100 : 100,
@@ -135,8 +51,15 @@ export const TwoColumns = ({ images, alt, imageSide, heading, paragraph }: IProp
         transition={{ duration: 1 }}
         viewport={{ margin: '-20% 0px -20% 0px' }}
       >
-        <CarouselContainer ref={ref} order={width < 1050 ? 2 : imageSide === 'left' ? 1 : 2}>
-          <StyledCarousel
+        <div
+          className={cn(
+            'relative w-full overflow-hidden',
+            width < 1024 ? 'order-2' : imageSide === 'left' ? 'order-1' : 'order-2',
+          )}
+          ref={ref}
+        >
+          <Carousel
+            className='relative h-full w-full pb-16 pt-4 lg:pb-20 '
             showDots={true}
             responsive={responsive}
             arrows={true}
@@ -147,19 +70,31 @@ export const TwoColumns = ({ images, alt, imageSide, heading, paragraph }: IProp
             renderDotsOutside={true}
             customTransition='transform 400ms ease-in-out'
             transitionDuration={1000}
+            itemClass='flex item-center justify-center'
+            dotListClass='w-[40%] flex-row flex-wrap !left-[50%] !bottom-[2%] !-translate-x-[50%] lg:w-[100%] !lg:left-0 !lg:bottom-[2%] transform-none'
           >
             {images.map((image, index) => (
-              <ImageContainer key={index}>
-                <ImageWithSkeleton src={image.image} alt={alt} />
-              </ImageContainer>
+              <div
+                className=' pointer-events-none relative flex h-72 w-72 select-none flex-col items-center justify-center overflow-hidden rounded-[2rem] shadow-2xl will-change-transform sm:h-80 sm:w-80 md:h-96 md:w-96 lg:h-[30rem] lg:w-[30rem]'
+                key={index}
+              >
+                <ImageWithSkeleton className='min-h-full min-w-full flex-shrink-0 object-cover' src={image.image} alt={alt} />
+              </div>
             ))}
-          </StyledCarousel>
-        </CarouselContainer>
-        <TextContainer order={width < 1050 ? 1 : imageSide === 'left' ? 2 : 1}>
-          <SubHeading>{heading}</SubHeading>
-          <m.p>{paragraph}</m.p>
-        </TextContainer>
-      </EvenColumns>
+          </Carousel>
+        </div>
+        <div
+          className={cn(
+            'flex flex-col items-center justify-center gap-8',
+            width < 1050 ? 'order-1' : imageSide === 'left' ? 'order-2' : 'order-1',
+          )}
+        >
+          <h2 className='rounded-3xl bg-primary-800 px-4 py-2 text-center uppercase tracking-wider dark:bg-primary-800 dark:text-slate-950'>
+            {heading}
+          </h2>
+          <p className='text-center'>{paragraph}</p>
+        </div>
+      </m.div>
     </AnimatePresence>
   );
 };

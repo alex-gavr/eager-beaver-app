@@ -1,179 +1,107 @@
-import { m } from 'framer-motion';
-import { FC, ReactNode } from 'react';
-import styled from 'styled-components';
+'use client';
+import { cn } from '@/utils/cn';
+import { VariantProps, cva } from 'class-variance-authority';
+import { HTMLMotionProps, m } from 'framer-motion';
+import { useRouter } from 'next/navigation';
+import { experimental_useFormStatus } from 'react-dom';
 
-const PrimaryButton = styled(m.button)((props) => ({
-    border: '2px solid transparent',
-    borderRadius: '1.85rem',
-    color: props.theme.colors.black,
-    backgroundColor: props.theme.colors.primaryDark,
-    boxShadow: '0px 0.7em 1em rgba(0,0,0,0.25)',
-    padding: '1em 2em',
-    textDecoration: 'none',
-    letterSpacing: '0.11rem',
-    fontSize: props.theme.fontSize.button,
-    textTransform: 'lowercase',
-    fontFamily: 'var(--ff-heading)',
-    '&:hover, &:focus-visible': {
-        backgroundColor: props.theme.colors.secondaryLight,
-        transition: 'all 0.3s ease-in-out',
+const style = 'backdrop-blur-lg';
+const buttonVariants = cva(
+  'active:scale-95 tracking-widest inline-flex items-center justify-center text-xs sm:text-base lg:text-xl 2xl:text-2xl transition-colors duration-500 focus:outline-none focus:ring-1 focus:ring-slate-400 focus:ring-offset-1 disabled:opacity-50 disabled:pointer-events-none',
+  {
+    variants: {
+      variant: {
+        default:
+          'border bg-slate-900 text-white border-primary-500 hover:bg-slate-700 dark:bg-slate-800 dark:border-slate-500 dark:text-white dark:hover:bg-slate-700',
+        defaultGhost:
+          'border border-slate-900 text-slate-900 bg-transparent hover:bg-slate-700 hover:text-slate-200  dark:border-slate-400 dark:text-slate-100 dark:hover:bg-slate-800',
+        primary:
+          'border bg-primary-500 text-slate-950 border-primary-800 hover:bg-primary-200 dark:bg-primary-800 dark:text-slate-950 dark:hover:bg-primary-200',
+        primaryGhost:
+          'border border-primary-800 text-slate-950 bg-transparent hover:bg-primary-200  dark:border-primary-800 dark:text-slate-200 dark:hover:bg-primary-200 dark:hover:text-slate-900',
+        secondary:
+          'border bg-accent-500 text-gray-900 border-accent-800  hover:bg-accent-200   dark:bg-accent-800 dark:text-gray-950  dark:hover:bg-accent-200 dark:border-accent-800',
+        secondaryGhost:
+          'border border-accent-800 text-gray-950 bg-transparent hover:bg-accent-200 dark:text-gray-200 dark:border-accent-800 dark:hover:bg-accent-200 dark:hover:text-gray-900',
+        hero: 'bg-white bg-opacity-20 border border-accent-200 backdrop-filter backdrop-blur-sm sm:bg-opacity-20',
+
+        success: 'bg-emerald-600 text-neutral-50 hover:bg-emerald-300 hover:text-neutral-900',
+        successSecondary: 'border border-emerald-600 text-neutral-900',
+        danger: 'bg-red-700 text-neutral-50 hover:bg-red-600 hover:text-neutral-50',
+      },
+      size: {
+        default: 'p-4',
+        sm: 'p-2',
+        lg: 'px-6 py-4',
+      },
+      font: {
+        default: 'koskoBold',
+        regular: 'koskoRegular',
+      },
+      rounded: {
+        default: 'rounded-md',
+        sm: 'rounded-sm',
+        lg: 'rounded-lg',
+        xl: 'rounded-xl',
+        '2xl': 'rounded-2xl',
+        '3xl': 'rounded-3xl',
+        full: 'rounded-full',
+      },
     },
-    '&:disabled': {
-        pointerEvents: 'none',
+    defaultVariants: {
+      variant: 'default',
+      size: 'default',
+      font: 'default',
+      rounded: 'default',
     },
-}));
+  },
+);
 
-const SecondaryButton = styled(PrimaryButton)((props) => ({
-    backgroundColor: props.theme.colors.secondaryDark,
-    '&:hover, &:focus-visible': {
-        backgroundColor: props.theme.colors.primaryDark,
-    },
-}));
-
-const EmptyPrimaryButton = styled(PrimaryButton)((props) => ({
-    color: props.theme.colors.paragraph,
-    backgroundColor: 'transparent',
-    backdropFilter: 'blur(4px) saturate(220%)',
-    border: `2px solid ${props.theme.colors.primaryMedium}`,
-}));
-const EmptySecondaryButton = styled(SecondaryButton)((props) => ({
-    color: props.theme.colors.paragraph,
-    backgroundColor: 'transparent',
-    backdropFilter: 'blur(4px) saturate(220%)',
-    border: `2px solid ${props.theme.colors.secondaryLight}`,
-}));
-
-export interface ICustomButton {
-    typeHTML: 'button' | 'submit' | 'reset';
-    type: 'primary' | 'secondary' | 'emptySecondary' | 'emptyPrimary';
-    children: ReactNode;
-    onClick?: () => void;
-    disabled?: boolean;
-    textColor?: string;
-    padding?: string;
-    fontFamily?: string;
-    fontSize?: string;
-    animate?: boolean;
-    isInputFocused?: boolean;
-    width?: number | string;
-    height?: number | string;
-    placeSelf?: string;
+export type TButtonVariants = VariantProps<typeof buttonVariants>;
+export interface IButtonProps extends HTMLMotionProps<'button'>, VariantProps<typeof buttonVariants> {
+  back?: boolean;
 }
 
 const animation = {
-    rotate: [0, 5, 0, -5, 0, 5, 0, -5, 0],
+  rotate: [0, 5, 0, -5, 0, 5, 0, -5, 0],
 };
 const transition = {
-    duration: 0.5,
-    ease: 'easeInOut',
-    repeat: Infinity,
-    repeatDelay: 5,
+  duration: 0.5,
+  ease: 'easeInOut',
+  repeat: Infinity,
+  repeatDelay: 5,
 };
 
-const Button: FC<ICustomButton> = ({
-    typeHTML,
-    type,
-    children,
-    onClick,
-    disabled,
-    textColor,
-    padding,
-    fontFamily,
-    fontSize,
-    animate,
-    isInputFocused,
-    width,
-    height,
-    placeSelf,
-}) => {
-    return (
-        <>
-            {type === 'primary' && (
-                <PrimaryButton
-                    style={{
-                        color: textColor,
-                        padding: padding,
-                        fontFamily: fontFamily,
-                        fontSize: fontSize,
-                        width: width,
-                        height: height,
-                        placeSelf: placeSelf,
-                        borderColor: isInputFocused ? 'rgb(101, 164, 111)' : undefined,
-                    }}
-                    type={typeHTML}
-                    onClick={onClick}
-                    animate={animate ? animation : {}}
-                    transition={animate ? transition : {}}
-                    whileTap={{ scale: 0.8 }}
-                    disabled={disabled}>
-                    {children}
-                </PrimaryButton>
-            )}
-            {type === 'secondary' && (
-                <SecondaryButton
-                    style={{
-                        color: textColor,
-                        padding: padding,
-                        fontFamily: fontFamily,
-                        fontSize: fontSize,
-                        width: width,
-                        height: height,
-                        placeSelf: placeSelf,
-                        borderColor: isInputFocused ? 'rgb(101, 164, 111)' : undefined,
-                    }}
-                    type={typeHTML}
-                    onClick={onClick}
-                    animate={animate ? animation : {}}
-                    transition={animate ? transition : {}}
-                    whileTap={{ scale: 0.8 }}
-                    disabled={disabled}>
-                    {children}
-                </SecondaryButton>
-            )}
-            {type === 'emptyPrimary' && (
-                <EmptyPrimaryButton
-                    style={{
-                        color: textColor,
-                        padding: padding,
-                        fontFamily: fontFamily,
-                        fontSize: fontSize,
-                        width: width,
-                        height: height,
-                        placeSelf: placeSelf,
-                        borderColor: isInputFocused ? 'rgb(101, 164, 111)' : undefined,
-                    }}
-                    type={typeHTML}
-                    onClick={onClick}
-                    animate={animate ? animation : {}}
-                    transition={animate ? transition : {}}
-                    whileTap={{ scale: 0.8 }}
-                    disabled={disabled}>
-                    {children}
-                </EmptyPrimaryButton>
-            )}
-            {type === 'emptySecondary' && (
-                <EmptySecondaryButton
-                    style={{
-                        color: textColor,
-                        padding: padding,
-                        fontFamily: fontFamily,
-                        fontSize: fontSize,
-                        width: width,
-                        height: height,
-                        placeSelf: placeSelf,
-                        borderColor: isInputFocused ? 'rgb(101, 164, 111)' : undefined,
-                    }}
-                    type={typeHTML}
-                    onClick={onClick}
-                    animate={animate ? animation : {}}
-                    transition={animate ? transition : {}}
-                    whileTap={{ scale: 0.8 }}
-                    disabled={disabled}>
-                    {children}
-                </EmptySecondaryButton>
-            )}
-        </>
-    );
+const Button = ({
+  type,
+  children,
+  onClick,
+  disabled,
+  className,
+  variant,
+  size,
+  font,
+  rounded,
+  back,
+  ...props
+}: IButtonProps) => {
+  const router = useRouter();
+  const { pending } = experimental_useFormStatus();
+  return (
+    <m.button
+      type={type}
+      onClick={back ? () => router.back() : onClick}
+      disabled={disabled}
+      // animate={animation}
+      whileHover={{ scale: 1.05 }}
+      whileTap={{ scale: 0.95 }}
+      // transition={transition}
+      className={cn(buttonVariants({ variant, size, font, rounded, className }))}
+      {...props}
+    >
+      {pending ? 'loading...' : children}
+    </m.button>
+  );
 };
 
 export default Button;

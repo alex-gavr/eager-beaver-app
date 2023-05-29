@@ -1,56 +1,30 @@
-
-import styled from 'styled-components';
 import { useRouter } from 'next/navigation';
-import { FlexCCC } from '@/styles/StyledMain';
 import { useAppDispatch } from '@/services/hook';
 import { resetError } from '@/services/errorSlice';
 import Button from '@/components/buttons/button';
-
-const StyledDiv = styled(FlexCCC)((props) => ({
-    backgroundColor: props.theme.colors.error,
-    flexFlow: 'row nowrap',
-    position: 'fixed',
-    bottom: '2%',
-    right: '2%',
-    gap: '1rem',
-    padding: '1rem',
-    zIndex: 989,
-    '& > p': {
-        color: props.theme.colors.white,
-    },
-    '@media only screen and (max-width: 500px)': {
-        gap: '0.7rem',
-    },
-}));
+import { m } from 'framer-motion';
 
 const ImageLoadingError = () => {
-    const router = useRouter();
-    const dispatch = useAppDispatch();
-    const handleClick = () => {
-        dispatch(resetError());
-        router.refresh();
-    };
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+  const handleClick = () => {
+    dispatch(resetError());
+    router.refresh();
+  };
 
-    return (
-        <StyledDiv
-            initial={{
-                opacity: 0,
-                y: '100vw',
-            }}
-            animate={{
-                opacity: 1,
-                y: 0,
-            }}
-            transition={{
-                duration: 1.5,
-                ease: 'easeInOut',
-            }}>
-            <p>Произошла ошибка загрузки</p>
-            <Button typeHTML='button' type='primary' onClick={handleClick} padding={'1rem'}>
-                Повторить
-            </Button>
-        </StyledDiv>
-    );
+  return (
+    <m.div
+      className='fixed bottom-2 right-2 z-[989] flex flex-row flex-nowrap items-center justify-center gap-2 rounded-sm bg-red-700 p-4 dark:bg-red-700 sm:gap-4'
+      initial={{ opacity: 0, y: '100vw' }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 1.5, ease: 'easeInOut' }}
+    >
+      <p className='text-slate-200 dark:text-slate-200'>Произошла ошибка загрузки</p>
+      <Button type='button' variant={'primary'} onClick={handleClick}>
+        Повторить
+      </Button>
+    </m.div>
+  );
 };
 
 export default ImageLoadingError;

@@ -1,59 +1,63 @@
+'use client';
 import { useRouter } from 'next/navigation';
-import styled from 'styled-components';
-import { FlexCCC } from '@/styles/StyledMain';
-import Button, { ICustomButton } from '../button';
+import Button, { IButtonProps, TButtonVariants } from '../button';
 import { useAppDispatch } from '@/services/hook';
 import { onOpenModalForm } from '@/services/modalSlice';
+import { hasCookie } from 'cookies-next';
 
-const ButtonsContainer = styled(FlexCCC)({
-  width: '100%',
-  gap: '2rem',
-  zIndex: 2,
-  '@media only screen and (min-width: 500px)': {
-    flexFlow: 'row nowrap',
-  },
-});
-
-interface IProps {
-  primaryButtonStyle: ICustomButton['type'];
-  secondaryButtonStyle: ICustomButton['type'];
+interface IProps extends IButtonProps {
+  variantPrimary: TButtonVariants['variant'];
+  variantBack?: TButtonVariants['variant'];
   showBackButton: boolean;
-  fontSize?: string;
-  padding?: string;
 }
 
 const ActionButtons = ({
-  primaryButtonStyle,
-  secondaryButtonStyle,
+  variantPrimary,
+  variantBack,
+  className,
+  rounded,
+  size,
+  font,
   showBackButton,
-  fontSize,
-  padding,
 }: IProps) => {
   const router = useRouter();
-  const dispatch = useAppDispatch();
+  const futureEventsCookie = hasCookie('futureEvents');
+  const event = hasCookie('event');
 
-  const handleGetFreeTrial = () => {
-    dispatch(onOpenModalForm());
+  const handleClick = () => {
+
+    router.push('/form');
   };
 
   return (
-    <ButtonsContainer>
+    <div className='z-10 flex w-full flex-col items-center justify-center gap-8 sm:flex-row sm:flex-nowrap'>
       <Button
-        type={primaryButtonStyle}
-        typeHTML='button'
+        variant={variantPrimary}
+        rounded={rounded}
+        size={size}
+        font={font}
+        className={className}
+        type='button'
         disabled={false}
-        fontSize={fontSize}
-        padding={padding}
-        onClick={handleGetFreeTrial}
+        onClick={handleClick}
       >
         Пробное занятие бесплатно
       </Button>
       {showBackButton && (
-        <Button type={secondaryButtonStyle} typeHTML='button' disabled={false} onClick={() => router.back()}>
+        <Button
+          variant={variantBack}
+          rounded={rounded}
+          size={size}
+          font={font}
+          className={className}
+          type='button'
+          disabled={false}
+          onClick={() => router.back()}
+        >
           Назад
         </Button>
       )}
-    </ButtonsContainer>
+    </div>
   );
 };
 

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useTransition } from 'react';
 import { useAppDispatch, useAppSelector } from '@/services/hook';
 import Button from '@/components/buttons/button';
 import { AnimatePresence } from 'framer-motion';
@@ -6,51 +6,53 @@ import { toggleHeight } from '@/utils/motion-animations';
 import { onOpenModalFormFutureEvents } from '@/services/modalSlice';
 import { resetDetails, resetMemberCountChange, setDetails } from '@/services/futureEventSignUpData';
 import Image from 'next/image';
-import {
-  InnerContainer,
-  InnerContainerDetails,
-  MonthAndTimeContainer,
-  SpaceBetween,
-  StyledCard,
-  StyledDateNumber,
-  TitleAndAgeContainer,
-  TogglerContainer,
-} from './EventCardsStyles';
 import { convertH2M, minutesEachHourInOneDay, TimeDiff } from '@/utils/timeCalcHelpers';
 // import { addParticipant } from '@/lib/addParticipant';
 // import { publishChange } from '@/lib/publishChange';
 import declOfNum from '@/utils/declOfNum';
 import workWithDate from '@/utils/workWithDate';
-import { FlexCCC } from '@/styles/StyledMain';
-import { TFutureEvents } from '@/db/schemas';
+import { TFutureEvents, futureEvents } from '@/db/schemas';
+import { m } from 'framer-motion';
+import { db } from '@/db/db';
+import { eq } from 'drizzle-orm';
+import Link from 'next/link';
+import { setCookie } from 'cookies-next';
+import { useRouter } from 'next/navigation';
+import { handleChangeMembers } from '@/app/actions';
 
 const millisecondsPerDay = 1000 * 60 * 60 * 24;
 const daysPerMonth = 31;
 const minutesEachHour = 60;
 const secondsEachMinute = 60;
+const addPresentDay = 1;
+
+interface IFutureEventsProps extends TFutureEvents {
+  disabled?: boolean;
+}
 
 const EventCard = ({
+  uuid,
   eventName,
   description,
   age,
-  participants: participantsData,
+  participants,
   totalSpots,
   price,
   durationLongerThanDay,
   eventStart,
   eventEnd,
-}: Omit<TFutureEvents, 'id'>) => {
-  const [participants, setParticipants] = useState<number>(participantsData);
-  const { shouldChangeMember, futureEventDetails } = useAppSelector((state) => state.futureEventDetails);
-  const [enrolled, setEnrolled] = useState(false);
-  const [interested, setInterested] = useState(false);
-  const dispatch = useAppDispatch();
+  disabled
+}: IFutureEventsProps) => {
+  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
+  const [open, setOpen] = useState(false);
+  const [enrolled, setEnrolled] = useState<boolean | null>(null);
 
   const { day, month, monthFull, time: timeStart, dateFull } = workWithDate(eventStart);
   const { day: dayEnd, month: monthEnd, monthFull: monthEndFull, time: timeEnd } = workWithDate(eventEnd);
 
   // Calculate days difference between ending date and starting date
-  const daysDiff = Math.floor((eventEnd.getTime() - eventStart.getTime()) / millisecondsPerDay) + 1;
+  const daysDiff = Math.floor((eventEnd.getTime() - eventStart.getTime()) / millisecondsPerDay) + addPresentDay; // +1 for present day so that duration is correct
   const daysWord = declOfNum(daysDiff, ['день', 'дня', 'дней']);
   // is Less than a Month
   const lessThanMonth = daysDiff <= daysPerMonth;
@@ -81,84 +83,43 @@ const EventCard = ({
   // Spots Word
   const spotsWord = declOfNum(spotsLeft, ['место', 'места', 'мест']);
 
-  const [open, setOpen] = useState(false);
-
-  // TODO: WE NEED TO PASS DATA TO DB
-
-  const handleClick = async (eventName: string, age: string, dateFull: string, participants: number) => {
-    const values = {
-      eventName,
-      age,
-      dateFull,
-      participants,
-    };
-
-    dispatch(onOpenModalFormFutureEvents());
-    dispatch(setDetails(values));
-    setInterested(true);
+  const handleClick1 = (uuid: string, eventName: string, dateFull: string, participants: number) => {
+    router.push(`/form/future-events?uuid=${uuid}`);
+    // startTransition(() => handleChangeMembers(uuid, eventName, dateFull, participants));
+    // setEnrolled(true);
   };
-
-  // PUSH NEW MEMBER TO CONTENTFUL AND GET UPDATED NUMBER
-  const handleParticipantsChange = async () => {
-    const participantsFromRedux = futureEventDetails?.participants;
-    const entryId = futureEventDetails?.entryId;
-    if (entryId === undefined || participantsFromRedux === undefined) {
-      return null;
-    }
-
-    const members = participantsFromRedux + 1;
-
-    // const result = await addParticipant(entryId, members).then((response) => publishChange(response.sys.id));
-
-    // setParticipants(result.fields.participants['en-US']);
-    dispatch(resetMemberCountChange());
-  };
-
-  // INIT PARTICIPANTS CHANGE IF USER FILLED FORM. INTERESTED IS USED TO IDENTIFY EXACT CARD THAT WAS CHOSEN.
-  useEffect(() => {
-    if (shouldChangeMember && interested) {
-      handleParticipantsChange();
-      dispatch(resetDetails());
-      setEnrolled(true);
-      setInterested(false);
-    }
-  }, [shouldChangeMember, interested]);
 
   return (
-    <StyledCard>
-      <StyledDateNumber>
+    <div className='relative flex w-[300px] flex-col items-center justify-center gap-8 rounded-[3rem] border border-slate-900 bg-slate-50 px-4 py-4 shadow-2xl dark:border-primary-200 dark:bg-slate-950 sm:w-[340px] md:w-[370px] lg:w-[400px] lg:px-6 lg:py-4 xl:w-[450px]'>
+      <div className=' absolute -top-[3rem] left-[2.5rem] flex h-[6rem] w-[6rem] flex-col items-center justify-center rounded-full bg-accent-800 dark:bg-accent-800 sm:-top-[3.5rem] sm:left-[3rem] sm:h-[6.7rem] sm:w-[6.7rem] md:-top-[3.5rem] md:left-[3.5rem] lg:h-[7.3rem] lg:w-[7.3rem] xl:h-[8rem] xl:w-[8rem]'>
         {lessThanMonth && durationLongerThanDay ? (
-          <span
-            style={{
-              whiteSpace: 'nowrap',
-              fontSize: 'clamp(1.75rem, 1.6rem + 0.75vw, 2.5rem)',
-            }}
-          >
+          <span className='whitespace-nowrap text-3xl sm:text-4xl'>
             {day}-{dayEnd}
           </span>
         ) : (
-          <span>{day}</span>
+          <span className='whitespace-nowrap text-3xl sm:text-4xl md:text-5xl'>{day}</span>
         )}
-      </StyledDateNumber>
-      <MonthAndTimeContainer>
-        <span>{month}</span>
-        {!durationLongerThanDay && <span>{timeStart}</span>}
-      </MonthAndTimeContainer>
-      <FlexCCC>
-        <TitleAndAgeContainer>
-          <h2>{eventName}</h2>
-          {open ? null : <p>{age}</p>}
-        </TitleAndAgeContainer>
+      </div>
+      <div className='ml-16 flex flex-col items-start justify-center tracking-widest text-accent-800 md:ml-20'>
+        <span className='text-2xl md:text-3xl'>{month}</span>
+        {!durationLongerThanDay && <span className='text-2xl md:text-3xl'>{timeStart}</span>}
+      </div>
+      <div className='flex flex-col items-center justify-center'>
+        <div className='flex flex-col items-center justify-center gap-4'>
+          <h2 className='text-center text-3xl leading-tight md:text-4xl'>{eventName}</h2>
+          {open ? null : <p className='md:text-xl'>{age}</p>}
+        </div>
         <AnimatePresence initial={false} mode={'wait'}>
           {open ? (
-            <InnerContainer
+            <m.div
+              className='flex flex-col items-center justify-start gap-8'
               variants={toggleHeight}
               initial={toggleHeight.hidden}
               animate={toggleHeight.visible}
               exit={toggleHeight.exit}
             >
               <p>{description}</p>
-              <InnerContainerDetails>
+              <div className='flex w-full flex-col items-start justify-center'>
                 <p> Возраст - {age}</p>
                 {durationLongerThanDay && lessThanMonth ? (
                   <p>
@@ -176,27 +137,34 @@ const EventCard = ({
                 <p>
                   Стоимость - <span>{price}</span>
                 </p>
-              </InnerContainerDetails>
-              <SpaceBetween>
+              </div>
+              <div className='flex w-full flex-row items-center justify-between gap-8 lg:gap-12'>
                 <p>
                   Еще свободно {spotsLeft} {spotsWord}
                 </p>
                 <Button
-                  type='emptyPrimary'
-                  typeHTML='submit'
-                  padding='0.5rem 0.9rem'
-                  fontFamily='var(--ff-body)'
-                  onClick={() => handleClick(eventName, age, dateFull, participants)}
-                  disabled={enrolled || spotsLeft === 0}
+                  type='button'
+                  variant={'secondaryGhost'}
+                  onClick={() => handleClick1(uuid, eventName, dateFull, participants)}
+                  disabled={enrolled || spotsLeft === 0 || disabled}
                 >
-                  {enrolled ? 'Ждем вас!' : spotsLeft === 0 ? 'Мест больше нет' : 'Приведу ребенка'}
+                  {enrolled
+                    ? 'Ждем вас!'
+                    : spotsLeft === 0
+                    ? 'Мест больше нет'
+                    : isPending
+                    ? 'loading...'
+                    : 'Приведу ребенка'}
                 </Button>
-              </SpaceBetween>
-            </InnerContainer>
+              </div>
+            </m.div>
           ) : null}
         </AnimatePresence>
-      </FlexCCC>
-      <TogglerContainer onClick={() => setOpen((prev) => !prev)}>
+      </div>
+      <m.div
+        className='flex w-[70%] items-start justify-center bg-gray-200 py-4 dark:bg-gray-900'
+        onClick={() => setOpen((prev) => !prev)}
+      >
         <Image
           src={'/downArrow.svg'}
           width={30}
@@ -207,8 +175,8 @@ const EventCard = ({
             transition: 'transform 0.5s ease-in-out',
           }}
         />
-      </TogglerContainer>
-    </StyledCard>
+      </m.div>
+    </div>
   );
 };
 

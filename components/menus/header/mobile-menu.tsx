@@ -1,5 +1,4 @@
 import { FC, useEffect } from 'react';
-import styled from 'styled-components';
 import Image from 'next/image';
 import Link from 'next/link';
 import { m } from 'framer-motion';
@@ -8,116 +7,65 @@ import { useScrollBlock } from '@/utils/blockScroll';
 import { list, toDown, beaver, headerSidebar } from '@/utils/motion-animations';
 import { ILink } from '@/types/data';
 
-
-const Nav = styled.nav({
-    padding: '2rem 0.8rem',
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '5rem',
-    zIndex: 900,
-});
-const Background = styled(m.div)((props) => ({
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    position: 'absolute',
-    top: 0,
-    right: 0,
-    bottom: 0,
-    height: '100vh',
-    width: '100%',
-    background: props.theme.colors.mobileMenu,
-    zIndex: 9,
-}));
-const MobileNavigationContainer = styled(m.div)({
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'space-around',
-    height: '70vh',
-});
-const MobileNavigation = styled(m.div)((props) => ({
-    height: 'auto',
-    width: '70%',
-    display: 'flex',
-    flexFlow: 'row wrap',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: '3rem',
-    '& > li': {
-        backgroundColor: props.theme.colors.secondaryDark,
-        borderRadius: '2rem',
-        width: 'auto',
-        textAlign: 'center',
-        display: 'inline-block',
-        padding: '1rem',
-    },
-    '& > li > a': {
-        display: 'block',
-        width: '100%',
-        height: '100%',
-    },
-}));
-
-const LogoContainer = styled(m.div)({
-    position: 'absolute',
-    top: 0,
-    left: 0,
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'center',
-    rotate: '140deg',
-    translate: '-40% -20%',
-    width: '60%',
-    '& > img': {
-        width: '100%',
-        height: 'auto',
-    },
-
-});
-
 interface IProps {
-    header: ILink[];
-    isOpen: boolean;
-    toggle: () => void;
+  header: ILink[];
+  isOpen: boolean;
+  toggle: () => void;
 }
 
 const MobileMenu: FC<IProps> = ({ header, isOpen, toggle }): JSX.Element => {
-    const [blockScroll, allowScroll] = useScrollBlock();
+  const [blockScroll, allowScroll] = useScrollBlock();
 
-    useEffect(() => {
-        if (isOpen) {
-            blockScroll();
-            document.querySelector('body')?.scrollTo(0, 0);
-        } else {
-            allowScroll();
-        }
-    },[isOpen]);
+  useEffect(() => {
+    if (isOpen) {
+      blockScroll();
+      document.querySelector('body')?.scrollTo(0, 0);
+    } else {
+      allowScroll();
+    }
+  }, [isOpen]);
 
-    return (
-        <>
-            {isOpen && (
-                <Nav>
-                    <Background variants={headerSidebar} animate='open' initial='closed'>
-                        <MobileNavigationContainer>
-                            <MobileNavigation variants={list} initial='hidden' animate='visible'>
-                                {header.map((link: any) => (
-                                    <m.li variants={toDown} onClick={toggle} key={link.id}>
-                                        <Link href={link.to}>{link.name}</Link>
-                                    </m.li>
-                                ))}
-                            </MobileNavigation>
-                        </MobileNavigationContainer>
-                        <LogoContainer variants={beaver} initial='hidden' animate='visible'>
-                            <Image src={logo} alt='' loading='eager' />
-                        </LogoContainer>
-                    </Background>
-                </Nav>
-            )}
-        </>
-    );
+  return (
+    <>
+      {isOpen && (
+        <nav className='z-[900] flex flex-col items-center justify-center gap-10 px-8 py-3'>
+          <m.div
+            className='mobileMenuBg absolute bottom-0 left-0 right-0 top-0 z-10 flex h-screen w-full flex-col items-center justify-center'
+            variants={headerSidebar}
+            animate='open'
+            initial='closed'
+          >
+            <div className='flex h-[70vh] flex-col items-center justify-around'>
+              <m.ul
+                className='flex w-[70%] flex-row flex-wrap items-center justify-center gap-12'
+                variants={list}
+                initial='hidden'
+                animate='visible'
+              >
+                {header.map((link: any) => (
+                  <m.li variants={toDown} onClick={toggle} key={link.id}>
+                    <Link
+                      className='koskoBold inline-flex rounded-2xl bg-accent-800 p-4 text-center tracking-widest text-neutral-900 dark:text-neutral-900 sm:text-base'
+                      href={link.to}
+                    >
+                      {link.name}
+                    </Link>
+                  </m.li>
+                ))}
+              </m.ul>
+            </div>
+            <m.div
+              className='absolute left-0 top-0 flex w-3/5 items-center justify-center sm:w-2/5 md:w-4/12'
+              variants={beaver}
+              initial='hidden'
+              animate='visible'
+            >
+              <Image src={logo} alt='' loading='eager' className='w-full' />
+            </m.div>
+          </m.div>
+        </nav>
+      )}
+    </>
+  );
 };
 export default MobileMenu;

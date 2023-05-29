@@ -1,5 +1,4 @@
 import { AnimatePresence, m } from 'framer-motion';
-import styled from 'styled-components';
 import {
   textFromTop,
   textFromTopRight,
@@ -10,7 +9,7 @@ import {
   textFromLeft,
   textFromTopLeft,
 } from '@/utils/motion-animations';
-import { FlexCCC } from '@/styles/StyledMain';
+import { cn } from '@/utils/cn';
 
 interface IProps {
   title: boolean;
@@ -25,36 +24,10 @@ interface IProps {
     | 'fromLeft'
     | 'fromTopLeft';
   fontSize?: string;
+  className?: string;
 }
 
-const StyledContainer = styled(FlexCCC)({
-  overflow: 'hidden',
-  flexFlow: 'row wrap',
-  width: '100%',
-  zIndex: 2,
-});
-
-const StyledTitle = styled(m.span)({
-  fontSize: 'clamp(2.5rem, 2.2179rem + 1.3675vw, 3.5rem)',
-  fontFamily: 'var(--ff-heading)',
-  zIndex: 2,
-  marginRight: 10,
-  '@media only screen and (min-width: 50em)': {
-    marginRight: 16,
-  },
-});
-const StyledText = styled(m.span)({
-  fontSize: 'clamp(1.2rem, 1.1154rem + 0.4103vw, 1.5rem);',
-  fontFamily: 'var(--ff-body)',
-  textTransform: 'lowercase',
-  marginRight: 8,
-  zIndex: 2,
-  '@media only screen and (min-width: 50em)': {
-    marginRight: 10,
-  },
-});
-
-const AnimatedTextWords = ({ title, text, textAnimation }: IProps) => {
+const AnimatedTextWords = ({ title, text, textAnimation, className }: IProps) => {
   const words = text.split(' ');
 
   const textAnimationInit =
@@ -87,7 +60,8 @@ const AnimatedTextWords = ({ title, text, textAnimation }: IProps) => {
 
   return (
     <AnimatePresence>
-      <StyledContainer
+      <m.div
+        className='z-10 flex w-full flex-row flex-wrap items-center justify-center overflow-hidden'
         variants={container}
         initial='hidden'
         whileInView='visible'
@@ -95,16 +69,24 @@ const AnimatedTextWords = ({ title, text, textAnimation }: IProps) => {
       >
         {words.map((word: string, index: number) =>
           title ? (
-            <StyledTitle variants={textAnimationInit} key={index}>
+            <m.span
+              className={cn('z-10 mr-2 text-4xl lowercase sm:text-5xl lg:mr-3 xl:text-6xl', className)}
+              variants={textAnimationInit}
+              key={index}
+            >
               {word}
-            </StyledTitle>
+            </m.span>
           ) : (
-            <StyledText variants={textAnimationInit} key={index}>
+            <m.span
+              className={cn('text-base lowercase md:text-xl', className)}
+              variants={textAnimationInit}
+              key={index}
+            >
               {word}
-            </StyledText>
+            </m.span>
           ),
         )}
-      </StyledContainer>
+      </m.div>
     </AnimatePresence>
   );
 };

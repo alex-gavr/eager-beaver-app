@@ -2,8 +2,6 @@
 import dynamic from 'next/dynamic';
 import { useRouter } from 'next/navigation';
 import Loader from '@/components/Loader';
-import { useAppSelector } from '@/services/hook';
-import { StyledMain, StyledSection } from '@/styles/StyledMain';
 
 const PageAnimation = dynamic(() => import('@/components/page-animation/PageAnimation'));
 const Button = dynamic(() => import('@/components/buttons/button'));
@@ -11,19 +9,18 @@ const PolicyText = dynamic(() => import('@/components/policy/PolicyText'));
 
 const Policy = () => {
   const router = useRouter();
-  const { showLoader } = useAppSelector((state) => state.homeLoader);
 
   return (
     <>
-      {showLoader && <Loader title='Политика в отношении обработки персональных данных' layoutId='policy' />}
-      <StyledMain>
-        <StyledSection>
-          <PolicyText layoutId='policy' />
-          <Button typeHTML='button' type='emptySecondary' onClick={() => router.back()}>
+      <Loader title='Политика в отношении обработки персональных данных' />
+      <main className='flex min-h-[80vh] w-full flex-col items-center justify-center overflow-hidden'>
+        <section className='relative flex max-w-[1500px] flex-col items-center justify-start gap-8 px-2 py-8 xl:p-16'>
+          <PolicyText />
+          <Button type='button' variant={'defaultGhost'} size={'lg'} onClick={() => router.back()}>
             Назад
           </Button>
-        </StyledSection>
-      </StyledMain>
+        </section>
+      </main>
     </>
   );
 };
