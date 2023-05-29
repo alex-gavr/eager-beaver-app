@@ -6,12 +6,13 @@ import getIsTestVariable from '@/utils/getIsTestVariable';
 import { eq } from 'drizzle-orm';
 import { redirect } from 'next/navigation';
 import { v4 as uuid } from 'uuid';
+import { handleSubmit } from '../actions';
 // import { handleSubmit, handleSubmitEvent } from '../actions';
 
 interface IFormProps {
   event: boolean;
-  searchParams?: {
-    uuid: string;
+  searchParams: {
+    uuid?: string;
   };
 }
 
@@ -19,23 +20,23 @@ const botId = process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN;
 const chatIDLera = process.env.NEXT_PUBLIC_TELEGRAM_LERA_ID;
 const chatIDGavr = process.env.NEXT_PUBLIC_TELEGRAM_GAVR_ID;
 
-const Form = ({ event, searchParams }: IFormProps) => {
-  // const submitAction = event ? handleSubmitEvent : handleSubmit;
+const Form = ({ searchParams }: IFormProps) => {
+  const submitAction = searchParams.uuid === undefined ? handleSubmit :  handleSubmitEvent;
 
   async function handleSubmitEvent(formData: FormData) {
     'use server';
     if (searchParams?.uuid === undefined) {
       return;
     }
+    
     const name = formData.get('name');
     const phone = formData.get('phone');
-    
+
     if (name === null || phone === null) {
       return;
     }
 
     const eventId = searchParams.uuid;
-    
 
     const fullEventData = await db.select().from(futureEvents).where(eq(futureEvents.uuid, eventId));
 
@@ -117,7 +118,7 @@ const Form = ({ event, searchParams }: IFormProps) => {
 
   return (
     <div className='flex w-full flex-col items-center justify-center'>
-      <form action={handleSubmitEvent} className='flex flex-col items-center justify-center p-4'>
+      <form action={submitAction} className='flex flex-col items-center justify-center p-4'>
         <div className='flex w-full max-w-[400px] flex-col items-center justify-center gap-4 lg:gap-8'>
           {inputsData.map((input, index) => (
             <Input

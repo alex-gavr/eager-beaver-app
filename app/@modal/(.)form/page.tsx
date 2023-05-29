@@ -17,7 +17,7 @@ const FormModal = ({ params }: IFormModalProps) => {
     <Modal>
       <div className='modalGradient relative flex max-w-xl flex-col items-center justify-center rounded-md px-2 py-4 lg:px-10 lg:py-10'>
         <Heading event={false} />
-        <Form event={false}  />
+        <Form searchParams={{uuid: undefined}} event={false}  />
         <BackButton />
       </div>
     </Modal>
