@@ -1,14 +1,14 @@
 import { useRouter } from 'next/navigation';
-import { useAppDispatch } from '@/services/hook';
-import { resetError } from '@/services/errorSlice';
 import Button from '@/components/buttons/button';
 import { m } from 'framer-motion';
+import { useAppContext } from '@/context/Context';
+import { ActionsType } from '@/context/actionsTypes';
 
 const ImageLoadingError = () => {
   const router = useRouter();
-  const dispatch = useAppDispatch();
+  const { dispatch } = useAppContext();
   const handleClick = () => {
-    dispatch(resetError());
+    dispatch({ type: ActionsType.setError, payload: false });
     router.refresh();
   };
 

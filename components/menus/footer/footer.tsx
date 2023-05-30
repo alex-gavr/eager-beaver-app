@@ -1,4 +1,4 @@
-'use client'
+'use client';
 import { AnimatePresence, m } from 'framer-motion';
 import { footer } from '../links';
 import { list, opacity, popUp, toDown, toUp } from '@/utils/motion-animations';
@@ -9,11 +9,11 @@ import dynamic from 'next/dynamic';
 import SocialMediaIcons from '@/components/social-media-block/SocialMediaIcons';
 import { useEffect, useState } from 'react';
 import Skeleton from 'react-loading-skeleton';
-import { useAppDispatch } from '@/services/hook';
 import { useInView } from 'react-intersection-observer';
-import { footerVisibilityStatus } from '@/services/navigationVisibilitySlice';
 import Policy from './Policy';
 import Credits from './Credits';
+import { useAppContext } from '@/context/Context';
+import { ActionsType } from '@/context/actionsTypes';
 
 const SchoolLocationMap = dynamic(() => import('@/components/map/map'), {
   ssr: false,
@@ -26,12 +26,13 @@ const SchoolLocationMap = dynamic(() => import('@/components/map/map'), {
 
 const Footer = () => {
   const [showMap, setShowMap] = useState(false);
-  const dispatch = useAppDispatch();
+  // const dispatch = useAppDispatch();
+  const { dispatch } = useAppContext();
 
   const { ref, inView } = useInView({});
 
   useEffect(() => {
-    dispatch(footerVisibilityStatus(inView));
+    dispatch({ type: ActionsType.setFooterVisibility, payload: inView });
     if (!showMap && inView) {
       setShowMap(true);
     }
@@ -60,7 +61,7 @@ const Footer = () => {
               </m.div>
             </m.div>
             <div className='flex max-w-7xl flex-col items-center justify-evenly gap-8 p-4 lg:flex-row lg:flex-wrap lg:px-8 lg:py-10'>
-              <div className='flex w-[98%] flex-col items-center justify-center gap-4 border-b-2 border-primary-200 py-8 lowercase tracking-wider lg:w-5/6 lg:max-w-[800px] lg:items-start lg:flex-row lg:order-2 lg:border-b-0 lg:border-t-2'>
+              <div className='flex w-[98%] flex-col items-center justify-center gap-4 border-b-2 border-primary-200 py-8 lowercase tracking-wider lg:order-2 lg:w-5/6 lg:max-w-[800px] lg:flex-row lg:items-start lg:border-b-0 lg:border-t-2'>
                 <div className='flex flex-col items-start justify-center gap-8 lowercase tracking-wider'>
                   <Image
                     className='order-1 h-52 w-52 -rotate-12 -scale-x-100 place-self-center lg:absolute lg:left-12 lg:top-4 lg:h-32 lg:w-32'
@@ -74,7 +75,8 @@ const Footer = () => {
                   <p className='order-3 tracking-widest text-slate-300 dark:text-slate-300 lg:order-2'>
                     Телефон для связи:
                     <a href='tel:+7(909)380-96-57' className='text-slate-300 dark:text-slate-300'>
-                    {' '}+7(909)380-96-57
+                      {' '}
+                      +7(909)380-96-57
                     </a>
                   </p>
                 </div>
@@ -91,7 +93,7 @@ const Footer = () => {
                 )}
               </div>
               <m.ul
-                className='grid w-full grid-flow-row grid-cols-2 grid-rows-4 place-items-start gap-y-10 place-self-start lg:w-fit lg:gap-10 lg:flex lg:flex-row lg:flex-wrap lg:justify-center lg:items-center '
+                className='grid w-full grid-flow-row grid-cols-2 grid-rows-4 place-items-start gap-y-10 place-self-start lg:flex lg:w-fit lg:flex-row lg:flex-wrap lg:items-center lg:justify-center lg:gap-10 '
                 variants={list}
                 initial='hidden'
                 whileInView='visible'
@@ -100,7 +102,7 @@ const Footer = () => {
                 {footer.map((link) => (
                   <m.li variants={toDown} whileHover={{ scale: 1.1 }} whileTap={{ scale: 0.8 }} key={link.id}>
                     <Link
-                      className='p-2 text-xs tracking-widest text-slate-300 dark:text-slate-300 sm:text-sm hover:bg-accent-200 hover:text-slate-700 hover:dark:text-slate-700 hover:rounded-md'
+                      className='p-2 text-xs tracking-widest text-slate-300 hover:rounded-md hover:bg-accent-200 hover:text-slate-700 dark:text-slate-300 hover:dark:text-slate-700 sm:text-sm'
                       href={link.to}
                     >
                       {link.name}

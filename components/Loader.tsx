@@ -2,11 +2,11 @@
 import Image from 'next/image';
 import { AnimatePresence, m } from 'framer-motion';
 import { usePathname } from 'next/navigation';
-import { useAppDispatch, useAppSelector } from '@/services/hook';
-import { resetHomeLoader } from '@/services/homeLoaderSlice';
 import { toDown, toUp } from '@/utils/motion-animations';
 import logo from '@/images/logo.svg';
 import { useEffect } from 'react';
+import { useAppContext } from '@/context/Context';
+import { ActionsType } from '@/context/actionsTypes';
 
 const container = {
   visible: {
@@ -41,21 +41,19 @@ interface IProps {
 }
 
 const Loader = ({ title, layoutId }: IProps) => {
-  const { showLoader } = useAppSelector((state) => state.homeLoader);
-  
+  const { state, dispatch } = useAppContext();
   const pathname = usePathname();
-  const dispatch = useAppDispatch();
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      dispatch(resetHomeLoader());
+      dispatch({ type: ActionsType.setLoaderVisibility, payload: false });
     }, 2000);
     return () => clearTimeout(timer);
   }, []);
 
   return (
     <>
-      {showLoader ? (
+      {state.loaderVisible ? (
         <AnimatePresence>
           <m.div
             className='fixed bottom-0 left-0 right-0 top-0 z-[1999] flex flex-col items-center justify-center gap-8 bg-primary-200 dark:bg-slate-950'
@@ -88,7 +86,9 @@ const Loader = ({ title, layoutId }: IProps) => {
             )}
           </m.div>
         </AnimatePresence>
-      ) : false}
+      ) : (
+        false
+      )}
     </>
   );
 };

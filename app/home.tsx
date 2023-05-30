@@ -3,7 +3,6 @@ import dynamic from 'next/dynamic';
 import Loader from '@/components/Loader';
 import { IEventsData, TFutureEvents } from '@/db/schemas';
 import Form from './form/Form';
-// import LazyForm from './LazyForm';
 
 const TeachProcess = dynamic(() => import('@/components/home/teach-process/teach-process'), {
   ssr: false,

@@ -6,14 +6,14 @@ import { AnimatePresence, m } from 'framer-motion';
 import { toRight, toDown, popUp, list, toUp, opacity } from '@/utils/motion-animations';
 import Image from 'next/image';
 import ActionButtons from '../buttons/action-buttons-page-end/ActionButtons';
-import { useAppSelector } from '@/services/hook';
 import { getCookie } from 'cookies-next';
 import { useWindowSize } from 'usehooks-ts';
-import StyledLink from '../StyledLink/StyledLink';
+// import StyledLink from '../StyledLink/StyledLink';
+import { useAppContext } from '@/context/Context';
 
 const Hero = () => {
   const { width } = useWindowSize();
-  const { showLoader } = useAppSelector((state) => state.homeLoader);
+  const { state } = useAppContext();
   const [name, setName] = useState<string | undefined>('');
 
   useEffect(() => {
@@ -40,7 +40,7 @@ const Hero = () => {
             alt='hero image'
           />
         </m.div>
-        {!showLoader && (
+        {!state.loaderVisible && (
           <m.div
             className='z-10 flex max-w-[350px] flex-col items-start justify-start px-2 sm:ml-8 sm:max-w-lg sm:items-center sm:justify-center sm:col-span-3 md:col-span-2'
             variants={list}

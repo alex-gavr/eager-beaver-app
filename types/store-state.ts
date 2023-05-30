@@ -14,25 +14,7 @@ export interface ITelegram extends LoadingAndError {
     enrolledToFutureEvent: boolean | null;
 }
 
-export interface IModalState {
-    isModalOpen: boolean;
-    submitSuccess: boolean | null;
-    formFromModal: boolean;
-    formFutureEvents: boolean,
-    showPolicy: boolean;
-    initSubmitFrom: boolean;
-    initSubmitFutureEvent: boolean;
-}
 
-export interface IFutureEventDetailsState {
-    futureEventDetails: {
-        eventName: string;
-        age: string;
-        dateFull: string;
-        participants: number;
-    } | null;
-    shouldChangeMember: boolean;
-}
 export interface INavigationState{
     footerVisible: boolean;
     headerVisible: boolean;

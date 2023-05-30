@@ -1,9 +1,6 @@
 'use client';
 import { useRouter } from 'next/navigation';
 import Button, { IButtonProps, TButtonVariants } from '../button';
-import { useAppDispatch } from '@/services/hook';
-import { onOpenModalForm } from '@/services/modalSlice';
-import { hasCookie } from 'cookies-next';
 
 interface IProps extends IButtonProps {
   variantPrimary: TButtonVariants['variant'];
@@ -21,11 +18,8 @@ const ActionButtons = ({
   showBackButton,
 }: IProps) => {
   const router = useRouter();
-  const futureEventsCookie = hasCookie('futureEvents');
-  const event = hasCookie('event');
 
   const handleClick = () => {
-
     router.push('/form');
   };
 

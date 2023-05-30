@@ -1,6 +1,6 @@
-'use client'
-import { initError } from '@/services/errorSlice';
-import { useAppDispatch } from '@/services/hook';
+'use client';
+import { useAppContext } from '@/context/Context';
+import { ActionsType } from '@/context/actionsTypes';
 import Image from 'next/image';
 import { useState } from 'react';
 import Skeleton from 'react-loading-skeleton';
@@ -13,7 +13,7 @@ interface IProps {
 }
 
 export const ImageWithSkeleton = ({ src, alt, visibleByDefault, className }: IProps) => {
-  const dispatch = useAppDispatch();
+  const { dispatch } = useAppContext();
   const [isLoading, setIsLoading] = useState(true);
   return (
     <>
@@ -35,7 +35,7 @@ export const ImageWithSkeleton = ({ src, alt, visibleByDefault, className }: IPr
         height={500}
         className={className}
         onLoadingComplete={() => setIsLoading(false)}
-        onError={() => dispatch(initError())}
+        onError={() => dispatch({ type: ActionsType.setError, payload: true })}
       />
     </>
   );

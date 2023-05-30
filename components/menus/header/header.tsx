@@ -7,14 +7,15 @@ import { list, mobileHeaderAni } from '@/utils/motion-animations';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useInView } from 'react-intersection-observer';
-import { useAppDispatch, useAppSelector } from '@/services/hook';
-import { headerVisibilityStatus } from '@/services/navigationVisibilitySlice';
 import { Logo } from '@/components/logo/logo';
 import { useWindowSize } from 'usehooks-ts';
+import { useAppContext } from '@/context/Context';
+import { ActionsType } from '@/context/actionsTypes';
 
 const Header = () => {
   const { width } = useWindowSize();
-  const dispatch = useAppDispatch();
+  // const dispatch = useAppDispatch();
+  const { dispatch } = useAppContext();
   const [isOpen, setIsOpen] = useState(false);
 
   const handleToggle = () => {
@@ -24,7 +25,7 @@ const Header = () => {
   const { ref, inView } = useInView({});
 
   useEffect(() => {
-    dispatch(headerVisibilityStatus(inView));
+    dispatch({ type: ActionsType.setHeaderVisibility, payload: inView });
   }, [inView]);
 
   return (

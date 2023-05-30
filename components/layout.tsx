@@ -1,14 +1,9 @@
 'use client';
 import dynamic from 'next/dynamic';
-import { useAppDispatch, useAppSelector } from '../services/hook';
-import { onCloseModal } from '../services/modalSlice';
-import { Analytics } from '@vercel/analytics/react';
-import Skeleton from 'react-loading-skeleton';
-import Header from './menus/header/header';
 import { usePathname, useRouter } from 'next/navigation';
 import { useState } from 'react';
 import { deleteCookie, setCookie } from 'cookies-next';
-import production from '@/utils/isProd';
+import { useAppContext } from '@/context/Context';
 
 const FixedSocialMedia = dynamic(() => import('@/components/social-media-block/FixedSocialMedia'), {
   ssr: false,
@@ -29,11 +24,7 @@ interface IProps {
 const Layout = ({ children, theme }: IProps) => {
   const pathname = usePathname();
   const router = useRouter();
-  const dispatch = useAppDispatch();
-  const { isModalOpen, submitSuccess, formFromModal, formFutureEvents, showPolicy } = useAppSelector(
-    (state) => state.modal,
-  );
-  const { error } = useAppSelector((state) => state.error);
+  const { state } = useAppContext();
   const [currentTheme, setCurrentTheme] = useState<'light' | 'dark'>(theme);
   const isDarkMode = theme === 'dark';
 
@@ -52,15 +43,12 @@ const Layout = ({ children, theme }: IProps) => {
     }
   };
 
-  const handleCloseModal = () => {
-    dispatch(onCloseModal());
-  };
   return (
     <>
       {pathname === '/reviews' || pathname === '/contact' ? null : <FixedSocialMedia />}
       {children}
       <DayNightToggle onChange={toggleTheme} checked={isDarkMode} size={30} />
-      {error ? <ImageLoadingError /> : null}
+      {state.error ? <ImageLoadingError /> : null}
     </>
   );
 };

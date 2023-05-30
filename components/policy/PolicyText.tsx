@@ -1,13 +1,5 @@
-import { useAppDispatch, useAppSelector } from '@/services/hook';
-import { showForm } from '@/services/modalSlice';
-import Button from '@/components/buttons/button';
 
 const PolicyText = () => {
-    const dispatch = useAppDispatch();
-    const { isModalOpen, initSubmitFrom, initSubmitFutureEvent } = useAppSelector((state) => state.modal);
-    const handleShowForm = () => {
-        dispatch(showForm());
-    };
     return (
         <>
             <h2 className='text-slate-900 dark:text-slate-100 text-center'> Политика в отношении обработки персональных данных от 06.01.2023</h2>
@@ -225,16 +217,6 @@ const PolicyText = () => {
                     14.3. Актуальная версия Политики в свободном доступе расположена в сети Интернет по адресу https://eager-beaver.ru/policy.
                 </p>
             </div>
-            {isModalOpen && initSubmitFrom  && (
-                <Button variant='primary' type='button' onClick={handleShowForm}>
-                    обратно к форме
-                </Button>
-            )}
-            {isModalOpen && initSubmitFutureEvent  && (
-                <Button variant='primary' type='button' onClick={handleShowForm}>
-                    обратно к форме
-                </Button>
-            )}
         </>
     );
 };

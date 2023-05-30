@@ -1,9 +1,6 @@
 import Image from 'next/image';
 import { FC, useLayoutEffect, useRef, useState } from 'react';
 import { AnimatePresence, m } from 'framer-motion';
-import { useAppDispatch } from '@/services/hook';
-import { initError } from '@/services/errorSlice';
-import { useWindowSize } from 'usehooks-ts';
 import { ImageWithSkeleton } from '../image-with-skeleton/img-with-skeleton';
 import { cn } from '@/utils/cn';
 
@@ -16,21 +13,14 @@ interface IProps {
 }
 
 export const ReviewCard: FC<IProps> = ({ image, name, parent, relationToChild, review }) => {
-  const dispatch = useAppDispatch();
-  const { width } = useWindowSize();
-  const [isImgLoaded, setIsImgLoaded] = useState(false);
   const [showFullText, setShowFullText] = useState(false);
-
-  const handleImageLoaded = () => {
-    setIsImgLoaded(true);
-  };
+  const [isOverflowY, setIsOverflowY] = useState(false);
+  const ref = useRef<HTMLParagraphElement>(null);
 
   const toggleClassName = () => {
     setShowFullText(!showFullText);
   };
 
-  const [isOverflowY, setIsOverflowY] = useState(false);
-  const ref = useRef<HTMLParagraphElement>(null);
 
   useLayoutEffect(() => {
     const p = ref.current;
@@ -38,7 +28,7 @@ export const ReviewCard: FC<IProps> = ({ image, name, parent, relationToChild, r
       const hasOverflowY = p.scrollHeight > p.clientHeight;
       setIsOverflowY(hasOverflowY);
     }
-  }, [ref, isImgLoaded]);
+  }, [ref]);
 
   return (
     <AnimatePresence mode='wait' initial={false}>
@@ -66,7 +56,10 @@ export const ReviewCard: FC<IProps> = ({ image, name, parent, relationToChild, r
             {review}
           </m.p>
           {isOverflowY && (
-            <div className='flex flex-col items-center justify-center p-2' style={showFullText ? { rotate: '180deg' } : {}}>
+            <div
+              className='flex flex-col items-center justify-center p-2'
+              style={showFullText ? { rotate: '180deg' } : {}}
+            >
               <Image src={'/downArrow.svg'} width={30} height={20} alt='' />
             </div>
           )}

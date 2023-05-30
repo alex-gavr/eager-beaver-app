@@ -1,9 +1,8 @@
 'use client';
-import { Provider } from 'react-redux';
 import { SkeletonTheme } from 'react-loading-skeleton';
 import 'react-loading-skeleton/dist/skeleton.css';
 import { LazyMotion } from 'framer-motion';
-import { store } from '@/services/store';
+import { AppProvider } from '@/context/Context';
 
 interface IProps {
   children: React.ReactNode;
@@ -12,11 +11,11 @@ interface IProps {
 const Providers = ({ children }: IProps) => {
   return (
     <LazyMotion features={async () => (await import('@/lib/domAnimation')).default}>
-      <Provider store={store}>
+      <AppProvider>
         <SkeletonTheme baseColor='#cdf0b7' highlightColor='#f8ec9b'>
           {children}
         </SkeletonTheme>
-      </Provider>
+      </AppProvider>
     </LazyMotion>
   );
 };

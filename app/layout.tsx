@@ -14,7 +14,6 @@ import { Analytics } from '@vercel/analytics/react';
 import YMetrika from '@/components/Metrika/YMetrika';
 import Footer from '@/components/menus/footer/footer';
 
-
 export const metadata = {
   icons: {
     icon: '/favicon.ico',
@@ -38,7 +37,6 @@ export default function RootLayout({ children, modal }: IRootLayoutProps) {
     >
       <Providers>
         <Analytics />
-        {production && <YMetrika />}
         <body>
           <div className='relative flex w-full flex-col items-center justify-center overflow-hidden'>
             <Header />
@@ -49,6 +47,7 @@ export default function RootLayout({ children, modal }: IRootLayoutProps) {
           </div>
         </body>
       </Providers>
+      {production && <YMetrika />}
     </html>
   );
 }

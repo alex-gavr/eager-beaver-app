@@ -1,13 +1,16 @@
 import SocialMediaIcons from './SocialMediaIcons';
 import { AnimatePresence } from 'framer-motion';
 import Image from 'next/image';
-import { useAppSelector } from '@/services/hook';
 import { useWindowSize } from 'usehooks-ts';
 import { m } from 'framer-motion';
+import { useAppContext } from '@/context/Context';
 
 const FixedSocialMedia = () => {
   const { width } = useWindowSize();
-  const { footerVisible, headerVisible } = useAppSelector((state) => state.navigationVisibility);
+  const { state } = useAppContext();
+  const footerVisible = state.footerVisible
+  const headerVisible = state.headerVisible
+
   return (
     <AnimatePresence>
       {width > 700 ? (
@@ -22,7 +25,8 @@ const FixedSocialMedia = () => {
           <SocialMediaIcons />
         </m.div>
       ) : (
-        <m.div className='fixed z-[800] flex flex-col items-center justify-center bottom-4'
+        <m.div
+          className='fixed bottom-4 z-[800] flex flex-col items-center justify-center'
           initial={{ right: '-15%' }}
           animate={headerVisible ? { right: '-15%' } : { right: '4%' }}
           transition={{ ease: 'easeInOut', duration: 1 }}
