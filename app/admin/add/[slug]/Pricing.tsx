@@ -197,12 +197,12 @@ const Pricing = ({}: IReviewProps) => {
   return (
     <>
       <h1 className='mb-8 text-center text-4xl'>Добавление нового тарифа</h1>
-      <div className='grid grid-cols-1 items-center gap-10 px-4 lg:px-20 py-4 md:grid-cols-6 '>
+      <div className='flex w-full flex-col flex-nowrap items-center justify-center gap-10 p-2 md:flex-row '>
         <form
-          className='flex w-full  flex-1 flex-row flex-wrap items-start justify-center gap-4 rounded-xl bg-violet-300 md:col-span-3 p-2 lg:p-4'
+          className='order-2 flex h-full w-full min-w-[300px] max-w-[600px] flex-col items-start justify-start rounded-xl bg-violet-200 z-50'
           onSubmit={handleSubmit}
         >
-          <div className='z-50  items-center justify-center grid grid-cols-1 sm:grid-cols-2 sm:w-full'>
+          <div className='flex w-full flex-col sm:grid sm:grid-cols-2'>
             {inputsText.map((input, index) => (
               <InputExternalState
                 id={input.name}
@@ -225,7 +225,7 @@ const Pricing = ({}: IReviewProps) => {
             </Button>
           </div>
         </form>
-        <div className='flex flex-col items-center justify-start md:col-span-3'>
+        <div className='flex max-w-[350px] flex-col items-center justify-center'>
           <SwiperCards prices={data} disabled />
         </div>
       </div>

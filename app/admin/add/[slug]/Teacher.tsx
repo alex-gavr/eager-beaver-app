@@ -111,9 +111,9 @@ const Teacher = ({}: ITeacherProps) => {
   return (
     <>
       <h1 className='mb-8 text-center text-4xl'>Добавление нового учителя</h1>
-      <div className='grid grid-cols-1 gap-10 p-2 lg:grid-cols-2'>
+      <div className='flex w-full flex-col flex-nowrap items-center justify-center gap-10 p-2 md:flex-row '>
         <form
-          className='order-2 flex w-full min-w-[300px] max-w-xl flex-1 flex-col items-start justify-start  rounded-xl bg-slate-200'
+          className='order-2 flex h-full w-full min-w-[300px] max-w-[400px] flex-1 flex-col items-start justify-start rounded-xl bg-violet-200'
           onSubmit={handleSubmit}
         >
           {inputs.map((input) => {
@@ -141,7 +141,7 @@ const Teacher = ({}: ITeacherProps) => {
               />
             );
           })}
-          <div className='flex w-full flex-row items-start justify-center gap-4 px-4 py-2'>
+          <div className='flex w-full flex-col items-center justify-center gap-4 px-4 py-2'>
             <p className='block text-base font-medium leading-6 text-gray-900 dark:text-gray-900 sm:text-lg md:text-xl lg:text-2xl'>
               Фоточка
             </p>
@@ -160,11 +160,13 @@ const Teacher = ({}: ITeacherProps) => {
               }}
             />
           </div>
-          <Button disabled={preview.length === 0} className='my-6 place-self-center'>
+          <Button variant={'primary'} disabled={preview.length === 0} className='my-6 place-self-center'>
             Добавить нового учителя
           </Button>
         </form>
-        <TeacherCard image={imageToDisplay} name={name} description={description} alt={name} includePlay />
+        <div className='flex flex-1 flex-col items-center justify-center'>
+          <TeacherCard image={imageToDisplay} name={name} description={description} alt={name} includePlay />
+        </div>
       </div>
       <ToastContainer />
     </>

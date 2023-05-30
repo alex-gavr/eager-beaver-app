@@ -15,7 +15,7 @@ const Page = ({ params }: IPageProps) => {
   const { slug } = params;
 
   return (
-    <section className='flex min-h-[100vh] w-full flex-col items-center justify-start overflow-hidden px-2 py-4 lg:py-10'>
+    <section className='flex min-h-[90vh] w-full flex-col items-center justify-center gap-4 overflow-hidden px-2 py-4 lg:py-10 relative'>
       {slug === 'teachers' && <Teacher />}
       {slug === 'review' && <Review />}
       {slug === 'event' && <Event />}

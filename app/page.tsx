@@ -10,6 +10,11 @@ export const metadata: Metadata = {
     'Одной из основных целей языковой школы Eager Beaver является обучение языкам таким образом, чтобы ребенок был увлечен образовательным процессом. Поэтому помимо основного обучения мы регулярно проводим тематические праздники и мастер-классы. Проведение таких мероприятий для нас является неотъемлемой частью образования.',
 };
 
+export interface IServerProps {
+  params: { slug: string };
+  searchParams: { [key: string]: string | string[] | undefined };
+}
+
 const Page = async () => {
   const futureEventsData = (await db.select().from(futureEvents).limit(1)) as TFutureEvents[];
 

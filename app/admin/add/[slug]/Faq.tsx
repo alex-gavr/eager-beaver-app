@@ -105,9 +105,9 @@ const Faq = ({}: ITeacherProps) => {
   return (
     <>
       <h1 className='mb-8 text-center text-4xl'>Добавление нового учителя</h1>
-      <div className='grid w-full grid-cols-1 gap-10 p-2 lg:grid-cols-2 '>
+      <div className='flex w-full flex-col flex-nowrap items-center justify-center gap-10 p-2 md:flex-row '>
         <form
-          className='flex w-full flex-1 flex-col items-start justify-start rounded-xl bg-slate-200 px-2 py-4'
+          className='z-50 order-2 flex w-full min-w-[300px] max-w-[400px] flex-col items-start justify-start rounded-xl bg-violet-200 p-4'
           onSubmit={handleSubmit}
         >
           {inputs.map((input) => {
@@ -136,7 +136,7 @@ const Faq = ({}: ITeacherProps) => {
               />
             );
           })}
-          <Button disabled={false} className='my-6 place-self-center'>
+          <Button variant={'primary'} disabled={false} className='my-6 place-self-center'>
             Добавить новый вопрос / ответ
           </Button>
         </form>

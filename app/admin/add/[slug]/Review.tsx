@@ -129,9 +129,9 @@ const Review = ({}: IReviewProps) => {
   return (
     <>
       <h1 className='mb-8 text-center text-4xl'>Добавление нового отзыва</h1>
-      <div className='grid grid-cols-1 gap-10 p-2 lg:grid-cols-2'>
+      <div className='flex w-full flex-col flex-nowrap items-center justify-center gap-10 p-2 md:flex-row '>
         <form
-          className='order-2 flex w-full min-w-[300px] max-w-xl flex-1 flex-col items-start justify-start  rounded-xl bg-slate-200'
+          className='order-2 col-span-3 flex h-full w-full min-w-[300px] max-w-[400px] flex-1 flex-col items-start justify-start overflow-y-auto rounded-xl bg-violet-200'
           onSubmit={handleSubmit}
         >
           {inputs.map((input, index) => {
@@ -179,17 +179,19 @@ const Review = ({}: IReviewProps) => {
               }}
             />
           </div>
-          <Button disabled={image.length === 0} className='my-6 place-self-center'>
+          <Button variant={'primary'} disabled={image.length === 0} className='my-6 place-self-center'>
             Добавить новый отзыв
           </Button>
         </form>
-        <ReviewCard
-          image={image ? image : defaultImage}
-          name={childName}
-          parent={parentName}
-          relationToChild={relationToChild}
-          review={review}
-        />
+        <div className='flex flex-1 flex-col items-center justify-center'>
+          <ReviewCard
+            image={image ? image : defaultImage}
+            name={childName}
+            parent={parentName}
+            relationToChild={relationToChild}
+            review={review}
+          />
+        </div>
       </div>
       <ToastContainer />
     </>

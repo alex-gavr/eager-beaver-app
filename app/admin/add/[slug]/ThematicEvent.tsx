@@ -146,9 +146,12 @@ const ThematicEvent = ({}: IThematicEventProps) => {
   return (
     <>
       <h1 className='mb-8 text-center text-4xl'>Добавление нового тематического мероприятия</h1>
-      <div className='grid grid-cols-1 gap-10 p-2'>
-        <form className='order-2 flex flex-col rounded-xl bg-fuchsia-200' onSubmit={handleSubmit}>
-          <div className='grid grid-cols-1 gap-4 p-4 lg:grid-cols-2 '>
+      <div className='flex w-full flex-col flex-nowrap items-center justify-center gap-10 p-2 md:flex-row'>
+        <form
+          className='z-50 order-2 flex h-full w-full min-w-[300px] max-w-[400px] flex-1 flex-col items-start justify-start rounded-xl bg-violet-200 '
+          onSubmit={handleSubmit}
+        >
+          <div className='grid grid-cols-1 gap-4 p-4 lg:grid-cols-1 '>
             {inputs.map((input) => (
               <InputExternalState
                 label={input.label}
@@ -221,19 +224,19 @@ const ThematicEvent = ({}: IThematicEventProps) => {
             </div>
           </div>
 
-          <div className='flex flex-col items-center justify-center'>
-            <Button disabled={false} className='my-6 place-self-center'>
-              Добавить
-            </Button>
-          </div>
+          <Button disabled={false} className='my-6 place-self-center'>
+            Добавить
+          </Button>
         </form>
-        <TwoColumns
-          heading={heading}
-          paragraph={paragraph}
-          imageSide={imageSide}
-          images={images}
-          alt='whatever'
-        />
+        <div className='flex flex-col items-center justify-center bg-gray-100 p-4 rounded-md'>
+          <TwoColumns
+            heading={heading}
+            paragraph={paragraph}
+            imageSide={imageSide}
+            images={images}
+            alt='whatever'
+          />
+        </div>
       </div>
       <ToastContainer />
     </>

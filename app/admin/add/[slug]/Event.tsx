@@ -3,7 +3,7 @@ import { ChangeEvent, useEffect, useState } from 'react';
 import Button from '@/components/buttons/button';
 import { ToastContainer, toast } from 'react-toastify';
 import { InputExternalState, TextAreaExternalState } from '@/components/input/InputExternalState';
-import { TFutureEvents, TReviews, insertFutureEventsSchema, insertReviewSchema } from '@/db/schemas';
+import { TFutureEvents, insertFutureEventsSchema } from '@/db/schemas';
 import { v4 as uuid } from 'uuid';
 import EventCard from '@/components/future-events/event-card/EventCard';
 
@@ -32,7 +32,6 @@ const Event = ({}: IReviewProps) => {
   const [eventEnd, setEventEnd] = useState<string>(defaultEventEnd);
   const [eventEndDate, setEventEndDate] = useState<Date>(new Date(eventEnd));
   const [price, setPrice] = useState<string>(defaultPrice);
-
 
   useEffect(() => {
     setEventStartDate(new Date(eventStart));
@@ -243,23 +242,12 @@ const Event = ({}: IReviewProps) => {
     },
   ];
 
-  const checkbox = {
-    id: 6,
-    label: 'Длительность более 1 дня?',
-    name: 'durationLongerThanDay',
-    value: durationLongerThanDay,
-    type: 'checkbox',
-    onChange: handleToggle,
-    inputType: 'input',
-    className: '',
-  };
-
   return (
     <>
       <h1 className='mb-8 text-center text-4xl'>Добавление нового отзыва</h1>
-      <div className='grid grid-cols-1 items-center gap-10 px-4 py-4 md:grid-cols-6 md:gap-4'>
+      <div className='flex w-full flex-col flex-nowrap items-center justify-center gap-10 p-2 md:flex-row '>
         <form
-          className='flex w-full min-w-[300px] flex-1 flex-row flex-wrap items-start justify-center gap-4 rounded-xl bg-slate-200  md:col-span-3  '
+          className='z-50 order-2 flex w-full min-w-[300px] max-w-[600px] flex-col items-start justify-start rounded-xl bg-violet-200 p-4'
           onSubmit={handleSubmit}
         >
           <div className='flex w-full flex-row flex-wrap items-center justify-center'>
@@ -340,6 +328,7 @@ const Event = ({}: IReviewProps) => {
 
           <div className='flex w-full flex-col items-center justify-center'>
             <Button
+              variant={'primary'}
               disabled={eventStart === defaultEventStart || eventEnd === defaultEventEnd}
               className='my-6 place-self-center '
             >
@@ -347,7 +336,7 @@ const Event = ({}: IReviewProps) => {
             </Button>
           </div>
         </form>
-        <div className='flex flex-col items-center justify-start md:col-span-3 '>
+        <div className='flex flex-1 flex-col items-center justify-start '>
           <EventCard
             uuid='1'
             eventName={eventName}
