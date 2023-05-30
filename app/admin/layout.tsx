@@ -3,6 +3,7 @@ import { ReactNode, useState } from 'react';
 import 'react-toastify/dist/ReactToastify.css';
 import '@uploadthing/react/styles.css';
 import Button from '@/components/buttons/button';
+import production from '@/utils/isProd';
 
 interface ILayoutProps {
   children: ReactNode;
@@ -28,7 +29,9 @@ const Layout = ({ children }: ILayoutProps) => {
 
   return (
     <>
-      {auth === true ? (
+      {!production ? (
+        <>{children}</>
+      ) : auth === true ? (
         <>{children}</>
       ) : auth === false ? (
         <NotAllowed />

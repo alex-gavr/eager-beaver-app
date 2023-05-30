@@ -1,24 +1,14 @@
-import { useEffect, useState, useTransition } from 'react';
-import { useAppDispatch, useAppSelector } from '@/services/hook';
+import { useState, useTransition } from 'react';
 import Button from '@/components/buttons/button';
 import { AnimatePresence } from 'framer-motion';
 import { toggleHeight } from '@/utils/motion-animations';
-import { onOpenModalFormFutureEvents } from '@/services/modalSlice';
-import { resetDetails, resetMemberCountChange, setDetails } from '@/services/futureEventSignUpData';
 import Image from 'next/image';
 import { convertH2M, minutesEachHourInOneDay, TimeDiff } from '@/utils/timeCalcHelpers';
-// import { addParticipant } from '@/lib/addParticipant';
-// import { publishChange } from '@/lib/publishChange';
 import declOfNum from '@/utils/declOfNum';
 import workWithDate from '@/utils/workWithDate';
-import { TFutureEvents, futureEvents } from '@/db/schemas';
+import { TFutureEvents } from '@/db/schemas';
 import { m } from 'framer-motion';
-import { db } from '@/db/db';
-import { eq } from 'drizzle-orm';
-import Link from 'next/link';
-import { setCookie } from 'cookies-next';
 import { useRouter } from 'next/navigation';
-import { handleChangeMembers } from '@/app/actions';
 
 const millisecondsPerDay = 1000 * 60 * 60 * 24;
 const daysPerMonth = 31;
@@ -41,7 +31,7 @@ const EventCard = ({
   durationLongerThanDay,
   eventStart,
   eventEnd,
-  disabled
+  disabled,
 }: IFutureEventsProps) => {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
@@ -52,7 +42,8 @@ const EventCard = ({
   const { day: dayEnd, month: monthEnd, monthFull: monthEndFull, time: timeEnd } = workWithDate(eventEnd);
 
   // Calculate days difference between ending date and starting date
-  const daysDiff = Math.floor((eventEnd.getTime() - eventStart.getTime()) / millisecondsPerDay) + addPresentDay; // +1 for present day so that duration is correct
+  const daysDiff =
+    Math.floor((eventEnd.getTime() - eventStart.getTime()) / millisecondsPerDay) + addPresentDay; // +1 for present day so that duration is correct
   const daysWord = declOfNum(daysDiff, ['день', 'дня', 'дней']);
   // is Less than a Month
   const lessThanMonth = daysDiff <= daysPerMonth;
@@ -83,10 +74,8 @@ const EventCard = ({
   // Spots Word
   const spotsWord = declOfNum(spotsLeft, ['место', 'места', 'мест']);
 
-  const handleClick1 = (uuid: string, eventName: string, dateFull: string, participants: number) => {
+  const handleClick = (uuid: string) => {
     router.push(`/form/future-events?uuid=${uuid}`);
-    // startTransition(() => handleChangeMembers(uuid, eventName, dateFull, participants));
-    // setEnrolled(true);
   };
 
   return (
@@ -145,7 +134,7 @@ const EventCard = ({
                 <Button
                   type='button'
                   variant={'secondaryGhost'}
-                  onClick={() => handleClick1(uuid, eventName, dateFull, participants)}
+                  onClick={() => handleClick(uuid)}
                   disabled={enrolled || spotsLeft === 0 || disabled}
                 >
                   {enrolled

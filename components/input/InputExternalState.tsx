@@ -1,16 +1,20 @@
 'use client';
 
 import { cn } from '@/utils/cn';
-import { HtmlHTMLAttributes, InputHTMLAttributes } from 'react';
+import { InputHTMLAttributes } from 'react';
 
 interface IInputExternalStateProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
   index?: number;
   classNameDiv?: string;
+  classNameLabel?: string;
 }
 
+const defaultDivStyles = 'flex flex-col items-start justify-center gap-2 p-2';
+const defaultLabelStyles =
+  'block text-base font-medium leading-6 text-gray-900 sm:text-lg md:text-xl lg:text-2xl';
+const inputStyleDefault = 'w-full rounded-md';
 const radioStyle = 'flex flex-row flex-wrap items-center justify-center gap-2 p-2';
-const inputStyle = 'w-full rounded-md';
 const radioStyleInput = 'h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600';
 
 export const InputExternalState = ({
@@ -24,19 +28,17 @@ export const InputExternalState = ({
   className,
   required,
   classNameDiv,
+  classNameLabel,
   ...props
 }: IInputExternalStateProps) => {
   return (
-    <div className={cn(type === 'radio' ? radioStyle : 'flex flex-col items-start justify-center gap-2 p-2', classNameDiv)}>
-      <label
-        htmlFor={name}
-        className='block text-base font-medium leading-6 text-gray-900 sm:text-lg md:text-xl lg:text-2xl'
-      >
+    <div className={cn(type === 'radio' ? radioStyle : defaultDivStyles, classNameDiv)}>
+      <label htmlFor={name} className={cn(defaultLabelStyles, classNameLabel)}>
         {label}
       </label>
       <input
         {...props}
-        className={cn(type === 'radio' ? radioStyleInput : inputStyle, className)}
+        className={cn(type === 'radio' ? radioStyleInput : inputStyleDefault, className)}
         type={type}
         id={id}
         name={name}
@@ -52,6 +54,8 @@ export const InputExternalState = ({
 interface ITextAreaExternalStateProps extends InputHTMLAttributes<HTMLTextAreaElement> {
   label: string;
   index?: number;
+  classNameDiv?: string;
+  classNameLabel?: string;
 }
 
 export const TextAreaExternalState = ({
@@ -64,13 +68,20 @@ export const TextAreaExternalState = ({
   onChange,
   className,
   required,
+  classNameDiv,
+  classNameLabel,
   ...rest
 }: ITextAreaExternalStateProps) => {
   return (
-    <div className='flex w-full max-w-xl flex-col items-start justify-center gap-4 p-2 py-4'>
+    <div
+      className={cn('flex w-full max-w-xl flex-col items-start justify-center gap-4 p-2 py-4', classNameDiv)}
+    >
       <label
         htmlFor={name}
-        className='block text-base font-medium leading-6 text-gray-900 sm:text-lg md:text-xl lg:text-2xl'
+        className={cn(
+          'block text-base font-medium leading-6 text-gray-900 sm:text-lg md:text-xl lg:text-2xl',
+          classNameLabel,
+        )}
       >
         {label}
       </label>
