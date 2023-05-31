@@ -4,6 +4,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import '@uploadthing/react/styles.css';
 import Button from '@/components/buttons/button';
 import production from '@/utils/isProd';
+import { ToastContainer } from 'react-toastify';
 
 interface ILayoutProps {
   children: ReactNode;
@@ -30,9 +31,15 @@ const Layout = ({ children }: ILayoutProps) => {
   return (
     <>
       {!production ? (
-        <>{children}</>
+        <>
+          {children}
+          <ToastContainer />
+        </>
       ) : auth === true ? (
-        <>{children}</>
+        <>
+          {children}
+          <ToastContainer />
+        </>
       ) : auth === false ? (
         <NotAllowed />
       ) : (

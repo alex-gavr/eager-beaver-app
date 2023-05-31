@@ -193,7 +193,6 @@ const Review = ({}: IReviewProps) => {
           />
         </div>
       </div>
-      <ToastContainer />
     </>
   );
 };

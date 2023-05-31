@@ -199,7 +199,7 @@ const Pricing = ({}: IReviewProps) => {
       <h1 className='mb-8 text-center text-4xl'>Добавление нового тарифа</h1>
       <div className='flex w-full flex-col flex-nowrap items-center justify-center gap-10 p-2 md:flex-row '>
         <form
-          className='order-2 flex h-full w-full min-w-[300px] max-w-[600px] flex-col items-start justify-start rounded-xl bg-violet-200 z-50'
+          className='z-50 order-2 flex h-full w-full min-w-[300px] max-w-[600px] flex-col items-start justify-start rounded-xl bg-violet-200'
           onSubmit={handleSubmit}
         >
           <div className='flex w-full flex-col sm:grid sm:grid-cols-2'>
@@ -229,7 +229,6 @@ const Pricing = ({}: IReviewProps) => {
           <SwiperCards prices={data} disabled />
         </div>
       </div>
-      <ToastContainer />
     </>
   );
 };

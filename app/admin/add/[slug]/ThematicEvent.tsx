@@ -228,7 +228,7 @@ const ThematicEvent = ({}: IThematicEventProps) => {
             Добавить
           </Button>
         </form>
-        <div className='flex flex-col items-center justify-center bg-gray-100 p-4 rounded-md'>
+        <div className='flex flex-col items-center justify-center rounded-md bg-gray-100 p-4'>
           <TwoColumns
             heading={heading}
             paragraph={paragraph}
@@ -238,7 +238,6 @@ const ThematicEvent = ({}: IThematicEventProps) => {
           />
         </div>
       </div>
-      <ToastContainer />
     </>
   );
 };

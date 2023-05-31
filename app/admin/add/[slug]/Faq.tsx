@@ -144,7 +144,6 @@ const Faq = ({}: ITeacherProps) => {
           <FAQComponent question={question} description={description} />
         </div>
       </div>
-      <ToastContainer />
     </>
   );
 };

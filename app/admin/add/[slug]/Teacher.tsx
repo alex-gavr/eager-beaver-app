@@ -168,7 +168,6 @@ const Teacher = ({}: ITeacherProps) => {
           <TeacherCard image={imageToDisplay} name={name} description={description} alt={name} includePlay />
         </div>
       </div>
-      <ToastContainer />
     </>
   );
 };

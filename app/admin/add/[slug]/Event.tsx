@@ -352,7 +352,6 @@ const Event = ({}: IReviewProps) => {
           />
         </div>
       </div>
-      <ToastContainer />
     </>
   );
 };
