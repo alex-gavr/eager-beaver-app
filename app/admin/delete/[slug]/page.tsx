@@ -1,5 +1,4 @@
 import { IServerProps } from '@/app/page';
-import Button from '@/components/buttons/button';
 import { db } from '@/db/db';
 import { faq, futureEvents, prices, reviews, teachers, thematicEvents } from '@/db/schemas';
 import { eq } from 'drizzle-orm';

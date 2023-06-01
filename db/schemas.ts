@@ -26,8 +26,8 @@ export const thematicEvents = mysqlTable('thematic_events', {
 export type TThematicEvents = InferModel<typeof thematicEvents>;
 
 export const insertThematicEventsSchema = createInsertSchema(thematicEvents, {
-  heading: z.string().max(100),
-  paragraph: z.string().max(100),
+  heading: z.string().max(100, { message: "Заголовок должен быть менее 100 символов" }),
+  paragraph: z.string().max(100, { message: "Параграф должен быть менее 100 символов" }),
 })
 
 export interface Images {
@@ -58,10 +58,10 @@ export const futureEvents = mysqlTable('future_events', {
 export type TFutureEvents = InferModel<typeof futureEvents>;
 
 export const insertFutureEventsSchema = createInsertSchema(futureEvents, {
-  eventName: z.string().max(50),
-  description: z.string().max(500),
-  age: z.string().max(50),
-  price: z.string().max(50),
+  eventName: z.string().max(50, { message: "Название должен быть менее 50 символов" }),
+  description: z.string().max(500 , { message: "Описание должно быть менее 500 символов" }),
+  age: z.string().max(50, { message: "Возраст деток должен быть менее 50 символов" }),
+  price: z.string().max(50, { message: "Стоимость должна быть менее 50 символов" }),
 });
 
 export const faq = mysqlTable('faq', {
@@ -74,8 +74,8 @@ export const faq = mysqlTable('faq', {
 export type TFaq = InferModel<typeof faq>;
 
 export const insertFaqSchema = createInsertSchema(faq, {
-  question: z.string().max(255),
-  description: z.string().max(1000),
+  question: z.string().max(255, { message: "Вопрос должен быть менее 255 символов" }),
+  description: z.string().max(1000, { message: "Описание должен быть менее 1000 символов" }),
 });
 
 export const prices = mysqlTable('prices', {
@@ -92,11 +92,11 @@ export const prices = mysqlTable('prices', {
 export type TPrices = InferModel<typeof prices>;
 
 export const insertPriceSchema = createInsertSchema(prices, {
-  priceName: z.string().max(50),
-  price: z.string().max(50),
-  feature1: z.string().max(100),
-  feature2: z.string().max(100),
-  feature3: z.string().max(100),
+  priceName: z.string().max(50, { message: "Название должно быть менее 50 символов" }),
+  price: z.string().max(50 , { message: "Цена должен быть менее 50 символов" }),
+  feature1: z.string().max(100, { message: "Feature 1 должна быть менее 100 символов" }),
+  feature2: z.string().max(100, { message: "Feature 2 должна быть менее 100 символов" }),
+  feature3: z.string().max(100, { message: "Feature 3 должна быть менее 100 символов" }),
 });
 
 export const reviews = mysqlTable('reviews', {
@@ -112,11 +112,11 @@ export const reviews = mysqlTable('reviews', {
 export type TReviews = InferModel<typeof reviews>;
 
 export const insertReviewSchema = createInsertSchema(reviews, {
-  childName: z.string().max(100),
-  parentName: z.string().max(100),
-  relationToChild: z.string().max(100),
-  review: z.string().max(1000),
-  image: z.string().max(150),
+  childName: z.string().max(100, { message: "Имя ребёнка должно быть менее 100 символов" }),
+  parentName: z.string().max(100, { message: "Имя родителя должно быть менее 100 символов" }),
+  relationToChild: z.string().max(100, { message: "Кем приходится ребёнок родителю должно быть менее 100 символов" }),
+  review: z.string().max(1000, { message: "Отзыв должен быть менее 1000 символов" }),
+  image: z.string().max(150, { message: "Фотка должна быть менее 150 символов" }),
 });
 
 export const teachers = mysqlTable('teachers', {
@@ -130,9 +130,9 @@ export const teachers = mysqlTable('teachers', {
 export type TTeachers = InferModel<typeof teachers>;
 
 export const insertTeacherSchema = createInsertSchema(teachers, {
-  fullName: z.string().max(100),
-  description: z.string().max(255),
-  image: z.string().max(150),
+  fullName: z.string().max(100, { message: "Имя должно быть менее 100 символов" }),
+  description: z.string().max(255, { message: "Описания должно быть менее 255 символов" }),
+  image: z.string().max(150, { message: "Фотка должна быть менее 150 символов" }),
 });
 
 export const users = mysqlTable('eager_beaver_users', {

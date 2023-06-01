@@ -6,10 +6,14 @@ import { InputExternalState } from '@/components/input/InputExternalState';
 import { TPrices, insertPriceSchema } from '@/db/schemas';
 import { v4 as uuid } from 'uuid';
 import PriceCard from '@/components/prices/PriceCard';
-import { handleAddEntry } from '@/utils/handleAddEntry';
+import { getPromiseTextAdd, getPromiseTextEdit, toastConfig } from '@/utils/toast/toastConfig';
+import { ZodError } from 'zod';
+import ToastCustomError from '../ToastCustomError';
 
 interface IReviewProps {
   dbData?: TPrices;
+  updatePrice?: (data: any) => Promise<number>;
+  addPrice?: (data: any) => Promise<number>;
 }
 
 const defaultPriceName = 'Default Price Name';
@@ -19,7 +23,7 @@ const defaultFeature1 = 'Default Feature 1';
 const defaultFeature2 = 'Default Feature 2';
 const defaultFeature3 = 'Default Feature 3';
 
-const Pricing = ({ dbData }: IReviewProps) => {
+const Pricing = ({ dbData, updatePrice, addPrice }: IReviewProps) => {
   const [priceName, setPriceName] = useState<string>(dbData?.priceName ?? defaultPriceName);
   const [price, setPrice] = useState<string>(dbData?.price ?? defaultPrice);
   const [cardColor, setCardColor] = useState<'green' | 'yellow'>(dbData?.cardColor ?? defaultCardColor);
@@ -42,20 +46,69 @@ const Pricing = ({ dbData }: IReviewProps) => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const data: TPrices = {
-      uuid: uuid(),
-      priceName,
-      price,
-      cardColor,
-      feature1,
-      feature2,
-      feature3,
-    };
+    if (dbData !== undefined && updatePrice) {
+      const data: TPrices = {
+        uuid: dbData.uuid,
+        priceName,
+        price,
+        cardColor,
+        feature1,
+        feature2,
+        feature3,
+      };
+      const validPrice = await toast.promise(
+        insertPriceSchema.parseAsync(data),
+        {
+          pending: 'Проверяю данный...',
+          success: 'Данные корректны 👍',
+          error: {
+            render({ data }) {
+              const error = data as ZodError;
+              return <ToastCustomError error={error} />;
+            },
+          },
+        },
+        toastConfig,
+      );
+      // Update entry
+      const res = await toast.promise(updatePrice(validPrice), getPromiseTextEdit('prices'), toastConfig);
 
-    if (dbData === undefined) {
-      const res = await handleAddEntry('prices', data);
+      if (res === 200) {
+        console.log('success');
+      }
+      if (res === 500) {
+        toast.error('Ошибка! Попробуйте еще раз', {
+          theme: 'dark',
+        });
+      }
+    } else if (addPrice) {
+      const data: TPrices = {
+        uuid: uuid(),
+        priceName,
+        price,
+        cardColor,
+        feature1,
+        feature2,
+        feature3,
+      };
+      const validPrice = await toast.promise(
+        insertPriceSchema.parseAsync(data),
+        {
+          pending: 'Проверяю данный...',
+          success: 'Данные корректны 👍',
+          error: {
+            render({ data }) {
+              const error = data as ZodError;
+              return <ToastCustomError error={error} />;
+            },
+          },
+        },
+        toastConfig,
+      );
+      // Update entry
+      const res = await toast.promise(addPrice(validPrice), getPromiseTextAdd('prices'), toastConfig);
 
-      if (res.status === 200) {
+      if (res === 200) {
         setPriceName(defaultPriceName);
         setPrice(defaultPrice);
         setCardColor(defaultCardColor);
@@ -63,14 +116,11 @@ const Pricing = ({ dbData }: IReviewProps) => {
         setFeature2(defaultFeature2);
         setFeature3(defaultFeature3);
       }
-      if (res.status === 500 || res.status === 400) {
+      if (res === 500) {
         toast.error('Ошибка! Попробуйте еще раз', {
           theme: 'dark',
         });
       }
-    } else {
-      // Update entry
-      console.log('need to update');
     }
   };
 
@@ -142,7 +192,7 @@ const Pricing = ({ dbData }: IReviewProps) => {
       id: 3,
       label: 'Зеленая',
       name: 'cardColor',
-      //   value: cardColor,
+      defaultChecked: cardColor === 'green' ? true : false,
       type: 'radio',
       onChange: (e: ChangeEvent<HTMLInputElement>) => setCardColor('green'),
       inputType: 'input',
@@ -153,7 +203,7 @@ const Pricing = ({ dbData }: IReviewProps) => {
       id: 4,
       label: 'Желтая',
       name: 'cardColor',
-      //   value: cardColor,
+      defaultChecked: cardColor === 'yellow' ? true : false,
       type: 'radio',
       onChange: (e: ChangeEvent<HTMLInputElement>) => setCardColor('yellow'),
       inputType: 'input',
@@ -165,7 +215,7 @@ const Pricing = ({ dbData }: IReviewProps) => {
   return (
     <>
       <h1 className='mb-8 text-center text-4xl'>
-        {dbData ? 'Добавление нового тарифа' : 'Редактирование тарифа'}
+        {dbData === undefined ? 'Добавление нового тарифа' : 'Редактирование тарифа'}
       </h1>
       <div className='flex w-full flex-col flex-nowrap items-center justify-center gap-10 p-2 md:flex-row '>
         <form
@@ -198,10 +248,9 @@ const Pricing = ({ dbData }: IReviewProps) => {
                   key={input.id}
                   label={input.label}
                   name={input.name}
-                  // value={input.value}
+                  defaultChecked={input.defaultChecked}
                   type={input.type}
                   required={input.require}
-                  // placeholder={input.placeholder}
                   onChange={input.onChange}
                   className={input.className}
                 />
@@ -211,12 +260,12 @@ const Pricing = ({ dbData }: IReviewProps) => {
 
           <div className='flex w-full flex-col items-center justify-center'>
             <Button disabled={false} variant={'primary'} className='z-50 my-6 place-self-center'>
-              {dbData ? 'Добавить новый тариф' : 'Редактировать тарифа'}
+              {dbData === undefined ? 'Добавить новый тариф' : 'Редактировать тарифа'}
             </Button>
           </div>
         </form>
         <div className='flex flex-1 flex-col items-center justify-center'>
-          <PriceCard prices={data} />
+          <PriceCard price={data[0]} />
         </div>
       </div>
     </>

@@ -1,5 +1,6 @@
+import { IServerProps } from '@/app/page';
 import { ToastOptions } from 'react-toastify';
-import { TSlug } from '../handleAddEntry';
+export type TSlug = IServerProps['params']['slug'];
 
 export const toastConfig = {
   autoClose: 3000,
@@ -7,37 +8,32 @@ export const toastConfig = {
   position: 'top-center',
 } as ToastOptions<{}>;
 
-export const toastDataValidationTexts = {
-  pending: 'Проверяю данный...',
-  success: 'Данные корректны 👍',
-  error: 'Ошибка 🤯',
-};
 
 export const getPromiseTextAdd = (slug: TSlug) => {
   if (slug === 'faq') {
     return {
-      pending: 'Изменияю FAQ...',
+      pending: 'Добавляю FAQ...',
       success: 'Успех! FAQ добавлен 🥰',
       error: 'Ошибка 🤯',
     };
   }
   if (slug === 'futureEvents') {
     return {
-      pending: 'Изменияю событие...',
+      pending: 'Добавляю событие...',
       success: 'Готово! Новое мероприятие добавлено 💃',
       error: 'Ошибка 🤯',
     };
   }
   if (slug === 'prices') {
     return {
-      pending: 'Изменияю тариф...',
+      pending: 'Добавляю тариф...',
       success: 'Все супер! Тариф добавлен 🤑',
       error: 'Ошибка 🤯',
     };
   }
   if (slug === 'reviews') {
     return {
-      pending: 'Изменияю отзыв...',
+      pending: 'Добавляю отзыв...',
       success: 'Отзыв добавлен 🥳',
       error: 'Ошибка 🤯',
     };
@@ -45,7 +41,7 @@ export const getPromiseTextAdd = (slug: TSlug) => {
 
   if (slug === 'teachers') {
     return {
-      pending: 'Изменияю учителя...',
+      pending: 'Добавляю учителя...',
       success: 'Получилось! Учитель добавлен 🧑‍🏫',
       error: 'Ошибка 🤯',
     };
@@ -53,13 +49,13 @@ export const getPromiseTextAdd = (slug: TSlug) => {
 
   if (slug === 'thematicEvents') {
     return {
-      pending: 'Изменияю мероприятие...',
+      pending: 'Добавляю мероприятие...',
       success: 'Тематическое мероприятие добавлено 🤍',
       error: 'Ошибка 🤯',
     };
   } else {
     return {
-      pending: 'Изменияю...',
+      pending: 'Добавляю...',
       success: 'Готово 😘',
       error: 'Ошибка 🤯',
     };
@@ -76,21 +72,21 @@ export const getPromiseTextEdit = (slug: TSlug) => {
     }
     if (slug === 'futureEvents') {
       return {
-        pending: 'Изменияю событие...',
+        pending: 'Изменяю событие...',
         success: 'Готово! Мероприятие изменено 💃',
         error: 'Ошибка 🤯',
       };
     }
     if (slug === 'prices') {
       return {
-        pending: 'Изменияю тариф...',
+        pending: 'Изменяю тариф...',
         success: 'Все супер! Тариф скорректирован 🤑',
         error: 'Ошибка 🤯',
       };
     }
     if (slug === 'reviews') {
       return {
-        pending: 'Изменияю отзыв...',
+        pending: 'Изменяю отзыв...',
         success: 'Отзыв обновлен 🥳',
         error: 'Ошибка 🤯',
       };
@@ -98,7 +94,7 @@ export const getPromiseTextEdit = (slug: TSlug) => {
   
     if (slug === 'teachers') {
       return {
-        pending: 'Изменияю учителя...',
+        pending: 'Изменяю учителя...',
         success: 'Получилось! Учитель обновлен 🧑‍🏫',
         error: 'Ошибка 🤯',
       };
@@ -106,13 +102,13 @@ export const getPromiseTextEdit = (slug: TSlug) => {
   
     if (slug === 'thematicEvents') {
       return {
-        pending: 'Изменияю мероприятие...',
+        pending: 'Изменяю мероприятие...',
         success: 'Тематическое мероприятие обновлено 🤍',
         error: 'Ошибка 🤯',
       };
     } else {
       return {
-        pending: 'Изменияю...',
+        pending: 'Изменяю...',
         success: 'Обновлено 😘',
         error: 'Ошибка 🤯',
       };

@@ -7,19 +7,21 @@ import { InputExternalState, TextAreaExternalState } from '@/components/input/In
 import { TFaq, insertFaqSchema } from '@/db/schemas';
 import { v4 as uuid } from 'uuid';
 import FAQComponent from '@/components/faq/faq-component';
-import { handleAddEntry } from '@/utils/handleAddEntry';
-import { getPromiseTextEdit, toastConfig, toastDataValidationTexts } from '@/utils/toast/toastConfig';
+import { getPromiseTextAdd, getPromiseTextEdit, toastConfig } from '@/utils/toast/toastConfig';
+import { ZodError } from 'zod';
+import ToastCustomError from '../ToastCustomError';
 
 interface IFaqProps {
   dbData?: TFaq;
   updateFaq?: (data: any) => Promise<number>;
+  addFaq?: (data: any) => Promise<number>;
 }
 
 const defaultQuestion = 'Какой-нибудь заумный вопрос';
 const defaultDescription =
   'Руководитель школы, преподаватель английского и китайского языков. Стаж работы: 6 лет. Валерия может заинтересовать любого ученика. На её занятиях дети всегда сконцентрированы и внимательны.';
 
-const Faq = ({ dbData, updateFaq }: IFaqProps) => {
+const Faq = ({ dbData, updateFaq, addFaq }: IFaqProps) => {
   const [question, setQuestion] = useState<string>(dbData?.question ?? defaultQuestion);
   const [description, setDescription] = useState<string>(dbData?.description ?? defaultDescription);
 
@@ -32,37 +34,62 @@ const Faq = ({ dbData, updateFaq }: IFaqProps) => {
         question,
         description,
       };
-      
+
       const validFaq = await toast.promise(
         insertFaqSchema.parseAsync(data),
-        toastDataValidationTexts,
+        {
+          pending: 'Проверяю данный...',
+          success: 'Данные корректны 👍',
+          error: {
+            render({ data }) {
+              const error = data as ZodError;
+              return <ToastCustomError error={error} />;
+            },
+          },
+        },
         toastConfig,
       );
+
       // Update entry
       const res = await toast.promise(updateFaq(validFaq), getPromiseTextEdit('faq'), toastConfig);
 
       if (res === 200) {
         console.log('success');
       }
-      if (res === 500 || res === 400) {
+      if (res === 500) {
         toast.error('Ошибка! Попробуйте еще раз', {
           theme: 'dark',
         });
       }
-    } else {
+    } else if (addFaq) {
       const data: TFaq = {
         uuid: uuid(),
         question,
         description,
       };
       // Add entry
-      const res = await handleAddEntry('faq', data);
+      const validFaq = await toast.promise(
+        insertFaqSchema.parseAsync(data),
+        {
+          pending: 'Проверяю данный...',
+          success: 'Данные корректны 👍',
+          error: {
+            render({ data }) {
+              const error = data as ZodError;
+              return <ToastCustomError error={error} />;
+            },
+          },
+        },
+        toastConfig,
+      );
 
-      if (res.status === 200) {
+      const res = await toast.promise(addFaq(validFaq), getPromiseTextAdd('faq'), toastConfig);
+
+      if (res === 200) {
         setQuestion('Еще какие нибудь вопросы есть?)');
         setDescription(defaultDescription);
       }
-      if (res.status === 500 || res.status === 400) {
+      if (res === 500) {
         toast.error('Ошибка! Попробуйте еще раз', {
           theme: 'dark',
         });

@@ -1,16 +1,20 @@
 'use client';
 import { ChangeEvent, useEffect, useState } from 'react';
 import Button from '@/components/buttons/button';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import { InputExternalState, TextAreaExternalState } from '@/components/input/InputExternalState';
 import { TFutureEvents, insertFutureEventsSchema } from '@/db/schemas';
 import { v4 as uuid } from 'uuid';
 import EventCard from '@/components/future-events/event-card/EventCard';
 import { formatDateToString } from '@/utils/formatDataToString';
-import { handleAddEntry } from '@/utils/handleAddEntry';
+import { getPromiseTextAdd, getPromiseTextEdit, toastConfig } from '@/utils/toast/toastConfig';
+import { ZodError } from 'zod';
+import ToastCustomError from '../ToastCustomError';
 
 interface IReviewProps {
   dbData?: TFutureEvents;
+  updateFutureEvent?: (data: any) => Promise<number>;
+  addFutureEvent?: (data: any) => Promise<number>;
 }
 const millisecondsPerDay = 1000 * 60 * 60 * 24;
 const defaultEventName = 'Лучшие событие года';
@@ -24,7 +28,7 @@ const defaultEventStart = '2022-12-12';
 const defaultEventEnd = '2022-12-12';
 const defaultEventEndMoreThanStart = '2022-12-20';
 
-const FutureEvent = ({ dbData }: IReviewProps) => {
+const FutureEvent = ({ dbData, updateFutureEvent, addFutureEvent }: IReviewProps) => {
   const [eventName, setEventName] = useState<string>(dbData?.eventName ?? defaultEventName);
   const [description, setDescription] = useState<string>(dbData?.description ?? defaultEventDescription);
   const [age, setAge] = useState<string>(dbData?.age ?? defaultAge);
@@ -80,23 +84,79 @@ const FutureEvent = ({ dbData }: IReviewProps) => {
     const eventS = new Date(eventStart);
     const eventE = new Date(eventEnd);
 
-    const data: TFutureEvents = {
-      uuid: uuid(),
-      eventName,
-      description,
-      age,
-      participants,
-      totalSpots,
-      eventStart: eventS,
-      eventEnd: eventE,
-      durationLongerThanDay,
-      price,
-    };
-
-    if (dbData === undefined) {
-      const res = await handleAddEntry('futureEvents', data);
-
-      if (res.status === 200) {
+    if (dbData && updateFutureEvent) {
+      const data: TFutureEvents = {
+        uuid: dbData.uuid,
+        eventName,
+        description,
+        age,
+        participants,
+        totalSpots,
+        eventStart: eventS,
+        eventEnd: eventE,
+        durationLongerThanDay,
+        price,
+      };
+      const validFutureEvent = await toast.promise(
+        insertFutureEventsSchema.parseAsync(data),
+        {
+          pending: 'Проверяю данный...',
+          success: 'Данные корректны 👍',
+          error: {
+            render({ data }) {
+              const error = data as ZodError;
+              return <ToastCustomError error={error} />;
+            },
+          },
+        },
+        toastConfig,
+      );
+      const res = await toast.promise(
+        updateFutureEvent(validFutureEvent),
+        getPromiseTextEdit('futureEvents'),
+        toastConfig,
+      );
+      if (res === 200) {
+        console.log('success');
+      }
+      if (res === 500) {
+        toast.error('Ошибка! Попробуйте еще раз', {
+          theme: 'dark',
+        });
+      }
+    } else if (addFutureEvent) {
+      const data: TFutureEvents = {
+        uuid: uuid(),
+        eventName,
+        description,
+        age,
+        participants,
+        totalSpots,
+        eventStart: eventS,
+        eventEnd: eventE,
+        durationLongerThanDay,
+        price,
+      };
+      const validFutureEvent = await toast.promise(
+        insertFutureEventsSchema.parseAsync(data),
+        {
+          pending: 'Проверяю данный...',
+          success: 'Данные корректны 👍',
+          error: {
+            render({ data }) {
+              const error = data as ZodError;
+              return <ToastCustomError error={error} />;
+            },
+          },
+        },
+        toastConfig,
+      );
+      const res = await toast.promise(
+        addFutureEvent(validFutureEvent),
+        getPromiseTextAdd('futureEvents'),
+        toastConfig,
+      );
+      if (res === 200) {
         setEventName(defaultEventName);
         setDescription(defaultEventDescription);
         setAge(defaultAge);
@@ -107,14 +167,11 @@ const FutureEvent = ({ dbData }: IReviewProps) => {
         setDurationLongerThanDay(false);
         setPrice(defaultPrice);
       }
-      if (res.status === 500 || res.status === 400) {
+      if (res === 500) {
         toast.error('Ошибка! Попробуйте еще раз', {
           theme: 'dark',
         });
       }
-    } else {
-      // Update entry
-      console.log('need to update');
     }
   };
 
@@ -226,7 +283,9 @@ const FutureEvent = ({ dbData }: IReviewProps) => {
 
   return (
     <>
-      <h1 className='mb-8 text-center text-4xl'>Добавление нового отзыва</h1>
+      <h1 className='mb-8 text-center text-4xl'>
+        {dbData === undefined ? 'Добавление нового отзыва' : 'Обновление отзыва'}
+      </h1>
       <div className='flex w-full flex-col flex-nowrap items-center justify-center gap-10 p-2 md:flex-row '>
         <form
           className='z-50 order-2 flex w-full min-w-[300px] max-w-[600px] flex-col items-start justify-start rounded-xl bg-violet-200 p-4'
@@ -314,7 +373,7 @@ const FutureEvent = ({ dbData }: IReviewProps) => {
               disabled={eventStart === defaultEventStart || eventEnd === defaultEventEnd}
               className='my-6 place-self-center '
             >
-              Добавить новый отзыв
+              {dbData === undefined ? 'Добавить новый отзыв' : 'Обновить отзыва'}
             </Button>
           </div>
         </form>

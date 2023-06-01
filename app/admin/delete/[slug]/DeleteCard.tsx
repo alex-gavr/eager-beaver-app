@@ -1,5 +1,6 @@
 'use client';
 import Button from '@/components/buttons/button';
+import { toastConfig } from '@/utils/toast/toastConfig';
 import { ToastContentProps, toast } from 'react-toastify';
 
 const DeleteCard = ({
@@ -16,13 +17,13 @@ const DeleteCard = ({
       toastId: 'handlePrompt',
       autoClose: false,
       closeButton: false,
-      theme: 'dark'
+      theme: 'dark',
     });
   };
 
   return (
     <>
-      <div className='flex w-full min-w-[280px] max-w-xl flex-row items-center justify-between gap-4 rounded-xl border border-slate-400 bg-gradient-to-bl from-fuchsia-200 to-violet-100 p-4 shadow-md'>
+      <div className='flex w-full min-w-[280px] max-w-lg flex-row items-center justify-between gap-4 rounded-xl border border-slate-400 bg-gradient-to-bl from-fuchsia-200 to-violet-100 p-4 shadow-md'>
         <p className='lg:text-2xl'>{heading}</p>
         <Button variant={'danger'} onClick={handlePrompt}>
           delete
@@ -40,16 +41,20 @@ interface IConfirmationProps extends Partial<ToastContentProps> {
 }
 const Confirmation = ({ closeToast, deleteItem, uuid }: IConfirmationProps) => {
   const handleDelete = async () => {
-    await toast.promise(deleteItem(uuid), {
-      pending: 'Удаляем...',
-      success: 'Успешно удалено!',
-      error: 'Ошибка 🤯',
-    });
+    await toast.promise(
+      deleteItem(uuid),
+      {
+        pending: 'Удаляем...',
+        success: 'Успешно удалено!',
+        error: 'Ошибка 🤯',
+      },
+      toastConfig,
+    );
   };
 
   return (
     <div className='flex flex-col items-center justify-center gap-4 '>
-      <p className='lg:text-2xl text-white'>Точно удаляем? 😁</p>
+      <p className='text-white lg:text-2xl'>Точно удаляем? 😁</p>
       <div className='flex w-full flex-row items-center justify-evenly gap-2'>
         <Button
           size={'sm'}
@@ -63,7 +68,7 @@ const Confirmation = ({ closeToast, deleteItem, uuid }: IConfirmationProps) => {
           size={'sm'}
           variant={'secondaryGhost'}
           onClick={closeToast}
-          className='px-6 lg:text-base 2xl:text-base text-white'
+          className='px-6 text-white lg:text-base 2xl:text-base'
         >
           Нет, не надо
         </Button>

@@ -9,9 +9,14 @@ import 'react-toastify/dist/ReactToastify.css';
 import { InputExternalState, TextAreaExternalState } from '@/components/input/InputExternalState';
 import { TTeachers, insertTeacherSchema } from '@/db/schemas';
 import { v4 as uuid } from 'uuid';
+import { getPromiseTextAdd, getPromiseTextEdit, toastConfig } from '@/utils/toast/toastConfig';
+import { ZodError } from 'zod';
+import ToastCustomError from '../ToastCustomError';
 
 interface ITeacherProps {
   dbData?: TTeachers;
+  updateTeacher?: (data: any) => Promise<number>;
+  addTeacher?: (data: any) => Promise<number>;
 }
 
 const defaultName = 'Валерия Евстратова';
@@ -19,7 +24,7 @@ const defaultDescription =
   'Руководитель школы, преподаватель английского и китайского языков. Стаж работы: 6 лет. Валерия может заинтересовать любого ученика. На её занятиях дети всегда сконцентрированы и внимательны.';
 const defaultImage = 'https://uploadthing.com/f/dce2908f-3242-4484-a512-24b3a04ad8c4_lera.webp';
 
-const Teacher = ({ dbData }: ITeacherProps) => {
+const Teacher = ({ dbData, updateTeacher, addTeacher }: ITeacherProps) => {
   const [name, setName] = useState(dbData?.fullName ?? defaultName);
   const [description, setDescription] = useState(dbData?.description ?? defaultDescription);
   const [preview, setPreview] = useState(dbData?.image ?? defaultImage);
@@ -35,55 +40,75 @@ const Teacher = ({ dbData }: ITeacherProps) => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const data: TTeachers = {
-      uuid: uuid(),
-      fullName: name,
-      description,
-      image: preview,
-    };
-
-    const validatedDate = await toast.promise(
-      insertTeacherSchema.parseAsync(data),
-      {
-        pending: 'Проверяю данный...',
-        success: 'Данные корректны 👍',
-        error: 'Ошибка 🤯',
-      },
-      {
-        autoClose: 5000,
-        theme: 'dark',
-      },
-    );
-
-    const options = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: process.env.NEXT_PUBLIC_API_ROUTE_SECRET,
-      },
-      body: JSON.stringify(validatedDate),
-    };
-
-    const res = await toast
-      .promise(
-        fetch('/api/admin/add/teacher', options),
+    if (dbData && updateTeacher) {
+      const data: TTeachers = {
+        uuid: dbData.uuid,
+        fullName: name,
+        description,
+        image: preview,
+      };
+      const validTeacher = await toast.promise(
+        insertTeacherSchema.parseAsync(data),
         {
-          pending: 'Добавляем учителя...',
-          success: 'Успех! Учитель добавлен 🥰',
-          error: 'Ошибка 🤯',
+          pending: 'Проверяю данный...',
+          success: 'Данные корректны 👍',
+          error: {
+            render({ data }) {
+              const error = data as ZodError;
+              return <ToastCustomError error={error} />;
+            },
+          },
         },
-        {
-          autoClose: 5000,
+        toastConfig,
+      );
+
+      const res = await toast.promise(
+        updateTeacher(validTeacher),
+        getPromiseTextEdit('teachers'),
+        toastConfig,
+      );
+      if (res === 200) {
+        console.log('success');
+      }
+      if (res === 500) {
+        toast.error('Ошибка! Попробуйте еще раз', {
           theme: 'dark',
-        },
-      )
-      .then((res) => res.json());
+        });
+      }
+    } else if (addTeacher) {
+      const data: TTeachers = {
+        uuid: uuid(),
+        fullName: name,
+        description,
+        image: preview,
+      };
 
-    console.log(res);
-    if (res.status === 200) {
-      setName('Еще кого нибудь добавим или хватит?');
-      setDescription(defaultDescription);
-      setPreview(defaultImage);
+      const validTeacher = await toast.promise(
+        insertTeacherSchema.parseAsync(data),
+        {
+          pending: 'Проверяю данный...',
+          success: 'Данные корректны 👍',
+          error: {
+            render({ data }) {
+              const error = data as ZodError;
+              return <ToastCustomError error={error} />;
+            },
+          },
+        },
+        toastConfig,
+      );
+
+      const res = await toast.promise(addTeacher(validTeacher), getPromiseTextAdd('teachers'), toastConfig);
+      if (res === 200) {
+        setName('Еще кого нибудь добавим или хватит?');
+        setDescription(defaultDescription);
+        setPreview(defaultImage);
+      }
+      if (res === 500) {
+        toast.error('Ошибка! Попробуйте еще раз', {
+          theme: 'dark',
+        });
+      }
     }
   };
 
@@ -112,7 +137,10 @@ const Teacher = ({ dbData }: ITeacherProps) => {
 
   return (
     <>
-      <h1 className='mb-8 text-center text-4xl'> {dbData === undefined ? 'Добавление нового учителя' : `Редактирование учителя`}</h1>
+      <h1 className='mb-8 text-center text-4xl'>
+        {' '}
+        {dbData === undefined ? 'Добавление нового учителя' : `Редактирование учителя`}
+      </h1>
       <div className='flex w-full flex-col flex-nowrap items-center justify-center gap-10 p-2 md:flex-row'>
         <form
           className='order-2 flex h-full w-full min-w-[300px] max-w-[400px] flex-1 flex-col items-start justify-start rounded-xl bg-violet-200'

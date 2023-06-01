@@ -7,11 +7,15 @@ import { toast } from 'react-toastify';
 import { InputExternalState, TextAreaExternalState } from '@/components/input/InputExternalState';
 import { IEventsData, Images, TThematicEvents, insertThematicEventsSchema } from '@/db/schemas';
 import { v4 as uuid } from 'uuid';
-import { TwoColumns } from '@/components/home/thematic-events/two-columns';
-import { handleAddEntry } from '@/utils/handleAddEntry';
+import TwoColumnsNoAni from '@/components/home/thematic-events/twoColNoAni';
+import { getPromiseTextAdd, getPromiseTextEdit, toastConfig } from '@/utils/toast/toastConfig';
+import { ZodError } from 'zod';
+import ToastCustomError from '../ToastCustomError';
 
 interface IThematicEventProps {
   dbData?: IEventsData;
+  updateThematicEvent?: (data: any) => Promise<number>;
+  addThematicEvent?: (data: any) => Promise<number>;
 }
 const defaultHeading = 'New Thematic Event!';
 const defaultParagraph = 'Create a new Thematic Event!';
@@ -28,7 +32,7 @@ const defaultImages = [
   },
 ];
 
-const ThematicEvent = ({ dbData }: IThematicEventProps) => {
+const ThematicEvent = ({ dbData, updateThematicEvent, addThematicEvent }: IThematicEventProps) => {
   const [heading, setHeading] = useState<string>(dbData?.heading ?? defaultHeading);
   const [paragraph, setParagraph] = useState<string>(dbData?.paragraph ?? defaultParagraph);
   const [images, setImages] = useState<Array<Images>>(dbData?.images ?? defaultImages);
@@ -37,33 +41,89 @@ const ThematicEvent = ({ dbData }: IThematicEventProps) => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const imagesToPass = JSON.stringify(images);
+    if (dbData && updateThematicEvent) {
+      const imagesToPass = JSON.stringify(images);
+      const data: TThematicEvents = {
+        uuid: dbData.uuid,
+        heading,
+        paragraph,
+        images: imagesToPass,
+        imageSide,
+      };
 
-    const data: TThematicEvents = {
-      uuid: uuid(),
-      heading,
-      paragraph,
-      images: imagesToPass,
-      imageSide,
-    };
+      const validThematicEvent = await toast.promise(
+        insertThematicEventsSchema.parseAsync(data),
+        {
+          pending: 'Проверяю данный...',
+          success: 'Данные корректны 👍',
+          error: {
+            render({ data }) {
+              const error = data as ZodError;
+              return <ToastCustomError error={error} />;
+            },
+          },
+        },
+        toastConfig,
+      );
 
-    if (dbData === undefined) {
-      const res = await handleAddEntry('thematicEvents', data);
+      // Update entry
+      const res = await toast.promise(
+        updateThematicEvent(validThematicEvent),
+        getPromiseTextEdit('futureEvents'),
+        toastConfig,
+      );
 
-      if (res.status === 200) {
+      if (res === 200) {
+        console.log('success');
+      }
+      if (res === 500) {
+        toast.error('Ошибка! Попробуйте еще раз', {
+          theme: 'dark',
+        });
+      }
+    } else if (addThematicEvent) {
+      const imagesToPass = JSON.stringify(images);
+      const data: TThematicEvents = {
+        uuid: uuid(),
+        heading,
+        paragraph,
+        images: imagesToPass,
+        imageSide,
+      };
+      // const res = await handleAddEntry('thematicEvents', data);
+
+      const validThematicEvent = await toast.promise(
+        insertThematicEventsSchema.parseAsync(data),
+        {
+          pending: 'Проверяю данный...',
+          success: 'Данные корректны 👍',
+          error: {
+            render({ data }) {
+              const error = data as ZodError;
+              return <ToastCustomError error={error} />;
+            },
+          },
+        },
+        toastConfig,
+      );
+
+      const res = await toast.promise(
+        addThematicEvent(validThematicEvent),
+        getPromiseTextAdd('futureEvents'),
+        toastConfig,
+      );
+
+      if (res === 200) {
         setHeading(defaultHeading);
         setParagraph(defaultParagraph);
         setImages(defaultImages);
         setImageSide(defaultImageSide);
       }
-      if (res.status === 500 || res.status === 400) {
+      if (res === 500) {
         toast.error('Ошибка! Попробуйте еще раз', {
           theme: 'dark',
         });
       }
-    } else {
-      // Update entry
-      console.log('need to update');
     }
   };
 
@@ -88,6 +148,7 @@ const ThematicEvent = ({ dbData }: IThematicEventProps) => {
       label: 'Слева',
       name: 'imageSide',
       type: 'radio',
+      defaultChecked: imageSide === 'left' ? true : false,
       // value: imageSide,
       onChange: () => setImageSide('left'),
     },
@@ -96,6 +157,7 @@ const ThematicEvent = ({ dbData }: IThematicEventProps) => {
       label: 'Справа',
       name: 'imageSide',
       type: 'radio',
+      defaultChecked: imageSide === 'right' ? true : false,
       // value: imageSide,
       onChange: () => setImageSide('right'),
     },
@@ -118,7 +180,7 @@ const ThematicEvent = ({ dbData }: IThematicEventProps) => {
     <>
       <h1 className='mb-8 text-center text-4xl'>
         {' '}
-        {dbData ? 'Добавление нового тематического мероприятия' : 'Изменение мероприятия'}
+        {dbData === undefined ? 'Добавление нового тематического мероприятия' : 'Изменение мероприятия'}
       </h1>
       <div className='flex w-full flex-col flex-nowrap items-center justify-center gap-10 p-2 md:flex-row'>
         <form
@@ -151,6 +213,7 @@ const ThematicEvent = ({ dbData }: IThematicEventProps) => {
                     onChange={radio.onChange}
                     key={radio.id}
                     id={radio.name}
+                    defaultChecked={radio.defaultChecked}
                   />
                 ))}
               </div>
@@ -199,11 +262,11 @@ const ThematicEvent = ({ dbData }: IThematicEventProps) => {
           </div>
 
           <Button disabled={false} className='my-6 place-self-center'>
-            {dbData ? 'Добавить' : 'Изменить'}
+            {dbData === undefined ? 'Добавить' : 'Изменить'}
           </Button>
         </form>
         <div className='flex flex-col items-center justify-center rounded-md bg-gray-100 p-4'>
-          <TwoColumns
+          <TwoColumnsNoAni
             heading={heading}
             paragraph={paragraph}
             imageSide={imageSide}

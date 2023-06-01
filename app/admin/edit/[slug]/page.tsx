@@ -65,7 +65,7 @@ const DeletionOptions = ({ data, params }: TDeletionOptionsProps) => {
       <div className='flex w-full flex-row flex-wrap items-center justify-center gap-4 p-10'>
         {data.map((item) => (
           <div
-            className='flex w-full max-w-xl flex-row items-center justify-between rounded-xl bg-gradient-to-tl from-violet-800 to-fuchsia-900 p-4'
+            className='flex w-full max-w-lg flex-row items-center justify-between rounded-xl bg-gradient-to-tl from-violet-800 to-fuchsia-900 p-4'
             key={item.uuid}
           >
             <p className=' text-white lg:text-2xl'>{item.name}</p>

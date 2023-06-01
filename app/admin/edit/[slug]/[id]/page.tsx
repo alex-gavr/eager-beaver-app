@@ -58,7 +58,7 @@ const Page = async ({ params, searchParams }: IServerProps) => {
 
     return (
       <div className='flex min-h-[90vh] w-full flex-col items-center justify-center'>
-        <Teacher dbData={data[0]} />
+        <Teacher dbData={data[0]} updateTeacher={updateTeacher} />
       </div>
     );
   }
@@ -124,7 +124,7 @@ const Page = async ({ params, searchParams }: IServerProps) => {
 
     return (
       <div className='flex min-h-[90vh] w-full flex-col items-center justify-center'>
-        <FutureEvent dbData={data[0]} />
+        <FutureEvent dbData={data[0]} updateFutureEvent={updateFutureEvent} />
       </div>
     );
   }
@@ -159,7 +159,7 @@ const Page = async ({ params, searchParams }: IServerProps) => {
 
     return (
       <div className='flex min-h-[90vh] w-full flex-col items-center justify-center'>
-        <Pricing dbData={data[0]} />
+        <Pricing dbData={data[0]} updatePrice={updatePrice} />
       </div>
     );
   }
@@ -193,7 +193,7 @@ const Page = async ({ params, searchParams }: IServerProps) => {
 
     return (
       <div className='flex min-h-[90vh] w-full flex-col items-center justify-center'>
-        <Review dbData={data[0]} />
+        <Review dbData={data[0]} updateReview={updateReview} />
       </div>
     );
   }
@@ -233,7 +233,7 @@ const Page = async ({ params, searchParams }: IServerProps) => {
 
     return (
       <div className='flex min-h-[90vh] w-full flex-col items-center justify-center'>
-        <ThematicEvent dbData={d} />
+        <ThematicEvent dbData={d} updateThematicEvent={updateThematicEvent} />
       </div>
     );
   }
