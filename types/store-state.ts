@@ -7,14 +7,6 @@ export interface IButtonState {
     submitIntention: boolean;
 }
 
-export interface ITelegram extends LoadingAndError {
-    submitSuccess: boolean | null;
-    submitError: boolean | null;
-    locationSubmitted: boolean | null;
-    enrolledToFutureEvent: boolean | null;
-}
-
-
 export interface INavigationState{
     footerVisible: boolean;
     headerVisible: boolean;

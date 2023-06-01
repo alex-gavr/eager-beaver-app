@@ -1,78 +1,72 @@
 'use client';
 import { SetStateAction, useState } from 'react';
 import Button from '@/components/buttons/button';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { InputExternalState, TextAreaExternalState } from '@/components/input/InputExternalState';
 import { TFaq, insertFaqSchema } from '@/db/schemas';
 import { v4 as uuid } from 'uuid';
 import FAQComponent from '@/components/faq/faq-component';
+import { handleAddEntry } from '@/utils/handleAddEntry';
+import { getPromiseTextEdit, toastConfig, toastDataValidationTexts } from '@/utils/toast/toastConfig';
 
-interface ITeacherProps {}
+interface IFaqProps {
+  dbData?: TFaq;
+  updateFaq?: (data: any) => Promise<number>;
+}
 
 const defaultQuestion = 'Какой-нибудь заумный вопрос';
 const defaultDescription =
   'Руководитель школы, преподаватель английского и китайского языков. Стаж работы: 6 лет. Валерия может заинтересовать любого ученика. На её занятиях дети всегда сконцентрированы и внимательны.';
 
-const Faq = ({}: ITeacherProps) => {
-  const [question, setQuestion] = useState<string>(defaultQuestion);
-  const [description, setDescription] = useState<string>(defaultDescription);
+const Faq = ({ dbData, updateFaq }: IFaqProps) => {
+  const [question, setQuestion] = useState<string>(dbData?.question ?? defaultQuestion);
+  const [description, setDescription] = useState<string>(dbData?.description ?? defaultDescription);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    const data: TFaq = {
-      uuid: uuid(),
-      question,
-      description,
-    };
+    if (dbData && updateFaq) {
+      const data: TFaq = {
+        uuid: dbData.uuid,
+        question,
+        description,
+      };
+      
+      const validFaq = await toast.promise(
+        insertFaqSchema.parseAsync(data),
+        toastDataValidationTexts,
+        toastConfig,
+      );
+      // Update entry
+      const res = await toast.promise(updateFaq(validFaq), getPromiseTextEdit('faq'), toastConfig);
 
-    const validatedDate = await toast.promise(
-      insertFaqSchema.parseAsync(data),
-      {
-        pending: 'Проверяю данный...',
-        success: 'Данные корректны 👍',
-        error: 'Ошибка 🤯',
-      },
-      {
-        autoClose: 5000,
-        theme: 'dark',
-      },
-    );
-
-    const options = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: process.env.NEXT_PUBLIC_API_ROUTE_SECRET,
-      },
-      body: JSON.stringify(validatedDate),
-    };
-
-    const res = await toast
-      .promise(
-        fetch('/api/admin/add/faq', options),
-        {
-          pending: 'Добавляем faq...',
-          success: 'Успех! Вопрос и ответ добавлен 🥰',
-          error: 'Ошибка 🤯',
-        },
-        {
-          autoClose: 5000,
+      if (res === 200) {
+        console.log('success');
+      }
+      if (res === 500 || res === 400) {
+        toast.error('Ошибка! Попробуйте еще раз', {
           theme: 'dark',
-        },
-      )
-      .then((res) => res.json());
+        });
+      }
+    } else {
+      const data: TFaq = {
+        uuid: uuid(),
+        question,
+        description,
+      };
+      // Add entry
+      const res = await handleAddEntry('faq', data);
 
-    console.log(res);
-    if (res.status === 200) {
-      setQuestion('Еще какие нибудь вопросы есть?)');
-      setDescription(defaultDescription);
-    }
-    if (res.status === 500 || res.status === 400) {
-      toast.error('Ошибка! Попробуйте еще раз', {
-        theme: 'dark',
-      });
+      if (res.status === 200) {
+        setQuestion('Еще какие нибудь вопросы есть?)');
+        setDescription(defaultDescription);
+      }
+      if (res.status === 500 || res.status === 400) {
+        toast.error('Ошибка! Попробуйте еще раз', {
+          theme: 'dark',
+        });
+      }
     }
   };
 
@@ -104,7 +98,9 @@ const Faq = ({}: ITeacherProps) => {
 
   return (
     <>
-      <h1 className='mb-8 text-center text-4xl'>Добавление нового учителя</h1>
+      <h1 className='mb-8 text-center text-4xl'>
+        {dbData === undefined ? 'Добавление нового FAQ' : 'Корректирование FAQ'}
+      </h1>
       <div className='flex w-full flex-col flex-nowrap items-center justify-center gap-10 p-2 md:flex-row '>
         <form
           className='z-50 order-2 flex w-full min-w-[300px] max-w-[400px] flex-col items-start justify-start rounded-xl bg-violet-200 p-4'
@@ -137,7 +133,7 @@ const Faq = ({}: ITeacherProps) => {
             );
           })}
           <Button variant={'primary'} disabled={false} className='my-6 place-self-center'>
-            Добавить новый вопрос / ответ
+            {dbData === undefined ? 'Добавить новый FAQ' : 'Корректировать FAQ'}
           </Button>
         </form>
         <div className='flex w-full flex-col items-center justify-center'>

@@ -11,7 +11,10 @@ export const metadata: Metadata = {
 };
 
 export interface IServerProps {
-  params: { slug: string };
+  params: {
+    slug: 'futureEvents' | 'teachers' | 'reviews' | 'thematicEvents' | 'prices' | 'faq';
+    id: string;
+  };
   searchParams: { [key: string]: string | string[] | undefined };
 }
 

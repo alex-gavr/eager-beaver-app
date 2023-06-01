@@ -8,19 +8,25 @@ import { ReviewCard } from '@/components/review-card/review-card';
 import { InputExternalState, TextAreaExternalState } from '@/components/input/InputExternalState';
 import { TReviews, insertReviewSchema } from '@/db/schemas';
 import { v4 as uuid } from 'uuid';
+import { handleAddEntry } from '@/utils/handleAddEntry';
 
-interface IReviewProps {}
+interface IReviewProps {
+  dbData?: TReviews;
+}
 const defaultImage = 'https://uploadthing.com/f/dce2908f-3242-4484-a512-24b3a04ad8c4_lera.webp';
 const defaultName = 'Валерия Евстратова';
+const defaultParentName = 'Мамуля и папуля';
 const defaultReview =
   'Руководитель школы, преподаватель английского и китайского языков. Стаж работы: 6 лет. Валерия может заинтересовать любого ученика. На её занятиях дети всегда сконцентрированы и внимательны.';
 
-const Review = ({}: IReviewProps) => {
-  const [childName, setChildName] = useState<string>(defaultName);
-  const [parentName, setParentName] = useState<string>('Мама и папа');
-  const [relationToChild, setRelationToChild] = useState<string>('Мама и папа');
-  const [review, setReview] = useState<string>(defaultReview);
-  const [image, setImage] = useState<string>('');
+const Review = ({ dbData }: IReviewProps) => {
+  const [childName, setChildName] = useState<string>(dbData?.childName ?? defaultName);
+  const [parentName, setParentName] = useState<string>(dbData?.childName ?? defaultParentName);
+  const [relationToChild, setRelationToChild] = useState<string>(
+    dbData?.relationToChild ?? defaultParentName,
+  );
+  const [review, setReview] = useState<string>(dbData?.relationToChild ?? defaultReview);
+  const [image, setImage] = useState<string>(dbData?.image ?? defaultImage);
 
   // const [success, setSuccess] = useState<boolean | null>(null);
   // const [error, setError] = useState<boolean | null>(null);
@@ -39,47 +45,24 @@ const Review = ({}: IReviewProps) => {
       image,
     };
 
-    const validatedDate = await toast.promise(
-      insertReviewSchema.parseAsync(data),
-      {
-        pending: 'Проверяю данный...',
-        success: 'Данные подходят 👍',
-        error: 'Ошибка 🤯',
-      },
-      {
-        autoClose: 5000,
-        theme: 'dark',
-      },
-    );
+    if (dbData === undefined) {
+      const res = await handleAddEntry('reviews', data);
 
-    const options = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: process.env.NEXT_PUBLIC_API_ROUTE_SECRET,
-      },
-      body: JSON.stringify(validatedDate),
-    };
-
-    const res = await toast
-      .promise(
-        fetch('/api/admin/add/review', options),
-        {
-          pending: 'Добавляем отзыв...',
-          success: 'Успех! Отзыв добавлен 🥰',
-          error: 'Ошибка 🤯',
-        },
-        {
-          autoClose: 5000,
+      if (res.status === 200) {
+        setChildName(defaultName);
+        setParentName(defaultParentName);
+        setRelationToChild(defaultParentName);
+        setReview(defaultReview);
+        setImage(defaultImage);
+      }
+      if (res.status === 500 || res.status === 400) {
+        toast.error('Ошибка! Попробуйте еще раз', {
           theme: 'dark',
-        },
-      )
-      .then((res) => res.json());
-
-    if (res.status === 200) {
-      setChildName('Еще кого нибудь добавим или хватит?');
-      setReview(defaultReview);
-      setImage(defaultImage);
+        });
+      }
+    } else {
+      // Update entry
+      console.log('need to update');
     }
   };
 
@@ -128,7 +111,10 @@ const Review = ({}: IReviewProps) => {
 
   return (
     <>
-      <h1 className='mb-8 text-center text-4xl'>Добавление нового отзыва</h1>
+      <h1 className='mb-8 text-center text-4xl'>
+        {' '}
+        {dbData ? 'Добавление нового отзыва' : 'Изменение отзыва'}
+      </h1>
       <div className='flex w-full flex-col flex-nowrap items-center justify-center gap-10 p-2 md:flex-row '>
         <form
           className='order-2 col-span-3 flex h-full w-full min-w-[300px] max-w-[400px] flex-1 flex-col items-start justify-start overflow-y-auto rounded-xl bg-violet-200'
@@ -180,10 +166,10 @@ const Review = ({}: IReviewProps) => {
             />
           </div>
           <Button variant={'primary'} disabled={image.length === 0} className='my-6 place-self-center'>
-            Добавить новый отзыв
+            {dbData ? 'Добавить новый отзыв' : 'Изменить отзыв'}
           </Button>
         </form>
-        <div className='flex flex-1 flex-col items-center justify-center'>
+        <div className='flex flex-1 flex-col items-center justify-center max-w-3xl'>
           <ReviewCard
             image={image ? image : defaultImage}
             name={childName}

@@ -1,26 +1,28 @@
 'use client';
 import TeacherCard from '@/components/teacher-card/teacher-card';
-import { ChangeEvent, SetStateAction, useMemo, useState } from 'react';
+import { SetStateAction, useMemo, useState } from 'react';
 import { UploadButton } from '@uploadthing/react';
 import { OurFileRouter } from '@/app/api/uploadthing/core';
 import Button from '@/components/buttons/button';
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { InputExternalState, TextAreaExternalState } from '@/components/input/InputExternalState';
 import { TTeachers, insertTeacherSchema } from '@/db/schemas';
 import { v4 as uuid } from 'uuid';
 
-interface ITeacherProps {}
+interface ITeacherProps {
+  dbData?: TTeachers;
+}
 
 const defaultName = 'Валерия Евстратова';
 const defaultDescription =
   'Руководитель школы, преподаватель английского и китайского языков. Стаж работы: 6 лет. Валерия может заинтересовать любого ученика. На её занятиях дети всегда сконцентрированы и внимательны.';
+const defaultImage = 'https://uploadthing.com/f/dce2908f-3242-4484-a512-24b3a04ad8c4_lera.webp';
 
-const Teacher = ({}: ITeacherProps) => {
-  const [name, setName] = useState<string>(defaultName);
-  const [description, setDescription] = useState<string>(defaultDescription);
-  const [preview, setPreview] = useState<string>('');
-  const defaultImage = 'https://uploadthing.com/f/dce2908f-3242-4484-a512-24b3a04ad8c4_lera.webp';
+const Teacher = ({ dbData }: ITeacherProps) => {
+  const [name, setName] = useState(dbData?.fullName ?? defaultName);
+  const [description, setDescription] = useState(dbData?.description ?? defaultDescription);
+  const [preview, setPreview] = useState(dbData?.image ?? defaultImage);
 
   const imageToDisplay = useMemo(() => {
     if (preview) {
@@ -110,8 +112,8 @@ const Teacher = ({}: ITeacherProps) => {
 
   return (
     <>
-      <h1 className='mb-8 text-center text-4xl'>Добавление нового учителя</h1>
-      <div className='flex w-full flex-col flex-nowrap items-center justify-center gap-10 p-2 md:flex-row '>
+      <h1 className='mb-8 text-center text-4xl'> {dbData === undefined ? 'Добавление нового учителя' : `Редактирование учителя`}</h1>
+      <div className='flex w-full flex-col flex-nowrap items-center justify-center gap-10 p-2 md:flex-row'>
         <form
           className='order-2 flex h-full w-full min-w-[300px] max-w-[400px] flex-1 flex-col items-start justify-start rounded-xl bg-violet-200'
           onSubmit={handleSubmit}
@@ -161,7 +163,7 @@ const Teacher = ({}: ITeacherProps) => {
             />
           </div>
           <Button variant={'primary'} disabled={preview.length === 0} className='my-6 place-self-center'>
-            Добавить нового учителя
+            {dbData === undefined ? 'Добавить нового учителя ' : 'Редактировать учителя'}
           </Button>
         </form>
         <div className='flex flex-1 flex-col items-center justify-center'>

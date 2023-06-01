@@ -6,8 +6,12 @@ import { InputExternalState, TextAreaExternalState } from '@/components/input/In
 import { TFutureEvents, insertFutureEventsSchema } from '@/db/schemas';
 import { v4 as uuid } from 'uuid';
 import EventCard from '@/components/future-events/event-card/EventCard';
+import { formatDateToString } from '@/utils/formatDataToString';
+import { handleAddEntry } from '@/utils/handleAddEntry';
 
-interface IReviewProps {}
+interface IReviewProps {
+  dbData?: TFutureEvents;
+}
 const millisecondsPerDay = 1000 * 60 * 60 * 24;
 const defaultEventName = 'Лучшие событие года';
 const defaultEventDescription =
@@ -16,22 +20,30 @@ const defaultAge = 'от 6 лет';
 const defaultParticipants = 0;
 const defaultSpots = 8;
 const defaultPrice = '5000 рублей';
-const defaultEventStart = '2022/12/12';
-const defaultEventEnd = '2022/12/12';
-const defaultEventEndMoreThanStart = '2022/12/20';
+const defaultEventStart = '2022-12-12';
+const defaultEventEnd = '2022-12-12';
+const defaultEventEndMoreThanStart = '2022-12-20';
 
-const Event = ({}: IReviewProps) => {
-  const [eventName, setEventName] = useState<string>(defaultEventName);
-  const [description, setDescription] = useState<string>(defaultEventDescription);
-  const [age, setAge] = useState<string>(defaultAge);
-  const [participants, setParticipants] = useState<number>(defaultParticipants);
-  const [totalSpots, setTotalSpots] = useState<number>(defaultSpots);
-  const [durationLongerThanDay, setDurationLongerThanDay] = useState<boolean>(false);
-  const [eventStart, setEventStart] = useState<string>(defaultEventStart);
-  const [evenStartDate, setEventStartDate] = useState<Date>(new Date(eventStart));
-  const [eventEnd, setEventEnd] = useState<string>(defaultEventEnd);
-  const [eventEndDate, setEventEndDate] = useState<Date>(new Date(eventEnd));
-  const [price, setPrice] = useState<string>(defaultPrice);
+const FutureEvent = ({ dbData }: IReviewProps) => {
+  const [eventName, setEventName] = useState<string>(dbData?.eventName ?? defaultEventName);
+  const [description, setDescription] = useState<string>(dbData?.description ?? defaultEventDescription);
+  const [age, setAge] = useState<string>(dbData?.age ?? defaultAge);
+  const [participants, setParticipants] = useState<number>(dbData?.participants ?? defaultParticipants);
+  const [totalSpots, setTotalSpots] = useState<number>(dbData?.totalSpots ?? defaultSpots);
+  const [durationLongerThanDay, setDurationLongerThanDay] = useState<boolean>(
+    dbData?.durationLongerThanDay ?? false,
+  );
+  const [price, setPrice] = useState<string>(dbData?.price ?? defaultPrice);
+
+  const [eventStart, setEventStart] = useState<string>(
+    dbData ? formatDateToString(dbData.eventStart, dbData.durationLongerThanDay) : defaultEventStart,
+  );
+
+  const [evenStartDate, setEventStartDate] = useState<Date>(dbData?.eventStart ?? new Date(eventStart));
+  const [eventEnd, setEventEnd] = useState<string>(
+    dbData ? formatDateToString(dbData.eventEnd, dbData.durationLongerThanDay) : defaultEventEnd,
+  );
+  const [eventEndDate, setEventEndDate] = useState<Date>(dbData?.eventEnd ?? new Date(eventEnd));
 
   useEffect(() => {
     setEventStartDate(new Date(eventStart));
@@ -53,8 +65,8 @@ const Event = ({}: IReviewProps) => {
   const handleToggle = () => {
     if (!durationLongerThanDay) {
       setDurationLongerThanDay(true);
-      setEventStart(defaultEventEndMoreThanStart);
-      setEventEnd(defaultEventEnd);
+      setEventStart(defaultEventStart);
+      setEventEnd(defaultEventEndMoreThanStart);
     }
     if (durationLongerThanDay) {
       setDurationLongerThanDay(false);
@@ -81,58 +93,28 @@ const Event = ({}: IReviewProps) => {
       price,
     };
 
-    const validatedDate = await toast.promise(
-      insertFutureEventsSchema.parseAsync(data),
-      {
-        pending: 'Проверяю данный...',
-        success: 'Данные подходят 👍',
-        error: 'Ошибка 🤯',
-      },
-      {
-        autoClose: 5000,
-        theme: 'dark',
-      },
-    );
+    if (dbData === undefined) {
+      const res = await handleAddEntry('futureEvents', data);
 
-    const options = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: process.env.NEXT_PUBLIC_API_ROUTE_SECRET,
-      },
-      body: JSON.stringify(validatedDate),
-    };
-
-    const res = await toast
-      .promise(
-        fetch('/api/admin/add/future-event', options),
-        {
-          pending: 'Добавляем событие...',
-          success: 'Успех! Событие добавлено 🥰',
-          error: 'Ошибка 🤯',
-        },
-        {
-          autoClose: 5000,
+      if (res.status === 200) {
+        setEventName(defaultEventName);
+        setDescription(defaultEventDescription);
+        setAge(defaultAge);
+        setParticipants(defaultParticipants);
+        setTotalSpots(defaultSpots);
+        setEventStart(defaultEventStart);
+        setEventEnd(defaultEventEnd);
+        setDurationLongerThanDay(false);
+        setPrice(defaultPrice);
+      }
+      if (res.status === 500 || res.status === 400) {
+        toast.error('Ошибка! Попробуйте еще раз', {
           theme: 'dark',
-        },
-      )
-      .then((res) => res.json());
-
-    if (res.status === 200) {
-      setEventName(defaultEventName);
-      setDescription(defaultEventDescription);
-      setAge(defaultAge);
-      setParticipants(defaultParticipants);
-      setTotalSpots(defaultSpots);
-      setEventStart(defaultEventStart);
-      setEventEnd(defaultEventEnd);
-      setDurationLongerThanDay(false);
-      setPrice(defaultPrice);
-    }
-    if (res.status === 500 || res.status === 400) {
-      toast.error('Ошибка! Попробуйте еще раз', {
-        theme: 'dark',
-      });
+        });
+      }
+    } else {
+      // Update entry
+      console.log('need to update');
     }
   };
 
@@ -250,7 +232,7 @@ const Event = ({}: IReviewProps) => {
           className='z-50 order-2 flex w-full min-w-[300px] max-w-[600px] flex-col items-start justify-start rounded-xl bg-violet-200 p-4'
           onSubmit={handleSubmit}
         >
-          <div className='flex w-full flex-row flex-wrap items-center justify-center'>
+          <div className='flex w-full flex-row flex-wrap items-center justify-center border-b-2 border-y-purple-300 pb-4'>
             {inputsText.map((input, index) => (
               <InputExternalState
                 id={input.name}
@@ -277,7 +259,7 @@ const Event = ({}: IReviewProps) => {
             className={textarea.className}
           />
 
-          <div className='flex w-full flex-row items-center justify-center gap-4'>
+          <div className='flex w-full flex-row items-center justify-center gap-4 border-t-2 border-t-purple-300 py-4'>
             <label
               htmlFor='durationLongerThanDay'
               className='block text-base font-medium leading-6 text-gray-900 sm:text-lg md:text-xl lg:text-2xl'
@@ -294,7 +276,7 @@ const Event = ({}: IReviewProps) => {
             />
           </div>
 
-          <div className='flex w-full flex-row flex-wrap items-center justify-center'>
+          <div className='flex w-full flex-row flex-wrap items-center justify-center border-b-2 border-b-purple-300 pb-2'>
             {/* TODO: DATES */}
             {dates.map((date, index) => (
               <InputExternalState
@@ -310,7 +292,7 @@ const Event = ({}: IReviewProps) => {
               />
             ))}
           </div>
-          <div className='flex w-full flex-row flex-wrap items-center justify-center'>
+          <div className='flex w-full flex-row flex-wrap items-center justify-center pt-2'>
             {numbers.map((number) => (
               <InputExternalState
                 id={number.name}
@@ -356,4 +338,4 @@ const Event = ({}: IReviewProps) => {
   );
 };
 
-export default Event;
+export default FutureEvent;

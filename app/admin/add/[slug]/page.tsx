@@ -1,9 +1,9 @@
-import Event from './Event';
-import Faq from './Faq';
-import Pricing from './Pricing';
-import Review from './Review';
-import Teacher from './Teacher';
-import ThematicEvent from './ThematicEvent';
+import Faq from "@/components/admin/Faq";
+import FutureEvent from "@/components/admin/FutureEvent";
+import Pricing from "@/components/admin/Pricing";
+import Review from "@/components/admin/Review";
+import Teacher from "@/components/admin/Teacher";
+import ThematicEvent from "@/components/admin/ThematicEvent";
 
 interface IPageProps {
   params: {
@@ -17,11 +17,11 @@ const Page = ({ params }: IPageProps) => {
   return (
     <section className='flex min-h-[90vh] w-full flex-col items-center justify-center gap-4 overflow-hidden px-2 py-4 lg:py-10 relative'>
       {slug === 'teachers' && <Teacher />}
-      {slug === 'review' && <Review />}
-      {slug === 'event' && <Event />}
-      {slug === 'pricing' && <Pricing />}
+      {slug === 'reviews' && <Review />}
+      {slug === 'futureEvents' && <FutureEvent />}
+      {slug === 'prices' && <Pricing />}
       {slug === 'faq' && <Faq />}
-      {slug === 'thematic-event' && <ThematicEvent />}
+      {slug === 'thematicEvents' && <ThematicEvent />}
     </section>
   );
 };

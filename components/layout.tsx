@@ -45,7 +45,7 @@ const Layout = ({ children, theme }: IProps) => {
 
   return (
     <>
-      {pathname === '/reviews' || pathname === '/contact' ? null : <FixedSocialMedia />}
+      {pathname === '/reviews' || pathname === '/contact' || pathname === '/admin' ? null : <FixedSocialMedia />}
       {children}
       <DayNightToggle onChange={toggleTheme} checked={isDarkMode} size={30} />
       {state.error ? <ImageLoadingError /> : null}

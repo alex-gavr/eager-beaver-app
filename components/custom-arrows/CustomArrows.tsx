@@ -3,7 +3,7 @@ import { useWindowSize } from 'usehooks-ts';
 import { cn } from '@/utils/cn';
 
 const baseStyles =
-  'flex flex-col items-center justify-center absolute rounded-full p-2 select-none bg-slate-950 bg-opacity-50 dark:bg-slate-800 dark:bg-opacity-50 ';
+  'flex flex-col items-center justify-center absolute rounded-full p-2 select-none bg-slate-950 bg-opacity-50 dark:bg-slate-800 dark:bg-opacity-50 z-50';
 
 export const LeftArrow = ({ onClick, alwaysBottom, ...rest }: any) => {
   const { width } = useWindowSize();

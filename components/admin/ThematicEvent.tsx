@@ -3,14 +3,16 @@ import { SetStateAction, useState } from 'react';
 import { UploadDropzone } from '@uploadthing/react';
 import { OurFileRouter } from '@/app/api/uploadthing/core';
 import Button from '@/components/buttons/button';
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { toast } from 'react-toastify';
 import { InputExternalState, TextAreaExternalState } from '@/components/input/InputExternalState';
-import { Images, TThematicEvents, insertThematicEventsSchema } from '@/db/schemas';
+import { IEventsData, Images, TThematicEvents, insertThematicEventsSchema } from '@/db/schemas';
 import { v4 as uuid } from 'uuid';
 import { TwoColumns } from '@/components/home/thematic-events/two-columns';
+import { handleAddEntry } from '@/utils/handleAddEntry';
 
-interface IThematicEventProps {}
+interface IThematicEventProps {
+  dbData?: IEventsData;
+}
 const defaultHeading = 'New Thematic Event!';
 const defaultParagraph = 'Create a new Thematic Event!';
 const defaultImageSide = 'left';
@@ -26,11 +28,11 @@ const defaultImages = [
   },
 ];
 
-const ThematicEvent = ({}: IThematicEventProps) => {
-  const [heading, setHeading] = useState<string>(defaultHeading);
-  const [paragraph, setParagraph] = useState<string>(defaultParagraph);
-  const [images, setImages] = useState<Array<Images>>(defaultImages);
-  const [imageSide, setImageSide] = useState<'left' | 'right'>(defaultImageSide);
+const ThematicEvent = ({ dbData }: IThematicEventProps) => {
+  const [heading, setHeading] = useState<string>(dbData?.heading ?? defaultHeading);
+  const [paragraph, setParagraph] = useState<string>(dbData?.paragraph ?? defaultParagraph);
+  const [images, setImages] = useState<Array<Images>>(dbData?.images ?? defaultImages);
+  const [imageSide, setImageSide] = useState<'left' | 'right'>(dbData?.imageSide ?? defaultImageSide);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -45,54 +47,23 @@ const ThematicEvent = ({}: IThematicEventProps) => {
       imageSide,
     };
 
-    const validatedDate = await toast.promise(
-      insertThematicEventsSchema.parseAsync(data),
-      {
-        pending: 'Проверяю данный...',
-        success: 'Данные корректны 👍',
-        error: 'Ошибка 🤯',
-      },
-      {
-        autoClose: 5000,
-        theme: 'dark',
-      },
-    );
+    if (dbData === undefined) {
+      const res = await handleAddEntry('thematicEvents', data);
 
-    const options = {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: process.env.NEXT_PUBLIC_API_ROUTE_SECRET,
-      },
-      body: JSON.stringify(validatedDate),
-    };
-
-    const res = await toast
-      .promise(
-        fetch('/api/admin/add/thematic-event', options),
-        {
-          pending: 'Добавляем новое тематическое мероприятие...',
-          success: 'Новое тематическое мероприятие добавлено 😍',
-          error: 'Ошибка 🤯',
-        },
-        {
-          autoClose: 5000,
+      if (res.status === 200) {
+        setHeading(defaultHeading);
+        setParagraph(defaultParagraph);
+        setImages(defaultImages);
+        setImageSide(defaultImageSide);
+      }
+      if (res.status === 500 || res.status === 400) {
+        toast.error('Ошибка! Попробуйте еще раз', {
           theme: 'dark',
-        },
-      )
-      .then((res) => res.json());
-
-    console.log(res);
-    if (res.status === 200) {
-      setHeading(defaultHeading);
-      setParagraph(defaultParagraph);
-      setImages(defaultImages);
-      setImageSide(defaultImageSide);
-    }
-    if (res.status === 500 || res.status === 400) {
-      toast.error('Ошибка! Попробуйте еще раз', {
-        theme: 'dark',
-      });
+        });
+      }
+    } else {
+      // Update entry
+      console.log('need to update');
     }
   };
 
@@ -145,7 +116,10 @@ const ThematicEvent = ({}: IThematicEventProps) => {
 
   return (
     <>
-      <h1 className='mb-8 text-center text-4xl'>Добавление нового тематического мероприятия</h1>
+      <h1 className='mb-8 text-center text-4xl'>
+        {' '}
+        {dbData ? 'Добавление нового тематического мероприятия' : 'Изменение мероприятия'}
+      </h1>
       <div className='flex w-full flex-col flex-nowrap items-center justify-center gap-10 p-2 md:flex-row'>
         <form
           className='z-50 order-2 flex h-full w-full min-w-[300px] max-w-[400px] flex-1 flex-col items-start justify-start rounded-xl bg-violet-200 '
@@ -225,7 +199,7 @@ const ThematicEvent = ({}: IThematicEventProps) => {
           </div>
 
           <Button disabled={false} className='my-6 place-self-center'>
-            Добавить
+            {dbData ? 'Добавить' : 'Изменить'}
           </Button>
         </form>
         <div className='flex flex-col items-center justify-center rounded-md bg-gray-100 p-4'>
