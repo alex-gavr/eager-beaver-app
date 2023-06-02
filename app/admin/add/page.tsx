@@ -15,10 +15,10 @@ const Page = ({}: IPageProps) => {
             key={item.id}
             href={item.path}
             variant={'secondaryGhost'}
-            className='min-w-[300px] lg:min-w-[400px]'
+            className='min-w-[300px] lg:min-w-[400px] group'
           >
             <div className='flex w-full flex-row items-center justify-between gap-4'>
-              <p className='text-black lg:text-2xl dark:text-slate-300'>{item.name}</p>
+              <p className='text-black lg:text-2xl dark:text-slate-300 dark:group-hover:text-slate-900'>{item.name}</p>
               {item.icon}
             </div>
           </StyledLink>
