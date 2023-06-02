@@ -9,7 +9,6 @@ import { revalidatePath } from 'next/cache';
 import { cookies, headers } from 'next/dist/client/components/headers';
 import { RedirectType } from 'next/dist/client/components/redirect';
 import { redirect } from 'next/navigation';
-import { NextResponse } from 'next/server';
 import { v4 as uuid } from 'uuid';
 import { ZodError } from 'zod';
 
@@ -62,8 +61,6 @@ export async function handleSubmit(formData: FormData) {
     } else {
       redirect('/form-error', RedirectType.replace);
     }
-
-    // return status;
   }
 
   if (!isTest) {

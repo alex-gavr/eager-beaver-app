@@ -42,10 +42,12 @@ const Layout = ({ children, theme }: IProps) => {
       router.refresh();
     }
   };
+  const allowedPathsForSocialMedia = ['/', '/teachers', '/pricing', '/schedule', '/faq'];
+  const isAllowedPath = allowedPathsForSocialMedia.includes(pathname);
 
   return (
     <>
-      {pathname === '/reviews' || pathname === '/contact' || pathname === '/admin' ? null : <FixedSocialMedia />}
+      {isAllowedPath ? <FixedSocialMedia /> : null}
       {children}
       <DayNightToggle onChange={toggleTheme} checked={isDarkMode} size={30} />
       {state.error ? <ImageLoadingError /> : null}

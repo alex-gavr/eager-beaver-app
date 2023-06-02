@@ -34,7 +34,7 @@ const Home = ({ futureEvents, themeEvents }: IProps) => {
           <FutureEvents futureEvents={futureEvents} />
         </section>
         <LazyForm>
-          <Form  />
+          <Form />
         </LazyForm>
       </main>
     </>
