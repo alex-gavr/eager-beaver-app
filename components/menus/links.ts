@@ -25,12 +25,7 @@ export const header: ILink[] = [
     id: 5,
     name: 'КОНТАКТЫ',
     to: '/contact',
-  },
-  {
-    id: 6,
-    name: 'ADMIN',
-    to: '/admin',
-  },
+  }
 ];
 
 export const footer: ILink[] = [

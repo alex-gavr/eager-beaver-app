@@ -8,6 +8,14 @@ import { ToastContainer } from 'react-toastify';
 import Breadcrumbs from '@/components/breadCrumbs/Breadcrumbs';
 import { usePathname } from 'next/navigation';
 import { createPathArray } from '@/utils/createPathArray';
+import { Metadata } from 'next';
+
+
+export const metadata: Metadata = {
+  robots: {
+    index: false,
+  },
+};
 
 interface ILayoutProps {
   children: ReactNode;
