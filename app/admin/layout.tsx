@@ -5,6 +5,9 @@ import '@uploadthing/react/styles.css';
 import Button from '@/components/buttons/button';
 import production from '@/utils/isProd';
 import { ToastContainer } from 'react-toastify';
+import Breadcrumbs from '@/components/breadCrumbs/Breadcrumbs';
+import { usePathname } from 'next/navigation';
+import { createPathArray } from '@/utils/createPathArray';
 
 interface ILayoutProps {
   children: ReactNode;
@@ -21,6 +24,10 @@ const NotAllowed = () => {
 const Layout = ({ children }: ILayoutProps) => {
   const [auth, setAuth] = useState<boolean | null>(null);
   const [password, setPassword] = useState<string | null>();
+  const pathName = usePathname();
+
+  const pathNameArray = createPathArray(pathName);
+  console.log(pathNameArray.length);
 
   const handleLogin = () => {
     if (password === '265d46cc1c7501afff17aa87030cba8639cb9dbf2fa7d99c4301801da881d42a') {
@@ -32,6 +39,8 @@ const Layout = ({ children }: ILayoutProps) => {
     <>
       {!production ? (
         <>
+          {pathNameArray.length > 1 && <Breadcrumbs items={pathNameArray} />}
+
           {children}
           <ToastContainer />
         </>
@@ -61,3 +70,14 @@ const Layout = ({ children }: ILayoutProps) => {
 };
 
 export default Layout;
+
+const items = [
+  {
+    label: 'admin',
+    path: '/admin',
+  },
+  {
+    label: 'add',
+    path: '/admin/add',
+  },
+];

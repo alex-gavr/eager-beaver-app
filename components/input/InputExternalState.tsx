@@ -13,7 +13,7 @@ interface IInputExternalStateProps extends InputHTMLAttributes<HTMLInputElement>
 const defaultDivStyles = 'flex flex-col items-start justify-center gap-2 p-2';
 const defaultLabelStyles =
   'block text-base font-medium leading-6 text-gray-900 dark:text-gray-200 sm:text-lg md:text-xl lg:text-2xl';
-const inputStyleDefault = 'w-full rounded-md dark:bg-gray-900 dark:text-gray-300';
+const inputStyleDefault = 'w-full rounded-md dark:bg-gray-900 dark:text-gray-300 md:text-lg lg:text-xl';
 const radioStyle = 'flex flex-row flex-wrap items-center justify-center gap-2 p-2';
 const radioStyleInput = 'h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600';
 
@@ -92,7 +92,7 @@ export const TextAreaExternalState = ({
         required={required}
         placeholder={placeholder}
         className={cn(
-          'block w-full rounded-md border-0 p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 dark:bg-gray-900 dark:text-gray-300',
+          'block w-full rounded-md border-0 p-2 text-gray-900 shadow-sm ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 dark:bg-gray-900 dark:text-gray-300 md:text-lg lg:text-xl',
           className,
         )}
         onChange={onChange}

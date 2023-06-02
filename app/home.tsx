@@ -34,7 +34,7 @@ const Home = ({ futureEvents, themeEvents }: IProps) => {
           <FutureEvents futureEvents={futureEvents} />
         </section>
         <LazyForm>
-          <Form searchParams={{uuid: undefined}} event={false} />
+          <Form  />
         </LazyForm>
       </main>
     </>

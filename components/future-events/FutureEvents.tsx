@@ -34,7 +34,7 @@ const FutureEvents = ({ layoutId, futureEvents }: IProps) => {
         {inView ? (
           <>
             <m.h1
-              className='rounded-3xl bg-accent-800 px-8 py-2 text-center dark:bg-accent-800'
+              className='rounded-3xl bg-accent-800 px-8 py-2 text-center dark:bg-accent-800 mx-2'
               layoutId={layoutId}
               transition={{ duration: 0.6, ease: 'easeOut' }}
             >

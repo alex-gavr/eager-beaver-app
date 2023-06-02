@@ -89,7 +89,7 @@ export const TwoColumns = ({ images, alt, imageSide, heading, paragraph }: IProp
             width < 1050 ? 'order-1' : imageSide === 'left' ? 'order-2' : 'order-1',
           )}
         >
-          <h2 className='rounded-3xl bg-primary-800 px-4 py-2 text-center uppercase tracking-wider dark:bg-primary-800 dark:text-slate-950 text-xl md:text-2xl lg:text-3xl'>
+          <h2 className='rounded-3xl bg-primary-800 px-4 py-2 text-center uppercase tracking-wider dark:bg-primary-800 dark:text-slate-950 text-2xl md:text-3xl lg:text-4xl'>
             {heading}
           </h2>
           <p className='text-center'>{paragraph}</p>

@@ -10,9 +10,9 @@ import { handleSubmit } from '../actions';
 // import { handleSubmit, handleSubmitEvent } from '../actions';
 
 interface IFormProps {
-  event: boolean;
-  searchParams: {
-    uuid?: string;
+  event?: boolean;
+  searchParams?: {
+    uuid: string;
   };
 }
 
@@ -21,22 +21,23 @@ const chatIDLera = process.env.NEXT_PUBLIC_TELEGRAM_LERA_ID;
 const chatIDGavr = process.env.NEXT_PUBLIC_TELEGRAM_GAVR_ID;
 
 const Form = ({ searchParams }: IFormProps) => {
-  const submitAction = searchParams.uuid === undefined ? handleSubmit :  handleSubmitEvent;
+  const submitAction = searchParams?.uuid === undefined ? handleSubmit : handleSubmitEvent;
 
   async function handleSubmitEvent(formData: FormData) {
     'use server';
-    if (searchParams?.uuid === undefined) {
-      return;
+
+    if (searchParams === undefined || searchParams?.uuid === undefined) {
+      return null;
     }
-    
+
     const name = formData.get('name');
     const phone = formData.get('phone');
 
     if (name === null || phone === null) {
-      return;
+      return null;
     }
 
-    const eventId = searchParams.uuid;
+    const eventId = searchParams?.uuid;
 
     const fullEventData = await db.select().from(futureEvents).where(eq(futureEvents.uuid, eventId));
 
@@ -87,6 +88,7 @@ const Form = ({ searchParams }: IFormProps) => {
       } else {
         redirect('/form-error');
       }
+      // TODO: CREATE PRODUCTION VERSION
     }
   }
 

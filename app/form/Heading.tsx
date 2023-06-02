@@ -1,21 +1,16 @@
-'use client'
-// import { cookies } from 'next/headers';
-import { getCookie } from 'cookies-next';
-
 interface IHeadingProps {
   event: boolean;
+  heading?: string;
 }
 
-const Heading = ({ event }: IHeadingProps) => {
-  // const eventName = cookies().get('event')?.value;
-  const eventName = getCookie('event');
+const Heading = ({ event, heading }: IHeadingProps) => {
   return (
     <>
-      {event ? (
+      {heading ? (
         <h2 className='text-center text-lg leading-relaxed text-slate-800 dark:text-slate-200 sm:text-xl md:text-2xl lg:text-3xl'>
           Позвольте связаться с Вами для подтверждения записи на <br />
           <span className='rounded-lg bg-primary-500 px-4 py-1 text-accent-800 dark:bg-primary-500 dark:text-accent-800'>
-            {eventName}
+            {heading}
           </span>
         </h2>
       ) : (

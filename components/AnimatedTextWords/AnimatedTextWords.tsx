@@ -70,7 +70,7 @@ const AnimatedTextWords = ({ title, text, textAnimation, className }: IProps) =>
         {words.map((word: string, index: number) =>
           title ? (
             <m.span
-              className={cn('z-10 mr-2 text-4xl lowercase sm:text-5xl lg:mr-3 xl:text-6xl', className)}
+              className={cn('z-10 mr-2 text-5xl lowercase sm:text-5xl lg:mr-3 xl:text-6xl', className)}
               variants={textAnimationInit}
               key={index}
             >

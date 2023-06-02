@@ -34,7 +34,7 @@ const TeacherCard = ({ image, alt, name, description, includePlay }: IProps) => 
         )}
       </div>
       <div className='flex w-full flex-col items-center justify-center overflow-hidden'>
-        <h2 className='text-center text-slate-900 dark:text-slate-100'>{name}</h2>
+        <h2 className='text-center text-slate-900 dark:text-slate-100 text-2xl md:text-3xl lg:text-4xl'>{name}</h2>
       </div>
       <div className='flex w-full flex-col items-center justify-center overflow-hidden'>
         <p className='text-center'>{description}</p>

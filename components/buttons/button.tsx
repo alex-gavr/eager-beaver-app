@@ -7,7 +7,7 @@ import { experimental_useFormStatus } from 'react-dom';
 
 const style = 'backdrop-blur-lg';
 const buttonVariants = cva(
-  'active:scale-95 tracking-widest inline-flex items-center justify-center text-xs sm:text-base lg:text-xl 2xl:text-2xl transition-colors duration-500 focus:outline-none focus:ring-1 focus:ring-slate-400 focus:ring-offset-1 disabled:opacity-50 disabled:pointer-events-none',
+  'active:scale-95 tracking-widest inline-flex items-center justify-center text-sm sm:text-base lg:text-xl 2xl:text-2xl transition-colors duration-500 focus:outline-none focus:ring-1 focus:ring-slate-400 focus:ring-offset-1 disabled:opacity-50 disabled:pointer-events-none',
   {
     variants: {
       variant: {
