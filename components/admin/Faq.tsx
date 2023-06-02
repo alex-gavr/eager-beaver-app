@@ -130,7 +130,7 @@ const Faq = ({ dbData, updateFaq, addFaq }: IFaqProps) => {
       </h1>
       <div className='flex w-full flex-col flex-nowrap items-center justify-center gap-10 p-2 md:flex-row '>
         <form
-          className='z-50 order-2 flex w-full min-w-[300px] max-w-[400px] flex-col items-start justify-start rounded-xl bg-violet-200 p-4'
+          className='z-50 order-2 flex w-full min-w-[300px] max-w-[400px] flex-col items-start justify-start rounded-xl bg-violet-200 p-4 dark:bg-violet-950'
           onSubmit={handleSubmit}
         >
           {inputs.map((input) => {

@@ -219,7 +219,7 @@ const Pricing = ({ dbData, updatePrice, addPrice }: IReviewProps) => {
       </h1>
       <div className='flex w-full flex-col flex-nowrap items-center justify-center gap-10 p-2 md:flex-row '>
         <form
-          className='z-50 order-2 flex h-full w-full min-w-[300px] max-w-[400px] flex-col items-start justify-start rounded-xl bg-violet-200'
+          className='z-50 order-2 flex h-full w-full min-w-[300px] max-w-[400px] flex-col items-start justify-start rounded-xl bg-violet-200 dark:bg-violet-950'
           onSubmit={handleSubmit}
         >
           <div className='flex w-full flex-col sm:grid sm:grid-cols-2'>
@@ -240,7 +240,7 @@ const Pricing = ({ dbData, updatePrice, addPrice }: IReviewProps) => {
           </div>
           <hr className='h-1 w-11/12 place-self-center rounded-sm bg-violet-700 ' />
           <div className='flex w-full flex-col items-start justify-start p-2'>
-            <p className='w-full text-center lg:text-2xl'>Какой цвет карточки?</p>
+            <p className='w-full text-center lg:text-2xl dark:text-gray-300'>Какой цвет карточки?</p>
             <div className='flex w-full flex-row items-center justify-evenly'>
               {radios.map((input, index) => (
                 <InputExternalState

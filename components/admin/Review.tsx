@@ -166,7 +166,7 @@ const Review = ({ dbData, updateReview, addReview }: IReviewProps) => {
       </h1>
       <div className='flex w-full flex-col flex-nowrap items-center justify-center gap-10 p-2 md:flex-row '>
         <form
-          className='order-2 col-span-3 flex h-full w-full min-w-[300px] max-w-[400px] flex-1 flex-col items-start justify-start overflow-y-auto rounded-xl bg-violet-200'
+          className='order-2 col-span-3 flex h-full w-full min-w-[300px] max-w-[400px] flex-1 flex-col items-start justify-start overflow-y-auto rounded-xl bg-violet-200 dark:bg-violet-950'
           onSubmit={handleSubmit}
         >
           {inputs.map((input, index) => {
@@ -196,7 +196,7 @@ const Review = ({ dbData, updateReview, addReview }: IReviewProps) => {
           })}
 
           <div className='flex w-full flex-col items-start justify-center gap-4 px-4 py-2'>
-            <p className='block text-base font-medium leading-6 text-gray-900 dark:text-gray-900 sm:text-lg md:text-xl lg:text-2xl'>
+            <p className='block text-base font-medium leading-6 text-gray-900 sm:text-lg md:text-xl lg:text-2xl dark:text-gray-200'>
               Фоточка
             </p>
             <UploadButton<OurFileRouter>

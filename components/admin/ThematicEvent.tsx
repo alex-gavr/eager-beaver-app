@@ -184,7 +184,7 @@ const ThematicEvent = ({ dbData, updateThematicEvent, addThematicEvent }: IThema
       </h1>
       <div className='flex w-full flex-col flex-nowrap items-center justify-center gap-10 p-2 md:flex-row'>
         <form
-          className='z-50 order-2 flex h-full w-full min-w-[300px] max-w-[400px] flex-1 flex-col items-start justify-start rounded-xl bg-violet-200 '
+          className='z-50 order-2 flex h-full w-full min-w-[300px] max-w-[400px] flex-1 flex-col items-start justify-start rounded-xl bg-violet-200 dark:bg-violet-950'
           onSubmit={handleSubmit}
         >
           <div className='grid grid-cols-1 gap-4 p-4 lg:grid-cols-1 '>
@@ -202,7 +202,7 @@ const ThematicEvent = ({ dbData, updateThematicEvent, addThematicEvent }: IThema
             ))}
 
             <div className='flex flex-col items-start justify-center border-b-2 border-emerald-800 pb-4'>
-              <p className='mb-4 text-xl md:text-2xl'>С какой стороны изображать фотографии ?</p>
+              <p className='mb-4 text-xl md:text-2xl dark:text-neutral-300'>С какой стороны изображать фотографии ?</p>
               <div className='flex flex-row gap-2'>
                 {radios.map((radio) => (
                   <InputExternalState
@@ -232,7 +232,7 @@ const ThematicEvent = ({ dbData, updateThematicEvent, addThematicEvent }: IThema
               />
             ))}
             <div className='flex flex-col items-start justify-center gap-4'>
-              <p className='block text-base font-medium leading-6 text-gray-900 dark:text-gray-900 sm:text-lg md:text-xl lg:text-2xl'>
+              <p className='block text-base font-medium leading-6 text-gray-900 sm:text-lg md:text-xl lg:text-2xl dark:text-neutral-300'>
                 Фоточки
               </p>
               <UploadDropzone<OurFileRouter>
@@ -265,7 +265,7 @@ const ThematicEvent = ({ dbData, updateThematicEvent, addThematicEvent }: IThema
             {dbData === undefined ? 'Добавить' : 'Изменить'}
           </Button>
         </form>
-        <div className='flex flex-col items-center justify-center rounded-md bg-gray-100 p-4'>
+        <div className='flex flex-col items-center justify-center rounded-md bg-gray-100 p-4 dark:bg-gray-900'>
           <TwoColumnsNoAni
             heading={heading}
             paragraph={paragraph}

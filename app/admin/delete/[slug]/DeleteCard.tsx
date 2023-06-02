@@ -23,8 +23,8 @@ const DeleteCard = ({
 
   return (
     <>
-      <div className='flex w-full min-w-[280px] max-w-lg flex-row items-center justify-between gap-4 rounded-xl border border-slate-400 bg-gradient-to-bl from-fuchsia-200 to-violet-100 p-4 shadow-md'>
-        <p className='lg:text-2xl'>{heading}</p>
+      <div className='flex w-full min-w-[280px] max-w-lg flex-row items-center justify-between gap-4 rounded-xl border border-slate-400 bg-gradient-to-bl from-fuchsia-200 to-violet-100 p-4 shadow-md dark:from-fuchsia-900 dark:to-violet-950' >
+        <p className='lg:text-2xl dark:text-slate-300'>{heading}</p>
         <Button variant={'danger'} onClick={handlePrompt}>
           delete
         </Button>
@@ -54,7 +54,7 @@ const Confirmation = ({ closeToast, deleteItem, uuid }: IConfirmationProps) => {
 
   return (
     <div className='flex flex-col items-center justify-center gap-4 '>
-      <p className='text-white lg:text-2xl'>Точно удаляем? 😁</p>
+      <p className='text-white lg:text-2xl dark:text-slate-300'>Точно удаляем? 😁</p>
       <div className='flex w-full flex-row items-center justify-evenly gap-2'>
         <Button
           size={'sm'}

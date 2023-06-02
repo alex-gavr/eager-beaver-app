@@ -18,7 +18,7 @@ const Page = ({}: IPageProps) => {
             className='min-w-[300px] lg:min-w-[400px]'
           >
             <div className='flex w-full flex-row items-center justify-between gap-4'>
-              <p className='text-black lg:text-2xl'>{item.name}</p>
+              <p className='text-black lg:text-2xl dark:text-slate-300'>{item.name}</p>
               {item.icon}
             </div>
           </StyledLink>

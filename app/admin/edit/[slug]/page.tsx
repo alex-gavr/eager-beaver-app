@@ -68,7 +68,7 @@ const DeletionOptions = ({ data, params }: TDeletionOptionsProps) => {
             className='flex w-full max-w-lg flex-row items-center justify-between rounded-xl bg-gradient-to-tl from-violet-800 to-fuchsia-900 p-4'
             key={item.uuid}
           >
-            <p className=' text-white lg:text-2xl'>{item.name}</p>
+            <p className=' text-white lg:text-2xl dark:text-slate-300'>{item.name}</p>
             <StyledLink
               variant={'primaryGhost'}
               href={`/admin/edit/${slug}/${item.uuid}`}

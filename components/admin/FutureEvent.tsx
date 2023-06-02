@@ -288,7 +288,7 @@ const FutureEvent = ({ dbData, updateFutureEvent, addFutureEvent }: IReviewProps
       </h1>
       <div className='flex w-full flex-col flex-nowrap items-center justify-center gap-10 p-2 md:flex-row '>
         <form
-          className='z-50 order-2 flex w-full min-w-[300px] max-w-[600px] flex-col items-start justify-start rounded-xl bg-violet-200 p-4'
+          className='z-50 order-2 flex w-full min-w-[300px] max-w-[600px] flex-col items-start justify-start rounded-xl bg-violet-200 dark:bg-violet-950 p-4'
           onSubmit={handleSubmit}
         >
           <div className='flex w-full flex-row flex-wrap items-center justify-center border-b-2 border-y-purple-300 pb-4'>
@@ -321,7 +321,7 @@ const FutureEvent = ({ dbData, updateFutureEvent, addFutureEvent }: IReviewProps
           <div className='flex w-full flex-row items-center justify-center gap-4 border-t-2 border-t-purple-300 py-4'>
             <label
               htmlFor='durationLongerThanDay'
-              className='block text-base font-medium leading-6 text-gray-900 sm:text-lg md:text-xl lg:text-2xl'
+              className='block text-base font-medium leading-6 text-gray-900 sm:text-lg md:text-xl lg:text-2xl dark:text-gray-300'
             >
               Длительность более 1 дня?
             </label>
