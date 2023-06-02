@@ -27,7 +27,6 @@ const Layout = ({ children }: ILayoutProps) => {
   const pathName = usePathname();
 
   const pathNameArray = createPathArray(pathName);
-  console.log(pathNameArray.length);
 
   const handleLogin = () => {
     if (password === '265d46cc1c7501afff17aa87030cba8639cb9dbf2fa7d99c4301801da881d42a') {
@@ -52,16 +51,16 @@ const Layout = ({ children }: ILayoutProps) => {
       ) : auth === false ? (
         <NotAllowed />
       ) : (
-        <div className='flex min-h-[90vh] w-full flex-col items-center justify-center'>
-          <h1 className='text-center text-2xl text-red-500 lg:text-4xl'>Do you know a password</h1>
+        <div className='flex min-h-[90vh] w-full flex-col items-center justify-center gap-8'>
+          <h1 className='text-center text-2xl text-slate-900 dark:text-slate-200 lg:text-4xl'>Type the password</h1>
           <div className='flex flex-col items-center justify-center'>
             <input
-              className='mb-4'
+              className='mb-8 min-w-[300px] rounded-md bg-slate-100 dark:bg-slate-800'
               type='password'
               placeholder='password'
               onChange={(e) => setPassword(e.target.value)}
             />
-            <Button onClick={handleLogin}>login</Button>
+            <Button onClick={handleLogin} variant={'secondaryGhost'} size={'lg'}>login</Button>
           </div>
         </div>
       )}
@@ -70,14 +69,3 @@ const Layout = ({ children }: ILayoutProps) => {
 };
 
 export default Layout;
-
-const items = [
-  {
-    label: 'admin',
-    path: '/admin',
-  },
-  {
-    label: 'add',
-    path: '/admin/add',
-  },
-];
