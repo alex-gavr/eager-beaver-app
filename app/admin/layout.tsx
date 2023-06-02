@@ -40,12 +40,12 @@ const Layout = ({ children }: ILayoutProps) => {
       {!production ? (
         <>
           {pathNameArray.length > 1 && <Breadcrumbs items={pathNameArray} />}
-
           {children}
           <ToastContainer />
         </>
       ) : auth === true ? (
         <>
+          {pathNameArray.length > 1 && <Breadcrumbs items={pathNameArray} />}
           {children}
           <ToastContainer />
         </>
