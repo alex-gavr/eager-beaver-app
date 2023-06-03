@@ -47,10 +47,10 @@ const Form = ({ searchParams }: IFormProps) => {
       const res = await handleSubmitBaseForm(name, phone);
       if (res === 200) {
         setCookie('name', name, { path: '/', maxAge: 60 * 60 * 24 * 365, secure: true, sameSite: 'lax' });
-        router.replace('/form-success');
+        router.push('/form-success');
         setLoading(false);
       } else {
-        router.replace('/form-error');
+        router.push('/form-error');
         setLoading(false);
       }
     }
