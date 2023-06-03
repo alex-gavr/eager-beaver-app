@@ -55,20 +55,20 @@ const Hero = () => {
                 {name && `с возвращением, ${name}`}
               </m.p>
               <m.h1
-                className='text-center text-4xl tracking-wider text-primary-800 shadow-slate-950 text-shadow dark:text-primary-800 sm:text-left sm:text-4xl sm:leading-snug md:text-5xl md:leading-snug'
+                className='text-center text-5xl leading-tight tracking-wider text-primary-800 shadow-slate-950 text-shadow dark:text-primary-800 sm:text-left sm:leading-snug'
                 variants={toDown}
               >
                 Eager Beaver Language School
               </m.h1>
               <div className='flex flex-col items-start justify-center gap-2 md:w-4/5'>
                 <m.p
-                  className='text-lg tracking-wider text-neutral-200 shadow-slate-800 text-shadow dark:text-neutral-200 md:text-xl'
+                  className='text-xl tracking-wider text-neutral-200 shadow-slate-800 text-shadow dark:text-neutral-200 md:text-2xl'
                   variants={toRight}
                 >
                   детская языковая школа
                 </m.p>
                 <m.p
-                  className='text-lg tracking-wider text-neutral-200 shadow-slate-800 text-shadow dark:text-neutral-200 md:text-xl'
+                  className='text-xl tracking-wider text-neutral-200 shadow-slate-800 text-shadow dark:text-neutral-200 md:text-2xl'
                   variants={toUp}
                 >
                   помогаем вашему ребенку любить иностранные языки с детства
