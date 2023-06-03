@@ -12,9 +12,9 @@ interface IBodyData {
   date: string;
 }
 
-const botId = process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN;
-const chatIDLera = process.env.NEXT_PUBLIC_TELEGRAM_LERA_ID;
-const chatIDGavr = process.env.NEXT_PUBLIC_TELEGRAM_GAVR_ID;
+const botId = process.env.TELEGRAM_BOT_TOKEN;
+const chatIDLera = process.env.TELEGRAM_LERA_ID;
+const chatIDGavr = process.env.TELEGRAM_GAVR_ID;
 
 export async function POST(request: NextRequest, response: NextResponse) {
   const { headers } = request;
