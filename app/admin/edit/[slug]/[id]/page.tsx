@@ -1,11 +1,6 @@
-import Faq from '@/components/admin/Faq';
-import FutureEvent from '@/components/admin/FutureEvent';
-import Pricing from '@/components/admin/Pricing';
-import Review from '@/components/admin/Review';
-import Teacher from '@/components/admin/Teacher';
-import ThematicEvent from '@/components/admin/ThematicEvent';
 import { IServerProps } from '@/app/page';
 import { db } from '@/db/db';
+import dynamic from 'next/dynamic';
 import {
   IEventsData,
   faq,
@@ -22,6 +17,14 @@ import {
   thematicEvents,
 } from '@/db/schemas';
 import { eq } from 'drizzle-orm';
+import SimpleLoading from '@/components/SimpleLoading';
+
+const Faq = dynamic(() => import('@/components/admin/Faq'), { ssr: false, loading: () => <SimpleLoading /> });
+const FutureEvent = dynamic(() => import('@/components/admin/FutureEvent'), { ssr: false, loading: () => <SimpleLoading /> });
+const Pricing = dynamic(() => import('@/components/admin/Pricing'), { ssr: false,loading: () => <SimpleLoading /> });
+const Review = dynamic(() => import('@/components/admin/Review'), { ssr: false,loading: () => <SimpleLoading /> });
+const Teacher = dynamic(() => import('@/components/admin/Teacher'), { ssr: false,loading: () => <SimpleLoading /> });
+const ThematicEvent = dynamic(() => import('@/components/admin/ThematicEvent'), { ssr: false,loading: () => <SimpleLoading /> });
 
 interface IPageProps {}
 
