@@ -12,11 +12,10 @@ import { v4 as uuid } from 'uuid';
 import { getPromiseTextAdd, getPromiseTextEdit, toastConfig } from '@/utils/toast/toastConfig';
 import { ZodError } from 'zod';
 import ToastCustomError from '../ToastCustomError';
+import { addTeacher, updateTeacher } from '@/app/admin/adminServerActions';
 
 interface ITeacherProps {
   dbData?: TTeachers;
-  updateTeacher?: (data: any) => Promise<number>;
-  addTeacher?: (data: any) => Promise<number>;
 }
 
 const defaultName = 'Валерия Евстратова';
@@ -24,7 +23,7 @@ const defaultDescription =
   'Руководитель школы, преподаватель английского и китайского языков. Стаж работы: 6 лет. Валерия может заинтересовать любого ученика. На её занятиях дети всегда сконцентрированы и внимательны.';
 const defaultImage = 'https://uploadthing.com/f/dce2908f-3242-4484-a512-24b3a04ad8c4_lera.webp';
 
-const Teacher = ({ dbData, updateTeacher, addTeacher }: ITeacherProps) => {
+const Teacher = ({ dbData }: ITeacherProps) => {
   const [name, setName] = useState(dbData?.fullName ?? defaultName);
   const [description, setDescription] = useState(dbData?.description ?? defaultDescription);
   const [preview, setPreview] = useState(dbData?.image ?? defaultImage);
@@ -172,7 +171,7 @@ const Teacher = ({ dbData, updateTeacher, addTeacher }: ITeacherProps) => {
             );
           })}
           <div className='flex w-full flex-col items-center justify-center gap-4 px-4 py-2'>
-            <p className='block text-base font-medium leading-6 text-gray-900 sm:text-lg md:text-xl lg:text-2xl dark:text-gray-200'>
+            <p className='block text-base font-medium leading-6 text-gray-900 dark:text-gray-200 sm:text-lg md:text-xl lg:text-2xl'>
               Фоточка
             </p>
             <UploadButton<OurFileRouter>

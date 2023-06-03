@@ -10,18 +10,17 @@ import FAQComponent from '@/components/faq/faq-component';
 import { getPromiseTextAdd, getPromiseTextEdit, toastConfig } from '@/utils/toast/toastConfig';
 import { ZodError } from 'zod';
 import ToastCustomError from '../ToastCustomError';
+import { addFaq, updateFaq } from '@/app/admin/adminServerActions';
 
 interface IFaqProps {
   dbData?: TFaq;
-  updateFaq?: (data: any) => Promise<number>;
-  addFaq?: (data: any) => Promise<number>;
 }
 
 const defaultQuestion = 'Какой-нибудь заумный вопрос';
 const defaultDescription =
   'Руководитель школы, преподаватель английского и китайского языков. Стаж работы: 6 лет. Валерия может заинтересовать любого ученика. На её занятиях дети всегда сконцентрированы и внимательны.';
 
-const Faq = ({ dbData, updateFaq, addFaq }: IFaqProps) => {
+const Faq = ({ dbData }: IFaqProps) => {
   const [question, setQuestion] = useState<string>(dbData?.question ?? defaultQuestion);
   const [description, setDescription] = useState<string>(dbData?.description ?? defaultDescription);
 

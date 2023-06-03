@@ -9,11 +9,10 @@ import PriceCard from '@/components/prices/PriceCard';
 import { getPromiseTextAdd, getPromiseTextEdit, toastConfig } from '@/utils/toast/toastConfig';
 import { ZodError } from 'zod';
 import ToastCustomError from '../ToastCustomError';
+import { addPrice, updatePrice } from '@/app/admin/adminServerActions';
 
 interface IReviewProps {
   dbData?: TPrices;
-  updatePrice?: (data: any) => Promise<number>;
-  addPrice?: (data: any) => Promise<number>;
 }
 
 const defaultPriceName = 'Default Price Name';
@@ -23,7 +22,7 @@ const defaultFeature1 = 'Default Feature 1';
 const defaultFeature2 = 'Default Feature 2';
 const defaultFeature3 = 'Default Feature 3';
 
-const Pricing = ({ dbData, updatePrice, addPrice }: IReviewProps) => {
+const Pricing = ({ dbData }: IReviewProps) => {
   const [priceName, setPriceName] = useState<string>(dbData?.priceName ?? defaultPriceName);
   const [price, setPrice] = useState<string>(dbData?.price ?? defaultPrice);
   const [cardColor, setCardColor] = useState<'green' | 'yellow'>(dbData?.cardColor ?? defaultCardColor);
@@ -240,7 +239,7 @@ const Pricing = ({ dbData, updatePrice, addPrice }: IReviewProps) => {
           </div>
           <hr className='h-1 w-11/12 place-self-center rounded-sm bg-violet-700 ' />
           <div className='flex w-full flex-col items-start justify-start p-2'>
-            <p className='w-full text-center lg:text-2xl dark:text-gray-300'>Какой цвет карточки?</p>
+            <p className='w-full text-center dark:text-gray-300 lg:text-2xl'>Какой цвет карточки?</p>
             <div className='flex w-full flex-row items-center justify-evenly'>
               {radios.map((input, index) => (
                 <InputExternalState

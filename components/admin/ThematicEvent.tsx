@@ -11,11 +11,10 @@ import TwoColumnsNoAni from '@/components/home/thematic-events/twoColNoAni';
 import { getPromiseTextAdd, getPromiseTextEdit, toastConfig } from '@/utils/toast/toastConfig';
 import { ZodError } from 'zod';
 import ToastCustomError from '../ToastCustomError';
+import { addThematicEvent, updateThematicEvent } from '@/app/admin/adminServerActions';
 
 interface IThematicEventProps {
   dbData?: IEventsData;
-  updateThematicEvent?: (data: any) => Promise<number>;
-  addThematicEvent?: (data: any) => Promise<number>;
 }
 const defaultHeading = 'New Thematic Event!';
 const defaultParagraph = 'Create a new Thematic Event!';
@@ -32,7 +31,7 @@ const defaultImages = [
   },
 ];
 
-const ThematicEvent = ({ dbData, updateThematicEvent, addThematicEvent }: IThematicEventProps) => {
+const ThematicEvent = ({ dbData }: IThematicEventProps) => {
   const [heading, setHeading] = useState<string>(dbData?.heading ?? defaultHeading);
   const [paragraph, setParagraph] = useState<string>(dbData?.paragraph ?? defaultParagraph);
   const [images, setImages] = useState<Array<Images>>(dbData?.images ?? defaultImages);
@@ -202,7 +201,9 @@ const ThematicEvent = ({ dbData, updateThematicEvent, addThematicEvent }: IThema
             ))}
 
             <div className='flex flex-col items-start justify-center border-b-2 border-emerald-800 pb-4'>
-              <p className='mb-4 text-xl md:text-2xl dark:text-neutral-300'>С какой стороны изображать фотографии ?</p>
+              <p className='mb-4 text-xl dark:text-neutral-300 md:text-2xl'>
+                С какой стороны изображать фотографии ?
+              </p>
               <div className='flex flex-row gap-2'>
                 {radios.map((radio) => (
                   <InputExternalState
@@ -232,7 +233,7 @@ const ThematicEvent = ({ dbData, updateThematicEvent, addThematicEvent }: IThema
               />
             ))}
             <div className='flex flex-col items-start justify-center gap-4'>
-              <p className='block text-base font-medium leading-6 text-gray-900 sm:text-lg md:text-xl lg:text-2xl dark:text-neutral-300'>
+              <p className='block text-base font-medium leading-6 text-gray-900 dark:text-neutral-300 sm:text-lg md:text-xl lg:text-2xl'>
                 Фоточки
               </p>
               <UploadDropzone<OurFileRouter>

@@ -11,11 +11,10 @@ import { v4 as uuid } from 'uuid';
 import { getPromiseTextAdd, getPromiseTextEdit, toastConfig } from '@/utils/toast/toastConfig';
 import { ZodError } from 'zod';
 import ToastCustomError from '../ToastCustomError';
+import { addReview, updateReview } from '@/app/admin/adminServerActions';
 
 interface IReviewProps {
   dbData?: TReviews;
-  updateReview?: (data: any) => Promise<number>;
-  addReview?: (data: any) => Promise<number>;
 }
 const defaultImage = 'https://uploadthing.com/f/dce2908f-3242-4484-a512-24b3a04ad8c4_lera.webp';
 const defaultName = 'Валерия Евстратова';
@@ -23,7 +22,7 @@ const defaultParentName = 'Мамуля и папуля';
 const defaultReview =
   'Руководитель школы, преподаватель английского и китайского языков. Стаж работы: 6 лет. Валерия может заинтересовать любого ученика. На её занятиях дети всегда сконцентрированы и внимательны.';
 
-const Review = ({ dbData, updateReview, addReview }: IReviewProps) => {
+const Review = ({ dbData }: IReviewProps) => {
   const [childName, setChildName] = useState<string>(dbData?.childName ?? defaultName);
   const [parentName, setParentName] = useState<string>(dbData?.parentName ?? defaultParentName);
   const [relationToChild, setRelationToChild] = useState<string>(
@@ -196,7 +195,7 @@ const Review = ({ dbData, updateReview, addReview }: IReviewProps) => {
           })}
 
           <div className='flex w-full flex-col items-start justify-center gap-4 px-4 py-2'>
-            <p className='block text-base font-medium leading-6 text-gray-900 sm:text-lg md:text-xl lg:text-2xl dark:text-gray-200'>
+            <p className='block text-base font-medium leading-6 text-gray-900 dark:text-gray-200 sm:text-lg md:text-xl lg:text-2xl'>
               Фоточка
             </p>
             <UploadButton<OurFileRouter>
