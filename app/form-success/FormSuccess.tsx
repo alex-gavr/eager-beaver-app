@@ -18,7 +18,7 @@ const FormSuccess = () => {
           отлично 👍
         </Button>
 
-        {/* Needs to be like that but currently is broken on the NextJS side */}
+        {/* TODO: Needs to be like that but currently is broken on the NextJS side */}
         {/* <StyledLink variant={'default'} size={'lg'} href={'/'} className='mt-4'>
           отлично 👍
         </StyledLink> */}

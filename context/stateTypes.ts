@@ -4,4 +4,5 @@ export interface InitialState {
   headerVisible: boolean;
   footerVisible: boolean;
   loaderVisible: boolean;
+  eventUpdated: boolean;
 }

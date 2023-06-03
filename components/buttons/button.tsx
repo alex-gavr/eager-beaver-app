@@ -1,9 +1,9 @@
 'use client';
 import { cn } from '@/utils/cn';
+import { ArrowPathIcon } from '@heroicons/react/24/outline';
 import { VariantProps, cva } from 'class-variance-authority';
 import { HTMLMotionProps, m } from 'framer-motion';
 import { useRouter } from 'next/navigation';
-import { experimental_useFormStatus } from 'react-dom';
 
 const style = 'backdrop-blur-lg';
 const buttonVariants = cva(
@@ -60,6 +60,7 @@ const buttonVariants = cva(
 export type TButtonVariants = VariantProps<typeof buttonVariants>;
 export interface IButtonProps extends HTMLMotionProps<'button'>, VariantProps<typeof buttonVariants> {
   back?: boolean;
+  loading?: boolean;
 }
 
 const animation = {
@@ -83,10 +84,12 @@ const Button = ({
   font,
   rounded,
   back,
+  loading,
   ...props
 }: IButtonProps) => {
   const router = useRouter();
-  const { pending } = experimental_useFormStatus();
+
+
   return (
     <m.button
       type={type}
@@ -99,7 +102,11 @@ const Button = ({
       className={cn(buttonVariants({ variant, size, font, rounded, className }))}
       {...props}
     >
-      {pending ? 'loading...' : children}
+      {loading ? (
+        <ArrowPathIcon className='h-6 w-6 animate-spin text-accent-800 dark:text-accent-200 lg:h-9 lg:w-9' />
+      ) : (
+        children
+      )}
     </m.button>
   );
 };

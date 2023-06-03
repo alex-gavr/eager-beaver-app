@@ -1,13 +1,13 @@
+'use client';
 import Input from '@/components/input/Input';
-import { db } from '@/db/db';
-import { futureEvents, insertUserSchema, users } from '@/db/schemas';
-import { userEventSignUpMessage } from '@/utils/formTelMessage';
-import getIsTestVariable from '@/utils/getIsTestVariable';
-import { eq } from 'drizzle-orm';
-import { redirect } from 'next/navigation';
-import { v4 as uuid } from 'uuid';
-import { handleSubmit } from '../actions';
-// import { handleSubmit, handleSubmitEvent } from '../actions';
+import { handleSubmitBaseForm, handleSubmitEvent } from '../actions';
+import Link from 'next/link';
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { setCookie } from 'cookies-next';
+import { revalidatePath } from 'next/cache';
+import { useAppContext } from '@/context/Context';
+import { ActionsType } from '@/context/actionsTypes';
 
 interface IFormProps {
   event?: boolean;
@@ -16,81 +16,46 @@ interface IFormProps {
   };
 }
 
-const botId = process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN;
-const chatIDLera = process.env.NEXT_PUBLIC_TELEGRAM_LERA_ID;
-const chatIDGavr = process.env.NEXT_PUBLIC_TELEGRAM_GAVR_ID;
-
 const Form = ({ searchParams }: IFormProps) => {
-  const submitAction = searchParams?.uuid === undefined ? handleSubmit : handleSubmitEvent;
+  const router = useRouter();
+  const [name, setName] = useState<string>('');
+  const [phone, setPhone] = useState<string>('');
+  const [loading, setLoading] = useState<boolean>(false)
+  const { dispatch } = useAppContext();
 
-  async function handleSubmitEvent(formData: FormData) {
-    'use server';
-
-    if (searchParams === undefined || searchParams?.uuid === undefined) {
-      return null;
-    }
-
-    const name = formData.get('name');
-    const phone = formData.get('phone');
-
-    if (name === null || phone === null) {
-      return null;
-    }
-
-    const eventId = searchParams?.uuid;
-
-    const fullEventData = await db.select().from(futureEvents).where(eq(futureEvents.uuid, eventId));
-
-    if (fullEventData.length === 0) {
-      return;
-    }
-    const userFromBody = {
-      uuid: uuid(),
-      personName: name,
-      phone: phone,
-    };
-
-    const userData = await insertUserSchema.parseAsync(userFromBody).catch((e) => {
-      throw new Error(e.message);
-    });
-
-    const message = userEventSignUpMessage(
-      userData.personName,
-      userData.phone,
-      fullEventData[0].eventName,
-      fullEventData[0].eventStart.toLocaleDateString(),
-    );
-    const isTest = getIsTestVariable(userData.personName, userData.phone);
-
-    if (isTest) {
-      const url = `https://api.telegram.org/bot${botId}/sendMessage?chat_id=${chatIDGavr}&text=${message}`;
-      const telegramGavr = fetch(url);
-      const addUserToDb = db.insert(users).values(userData);
-      const decreaseSpotsAvailable = db
-        .update(futureEvents)
-        .set({ participants: fullEventData[0].participants + 1 })
-        .where(eq(futureEvents.uuid, eventId));
-
-      const [telegramResult, dbResult, spotDecreaseResult] = await Promise.all([
-        telegramGavr,
-        addUserToDb,
-        decreaseSpotsAvailable,
-      ]);
-      const status = telegramResult.status;
-      const dbStatus = dbResult.rowsAffected;
-      const spotDecreaseStatus = spotDecreaseResult.rowsAffected;
-      console.log(status, dbStatus, spotDecreaseStatus);
-
-      if (status === 200) {
-        // TODO: Revalidate the path doesn't work
-        // revalidatePath('/schedule');
-        redirect('/form-success');
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setLoading(true);
+    if (searchParams?.uuid !== undefined) {
+      dispatch({ type: ActionsType.setEventUpdated, payload: false });
+      const res = await handleSubmitEvent(name, phone, searchParams.uuid);
+      if (res === 200) {
+        dispatch({ type: ActionsType.setEventUpdated, payload: true });
+        setCookie('name', name, { path: '/', maxAge: 60 * 60 * 24 * 365, secure: true, sameSite: 'lax' });
+        setCookie('enrolled', searchParams.uuid, {
+          path: '/',
+          maxAge: 60 * 60,
+          secure: true,
+          sameSite: 'lax',
+        });
+        router.replace('/form-success');
+        setLoading(false);
       } else {
-        redirect('/form-error');
+        router.replace('/form-error');
+        setLoading(false);
       }
-      // TODO: CREATE PRODUCTION VERSION
+    } else {
+      const res = await handleSubmitBaseForm(name, phone);
+      if (res === 200) {
+        setCookie('name', name, { path: '/', maxAge: 60 * 60 * 24 * 365, secure: true, sameSite: 'lax' });
+        router.replace('/form-success');
+        setLoading(false);
+      } else {
+        router.replace('/form-error');
+        setLoading(false);
+      }
     }
-  }
+  };
 
   const inputsData = [
     {
@@ -100,6 +65,10 @@ const Form = ({ searchParams }: IFormProps) => {
       label: 'Имя',
       name: 'name',
       placeholder: 'Валерия',
+      required: true,
+      value: name,
+      setValue: setName,
+      loading: loading,
     },
     {
       key: 2,
@@ -108,6 +77,10 @@ const Form = ({ searchParams }: IFormProps) => {
       label: 'Телефон',
       name: 'phone',
       placeholder: '(999)-999-99-99',
+      required: true,
+      value: phone,
+      setValue: setPhone,
+      loading: loading,
     },
   ];
 
@@ -120,7 +93,7 @@ const Form = ({ searchParams }: IFormProps) => {
 
   return (
     <div className='flex w-full flex-col items-center justify-center'>
-      <form action={submitAction} className='flex flex-col items-center justify-center p-4'>
+      <form onSubmit={handleSubmit} className='flex flex-col items-center justify-center p-4'>
         <div className='flex w-full max-w-[400px] flex-col items-center justify-center gap-4 lg:gap-8'>
           {inputsData.map((input, index) => (
             <Input
@@ -131,14 +104,20 @@ const Form = ({ searchParams }: IFormProps) => {
               label={input.label}
               name={input.name}
               placeholder={input.placeholder}
+              required={input.required}
+              value={input.value}
+              setValue={input.setValue}
+              loading={input.loading}
             />
           ))}
         </div>
-        {/* <Button className='mt-10'>Submit</Button> */}
+        {/* <Button className='mt-10' disabled={name === undefined || phone === undefined}>
+          Submit
+        </Button> */}
       </form>
-      <p className=' w-2/3 text-center text-xs underline underline-offset-2 lg:w-5/6 '>
+      <Link className=' w-2/3 text-center text-xs underline underline-offset-2 lg:w-5/6' href={'/policy'}>
         Нажимая кнопку, вы даёте согласие на обработку своих персональных данных
-      </p>{' '}
+      </Link>{' '}
     </div>
   );
 };

@@ -33,7 +33,13 @@ const AppReducer = (state: InitialState, action: AppActions): InitialState => {
         loaderVisible: payload,
       };
     }
-
+    case ActionsType.setEventUpdated: {
+      const { payload } = action;
+      return {
+        ...state,
+        eventUpdated: payload,
+      };
+    }
 
     default:
       return state;

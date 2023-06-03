@@ -17,10 +17,9 @@ const BeaverSleeps = dynamic(() => import('./BeaverSleeps'));
 
 interface IProps {
   futureEvents?: TFutureEvents[];
-  layoutId?: string;
 }
 
-const FutureEvents = ({ layoutId, futureEvents }: IProps) => {
+const FutureEvents = ({ futureEvents }: IProps) => {
   const { ref, inView } = useInView({
     triggerOnce: true,
   });
@@ -34,8 +33,7 @@ const FutureEvents = ({ layoutId, futureEvents }: IProps) => {
         {inView ? (
           <>
             <m.h1
-              className='rounded-3xl bg-accent-800 px-8 py-2 text-center dark:bg-accent-800 mx-2'
-              layoutId={layoutId}
+              className='mx-2 rounded-3xl bg-accent-800 px-8 py-2 text-center dark:bg-accent-800'
               transition={{ duration: 0.6, ease: 'easeOut' }}
             >
               <AnimatedTextWords

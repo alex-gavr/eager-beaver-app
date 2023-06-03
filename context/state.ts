@@ -5,6 +5,7 @@ const initialState: InitialState = {
   headerVisible: true,
   footerVisible: false,
   loaderVisible: true,
+  eventUpdated: false,
 };
 
 export default initialState;

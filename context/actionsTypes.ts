@@ -3,6 +3,7 @@ export enum ActionsType {
   setHeaderVisibility = 'setHeaderVisibility',
   setFooterVisibility = 'setFooterVisibility',
   setLoaderVisibility = 'setLoaderVisibility',
+  setEventUpdated = 'setEventUpdated',
 }
 
 export interface ISetError {
@@ -21,5 +22,14 @@ export interface ISetLoaderVisibility {
   type: ActionsType.setLoaderVisibility;
   payload: boolean;
 }
+export interface ISetEventUpdated {
+  type: ActionsType.setEventUpdated;
+  payload: boolean;
+}
 
-export type AppActions = ISetError | ISetSurveyLength | ISetNotificationVisibility | ISetLoaderVisibility;
+export type AppActions =
+  | ISetError
+  | ISetSurveyLength
+  | ISetNotificationVisibility
+  | ISetLoaderVisibility
+  | ISetEventUpdated;

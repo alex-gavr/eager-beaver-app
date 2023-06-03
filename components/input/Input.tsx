@@ -2,25 +2,33 @@
 
 import { cn } from '@/utils/cn';
 import { formatPhoneNumber } from '@/utils/format-phone-number';
-import { PhoneIcon, UserIcon } from '@heroicons/react/24/outline';
-import { ChangeEvent, InputHTMLAttributes, useCallback, useEffect, useRef, useState } from 'react';
+import { ArrowPathIcon, PhoneIcon, UserIcon } from '@heroicons/react/24/outline';
+import {
+  ChangeEvent,
+  Dispatch,
+  InputHTMLAttributes,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { z } from 'zod';
 import Button from '../buttons/button';
-import { experimental_useFormStatus } from 'react-dom';
-import { PreloaderSmall } from '../preloader/preloader-small';
 
 const mobile = z.string().length(15).startsWith('(9');
 
 interface IInputNewProps extends InputHTMLAttributes<HTMLInputElement> {
   label: string;
   index: number;
+  value: string;
+  setValue: Dispatch<SetStateAction<string>>;
+  loading: boolean;
 }
 
-const Input = ({ id, type, className, name, placeholder, label, index }: IInputNewProps) => {
-  const [value, setValue] = useState<string>('');
+const Input = ({ id, type, className, name, placeholder, label, index, value, setValue, loading }: IInputNewProps) => {
   const [error, setError] = useState<boolean | null>(null);
   const [focus, setFocus] = useState<boolean>(false);
-  const { pending } = experimental_useFormStatus();
   const ref = useRef<HTMLInputElement | null>(null);
 
   const handleValidatePhone = () => {
@@ -45,7 +53,6 @@ const Input = ({ id, type, className, name, placeholder, label, index }: IInputN
   };
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    // setError(null);
     if (event.target.type === 'tel') {
       const formattedPhoneNumber = formatPhoneNumber(event.target.value);
       setValue(formattedPhoneNumber);
@@ -127,8 +134,8 @@ const Input = ({ id, type, className, name, placeholder, label, index }: IInputN
         {error && <p className='mt-2 text-sm text-red-500'>Please enter a valid phone number</p>}
       </div>
       {index === 1 && (
-        <Button type='submit' disabled={error === true || error === null}>
-          {pending ? <PreloaderSmall /> : error === true || error === null ? 'заполните форму' : 'Записаться'}
+        <Button type='submit' loading={loading} disabled={error === true || error === null}>
+          {error === true || error === null ? 'заполните форму' : 'записаться'}
         </Button>
       )}
     </>

@@ -2,12 +2,10 @@
 
 import { db } from '@/db/db';
 import { futureEvents, insertUserSchema, users } from '@/db/schemas';
-import { userSignUpMessage, userEventSignUpMessage } from '@/utils/formTelMessage';
+import { userEventSignUpMessage, userSignUpMessage } from '@/utils/formTelMessage';
 import getIsTestVariable from '@/utils/getIsTestVariable';
 import { eq } from 'drizzle-orm';
-import { revalidatePath } from 'next/cache';
-import { cookies, headers } from 'next/dist/client/components/headers';
-import { RedirectType } from 'next/dist/client/components/redirect';
+import { revalidatePath, revalidateTag } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { v4 as uuid } from 'uuid';
 import { ZodError } from 'zod';
@@ -16,14 +14,7 @@ const botId = process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN;
 const chatIDLera = process.env.NEXT_PUBLIC_TELEGRAM_LERA_ID;
 const chatIDGavr = process.env.NEXT_PUBLIC_TELEGRAM_GAVR_ID;
 
-export async function handleSubmit(formData: FormData) {
-  const name = formData.get('name');
-  const phone = formData.get('phone');
-
-  if (name === null || phone === null) {
-    return;
-  }
-
+export async function handleSubmitBaseForm(name: string, phone: string) {
   const userFromBody = {
     uuid: uuid(),
     personName: name,
@@ -32,16 +23,6 @@ export async function handleSubmit(formData: FormData) {
 
   const userData = await insertUserSchema.parseAsync(userFromBody).catch((e: ZodError) => {
     throw new Error(e.message);
-  });
-
-  cookies().set({
-    name: 'name',
-    value: userData.personName,
-    // @ts-ignore
-    maxAge: 31536000, // 60 * 60 * 24 * 365
-    path: '/',
-    secure: true,
-    sameSite: 'lax',
   });
 
   const message = userSignUpMessage(userData.personName, userData.phone);
@@ -57,9 +38,9 @@ export async function handleSubmit(formData: FormData) {
     console.log(status, dbStatus);
 
     if (status === 200) {
-      redirect('/form-success', RedirectType.replace);
+      return 200;
     } else {
-      redirect('/form-error', RedirectType.replace);
+      return 500;
     }
   }
 
@@ -73,106 +54,91 @@ export async function handleSubmit(formData: FormData) {
     const status = leraResult.status;
     const dbStatus = dbResult.rowsAffected;
     console.log(status, dbStatus);
-    return status;
+    if (status === 200) {
+      return 200;
+    } else {
+      return 500;
+    }
   }
 }
 
-export async function handleSubmitEvent(formData: FormData, searchParams: URLSearchParams) {
-  const name = formData.get('name');
-  const phone = formData.get('phone');
+export async function handleSubmitEvent(name: string, phone: string, eventId: string) {
+  const fullEventData = await db.select().from(futureEvents).where(eq(futureEvents.uuid, eventId));
 
-  if (name === null || phone === null) {
-    return;
+  if (fullEventData.length === 0) {
+    return null;
   }
-
   const userFromBody = {
     uuid: uuid(),
     personName: name,
     phone: phone,
   };
 
-  const userData = await insertUserSchema.parseAsync(userFromBody).catch((e: ZodError) => {
+  const userData = await insertUserSchema.parseAsync(userFromBody).catch((e) => {
     throw new Error(e.message);
   });
 
-  const event = cookies().get('event')?.value ?? 'error';
-  const eventId = cookies().get('eventId')?.value ?? 'errorId';
-
-  cookies().set({
-    name: 'name',
-    value: userData.personName,
-    // @ts-ignore
-    maxAge: 31536000, // 60 * 60 * 24 * 365
-    path: '/',
-    secure: true,
-    sameSite: 'lax',
-  });
-
-  const message = userEventSignUpMessage(userData.personName, userData.phone, event, 'what');
+  const message = userEventSignUpMessage(
+    userData.personName,
+    userData.phone,
+    fullEventData[0].eventName,
+    fullEventData[0].eventStart.toLocaleDateString(),
+  );
   const isTest = getIsTestVariable(userData.personName, userData.phone);
 
   if (isTest) {
     const url = `https://api.telegram.org/bot${botId}/sendMessage?chat_id=${chatIDGavr}&text=${message}`;
-    const getCurrentParticipants = await db
-      .select({ participants: futureEvents.participants })
-      .from(futureEvents)
-      .where(eq(futureEvents.uuid, eventId));
-
-    const newParticipants = getCurrentParticipants[0].participants + 1;
-
     const telegramGavr = fetch(url);
+    const addUserToDb = db.insert(users).values(userData);
     const decreaseSpotsAvailable = db
       .update(futureEvents)
-      .set({ participants: newParticipants })
+      .set({ participants: fullEventData[0].participants + 1 })
       .where(eq(futureEvents.uuid, eventId));
-    // const addUserToDb = db.insert(users).values(userData);
-    const [telegramResult, dbResult] = await Promise.all([telegramGavr, decreaseSpotsAvailable]);
+
+    const [telegramResult, dbResult, spotDecreaseResult] = await Promise.all([
+      telegramGavr,
+      addUserToDb,
+      decreaseSpotsAvailable,
+    ]);
     const status = telegramResult.status;
     const dbStatus = dbResult.rowsAffected;
-    console.log(status, dbStatus);
+    const spotDecreaseStatus = spotDecreaseResult.rowsAffected;
+    console.log(status, dbStatus, spotDecreaseStatus);
 
-    revalidatePath('/schedule');
+    if (status === 200) {
+      return 200;
+    } else {
+      return 500;
+    }
   }
-}
 
-export async function handleChangeMembers(
-  uuid: string,
-  eventName: string,
-  dateFull: string,
-  participants: number,
-) {
-  // const userData = await insertUserSchema.parseAsync(userFromBody).catch((e: ZodError) => {
-  //   throw new Error(e.message);
-  // });
+  if (!isTest) {
+    const urlGavr = `https://api.telegram.org/bot${botId}/sendMessage?chat_id=${chatIDGavr}&text=${message}`;
+    const urlLera = `https://api.telegram.org/bot${botId}/sendMessage?chat_id=${chatIDLera}&text=${message}`;
 
-  const message = userEventSignUpMessage('test', 'test', eventName, dateFull);
-  const isTest = getIsTestVariable('test', '(909) 378-66-78');
-
-  if (isTest) {
-    const url = `https://api.telegram.org/bot${botId}/sendMessage?chat_id=${chatIDGavr}&text=${message}`;
-    // const getCurrentParticipants = await db
-    //   .select({ participants: futureEvents.participants })
-    //   .from(futureEvents)
-    //   .where(eq(futureEvents.uuid, eventId));
-
-    // const newParticipants = getCurrentParticipants[0].participants + 1;
-
-    const telegramGavr = fetch(url);
+    const telegramGavr = fetch(urlGavr);
+    const telegramLera = fetch(urlLera);
+    const addUserToDb = db.insert(users).values(userData);
     const decreaseSpotsAvailable = db
       .update(futureEvents)
-      .set({ participants: participants + 1 })
-      .where(eq(futureEvents.uuid, uuid));
-    // const addUserToDb = db.insert(users).values(userData);
-    const [telegramResult, dbResult] = await Promise.all([telegramGavr, decreaseSpotsAvailable]);
-    const status = telegramResult.status;
+      .set({ participants: fullEventData[0].participants + 1 })
+      .where(eq(futureEvents.uuid, eventId));
+
+    const [telegramResultGavr, telegramResultLera, dbResult, spotDecreaseResult] = await Promise.all([
+      telegramGavr,
+      telegramLera,
+      addUserToDb,
+      decreaseSpotsAvailable,
+    ]);
+
+    const status = telegramResultLera.status;
     const dbStatus = dbResult.rowsAffected;
-    // console.log(status, dbStatus);
-    revalidatePath('/schedule');
+    const spotDecreaseStatus = spotDecreaseResult.rowsAffected;
+
+    if (status === 200) {
+      return 200;
+    } else {
+      return 500;
+    }
   }
 }
-
-// catch (error) {
-//   if (error instanceof ZodError) {
-//     console.log(error.message);
-//     return error.message;
-//   }

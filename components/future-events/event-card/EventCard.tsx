@@ -1,4 +1,4 @@
-import { useState, useTransition } from 'react';
+import { useEffect, useState, useTransition } from 'react';
 import Button from '@/components/buttons/button';
 import { AnimatePresence } from 'framer-motion';
 import { toggleHeight } from '@/utils/motion-animations';
@@ -9,6 +9,9 @@ import workWithDate from '@/utils/workWithDate';
 import { TFutureEvents } from '@/db/schemas';
 import { m } from 'framer-motion';
 import { useRouter } from 'next/navigation';
+import { getCookie, hasCookie } from 'cookies-next';
+import { useAppContext } from '@/context/Context';
+import { ActionsType } from '@/context/actionsTypes';
 
 const millisecondsPerDay = 1000 * 60 * 60 * 24;
 const daysPerMonth = 31;
@@ -33,10 +36,22 @@ const EventCard = ({
   eventEnd,
   disabled,
 }: IFutureEventsProps) => {
+  const { state, dispatch } = useAppContext();
   const router = useRouter();
-  const [isPending, startTransition] = useTransition();
   const [open, setOpen] = useState(false);
   const [enrolled, setEnrolled] = useState<boolean | null>(null);
+  const [newSpotsAvailable, setNewSpotsAvailable] = useState<number>(participants);
+
+  useEffect(() => {
+    if (state.eventUpdated) {
+      const enrolledCookieValue = getCookie('enrolled');
+      if (enrolledCookieValue === uuid) {
+        console.log('i ran');
+        setEnrolled(true);
+        setNewSpotsAvailable(participants + 1);
+      }
+    }
+  }, [state.eventUpdated]);
 
   const { day, month, monthFull, time: timeStart, dateFull } = workWithDate(eventStart);
   const { day: dayEnd, month: monthEnd, monthFull: monthEndFull, time: timeEnd } = workWithDate(eventEnd);
@@ -69,8 +84,9 @@ const EventCard = ({
     duration = `${hours} ${durationName} ${minutes} минут`;
   }
 
+  const alreadyParticipating = participants === newSpotsAvailable ? participants : newSpotsAvailable;
   // Spots Left
-  const spotsLeft = totalSpots - participants;
+  const spotsLeft = totalSpots - alreadyParticipating;
   // Spots Word
   const spotsWord = declOfNum(spotsLeft, ['место', 'места', 'мест']);
 
@@ -129,7 +145,7 @@ const EventCard = ({
               </div>
               <div className='flex w-full flex-row items-center justify-between gap-8 lg:gap-12'>
                 <p>
-                  Еще свободно {spotsLeft} {spotsWord}
+                  Еще свободно  {spotsLeft} {spotsWord}
                 </p>
                 <Button
                   type='button'
@@ -137,13 +153,7 @@ const EventCard = ({
                   onClick={() => handleClick(uuid)}
                   disabled={enrolled || spotsLeft === 0 || disabled}
                 >
-                  {enrolled
-                    ? 'Ждем вас!'
-                    : spotsLeft === 0
-                    ? 'Мест больше нет'
-                    : isPending
-                    ? 'loading...'
-                    : 'Приведу ребенка'}
+                  {enrolled ? 'Ждем вас!' : spotsLeft === 0 ? 'Мест больше нет' : 'Приведу ребенка'}
                 </Button>
               </div>
             </m.div>
