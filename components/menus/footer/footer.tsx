@@ -1,7 +1,7 @@
 'use client';
 import { AnimatePresence, m } from 'framer-motion';
 import { footer } from '../links';
-import { list, opacity, popUp, toDown, toUp } from '@/utils/motion-animations';
+import { list, listFooterUl, opacity, popUp, toDown, toUp } from '@/utils/motion-animations';
 import beaverRocket from '@/images/beaver/BeaverRocket.svg';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -94,7 +94,7 @@ const Footer = () => {
               </div>
               <m.ul
                 className='grid w-full grid-flow-row grid-cols-2 grid-rows-4 place-items-start gap-y-10 place-self-start lg:flex lg:w-fit lg:flex-row lg:flex-wrap lg:items-center lg:justify-center lg:gap-10 '
-                variants={list}
+                variants={listFooterUl}
                 initial='hidden'
                 whileInView='visible'
                 viewport={{ once: true, margin: '-5% 0px -5% -0px' }}

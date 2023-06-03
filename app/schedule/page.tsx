@@ -1,4 +1,3 @@
-export const revalidate = 1;
 import Schedule from './Schedule';
 
 interface IPageProps {}

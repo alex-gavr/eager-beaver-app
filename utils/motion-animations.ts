@@ -35,6 +35,23 @@ export const list = {
         },
     },
 };
+export const listFooterUl = {
+    visible: (i = 1) => ({
+        opacity: 1,
+        transition: {
+            duration: 0.2,
+            when: 'beforeChildren',
+            staggerChildren: 0.2 * i,
+            ease: 'easeInOut',
+        },
+    }),
+    hidden: {
+        opacity: 0,
+        transition: {
+            when: 'afterChildren',
+        },
+    },
+};
 
 
 export const revealMenu = {

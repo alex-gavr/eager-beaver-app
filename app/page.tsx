@@ -19,9 +19,10 @@ export interface IServerProps {
 }
 
 const Page = async () => {
-  const futureEventsData = (await db.select().from(futureEvents).limit(1)) as TFutureEvents[];
+  const futureEventsRequest = db.select().from(futureEvents);
+  const themeEventsRequest = db.select().from(thematicEvents);
 
-  const themeEventsData = (await db.select().from(thematicEvents)) as TThematicEvents[];
+  const [futureEventsData, themeEventsData] = await Promise.all([futureEventsRequest, themeEventsRequest]);
 
   const themeEvents = themeEventsData.map((event) => {
     return {
