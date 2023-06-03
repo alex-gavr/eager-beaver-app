@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { setCookie } from 'cookies-next';
-import { revalidatePath } from 'next/cache';
 import { useAppContext } from '@/context/Context';
 import { ActionsType } from '@/context/actionsTypes';
 
@@ -38,10 +37,10 @@ const Form = ({ searchParams }: IFormProps) => {
           secure: true,
           sameSite: 'lax',
         });
-        router.replace('/form-success');
+        router.push('/form-success');
         setLoading(false);
       } else {
-        router.replace('/form-error');
+        router.push('/form-error');
         setLoading(false);
       }
     } else {

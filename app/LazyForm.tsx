@@ -3,12 +3,11 @@
 import { useInView } from 'react-intersection-observer';
 import Image from 'next/image';
 import beaver from '@/images/logo.svg';
+import Form from './form/Form';
 
-interface ILazyFormProps {
-  children?: React.ReactNode;
-}
+interface ILazyFormProps {}
 
-const LazyForm = ({children}: ILazyFormProps) => {
+const LazyForm = ({}: ILazyFormProps) => {
   const { ref, inView } = useInView({
     triggerOnce: true,
   });
@@ -26,7 +25,7 @@ const LazyForm = ({children}: ILazyFormProps) => {
             <div className='flex w-[60%] flex-shrink-0 flex-col items-center justify-center lg:w-[40%]'>
               <Image src={beaver} alt='hello' className='w-full' />
             </div>
-            {children}
+            <Form />
           </div>
         </>
       ) : null}

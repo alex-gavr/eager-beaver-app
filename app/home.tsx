@@ -33,9 +33,7 @@ const Home = ({ futureEvents, themeEvents }: IProps) => {
         <section className='relative flex w-screen max-w-[1500px] flex-col items-center justify-start gap-8 px-2 py-8 xl:p-16'>
           <FutureEvents futureEvents={futureEvents} />
         </section>
-        <LazyForm>
-          <Form />
-        </LazyForm>
+        <LazyForm />
       </main>
     </>
   );
