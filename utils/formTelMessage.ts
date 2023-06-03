@@ -10,9 +10,6 @@ export const userSignUpMessage = (user: string, phone: string) => {
 };
 
 export const userEventSignUpMessage = (user: string, phone: string, event: string, dateFull: string) => {
-
-  
-
   const messageForFutureEvent = `
   Лера, привет 🤍%0A
 ${user} хочет привести ребенка на ${event} 🎉%0A

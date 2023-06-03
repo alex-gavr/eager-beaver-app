@@ -5,14 +5,12 @@ import { futureEvents, insertUserSchema, users } from '@/db/schemas';
 import { userEventSignUpMessage, userSignUpMessage } from '@/utils/formTelMessage';
 import getIsTestVariable from '@/utils/getIsTestVariable';
 import { eq } from 'drizzle-orm';
-import { revalidatePath, revalidateTag } from 'next/cache';
-import { redirect } from 'next/navigation';
 import { v4 as uuid } from 'uuid';
 import { ZodError } from 'zod';
 
-const botId = process.env.NEXT_PUBLIC_TELEGRAM_BOT_TOKEN;
-const chatIDLera = process.env.NEXT_PUBLIC_TELEGRAM_LERA_ID;
-const chatIDGavr = process.env.NEXT_PUBLIC_TELEGRAM_GAVR_ID;
+const botId = process.env.TELEGRAM_BOT_TOKEN;
+const chatIDLera = process.env.TELEGRAM_LERA_ID;
+const chatIDGavr = process.env.TELEGRAM_GAVR_ID;
 
 export async function handleSubmitBaseForm(name: string, phone: string) {
   const userFromBody = {
@@ -35,7 +33,6 @@ export async function handleSubmitBaseForm(name: string, phone: string) {
     const [telegramResult, dbResult] = await Promise.all([telegramGavr, addUserToDb]);
     const status = telegramResult.status;
     const dbStatus = dbResult.rowsAffected;
-    console.log(status, dbStatus);
 
     if (status === 200) {
       return 200;
@@ -51,9 +48,10 @@ export async function handleSubmitBaseForm(name: string, phone: string) {
     const telegramGavr = fetch(urlGavr);
     const addUserToDb = db.insert(users).values(userData);
     const [leraResult, gavrResult, dbResult] = await Promise.all([telegramLera, telegramGavr, addUserToDb]);
+
     const status = leraResult.status;
     const dbStatus = dbResult.rowsAffected;
-    console.log(status, dbStatus);
+
     if (status === 200) {
       return 200;
     } else {
@@ -103,7 +101,6 @@ export async function handleSubmitEvent(name: string, phone: string, eventId: st
     const status = telegramResult.status;
     const dbStatus = dbResult.rowsAffected;
     const spotDecreaseStatus = spotDecreaseResult.rowsAffected;
-    console.log(status, dbStatus, spotDecreaseStatus);
 
     if (status === 200) {
       return 200;
