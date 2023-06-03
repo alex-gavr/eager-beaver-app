@@ -15,7 +15,7 @@ export const SwitchContainer = styled(m.div)<ISwitchContainer>`
     position: fixed;
     bottom: 10px;
     left: 10px;
-    z-index: 10;
+    z-index: 50;
     height: ${(props) => (props.size % 2 === 1 ? props.size + 0.1 : props.size)}px;
     width: ${(props) => ((props.size * 2.5) % 2 === 1 ? props.size * 2.5 + 1 : props.size * 2.5)}px;
 `;

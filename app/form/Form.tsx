@@ -92,7 +92,7 @@ const Form = ({ searchParams }: IFormProps) => {
 
   return (
     <div className='flex w-full flex-col items-center justify-center'>
-      <form onSubmit={handleSubmit} className='flex flex-col items-center justify-center p-4'>
+      <form onSubmit={handleSubmit} className='flex flex-col items-center justify-center p-4 w-full'>
         <div className='flex w-full max-w-[400px] flex-col items-center justify-center gap-4 lg:gap-8'>
           {inputsData.map((input, index) => (
             <Input

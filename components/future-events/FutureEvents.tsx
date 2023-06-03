@@ -27,7 +27,7 @@ const FutureEvents = ({ futureEvents }: IProps) => {
   return (
     <>
       <div
-        className='z-50 flex w-full max-w-[1500px] flex-col items-center justify-center gap-20 px-2 py-4 md:p-8'
+        className='z-40 flex w-full max-w-[1500px] flex-col items-center justify-center gap-20 px-2 py-4 md:p-8'
         ref={ref}
       >
         {inView ? (

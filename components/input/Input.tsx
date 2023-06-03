@@ -26,7 +26,18 @@ interface IInputNewProps extends InputHTMLAttributes<HTMLInputElement> {
   loading: boolean;
 }
 
-const Input = ({ id, type, className, name, placeholder, label, index, value, setValue, loading }: IInputNewProps) => {
+const Input = ({
+  id,
+  type,
+  className,
+  name,
+  placeholder,
+  label,
+  index,
+  value,
+  setValue,
+  loading,
+}: IInputNewProps) => {
   const [error, setError] = useState<boolean | null>(null);
   const [focus, setFocus] = useState<boolean>(false);
   const ref = useRef<HTMLInputElement | null>(null);
@@ -92,16 +103,20 @@ const Input = ({ id, type, className, name, placeholder, label, index, value, se
   }, [value, ref]);
 
   const baseStyles =
-    'peer border-0 block w-full rounded-md py-2 pl-4 pr-10 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400  focus:ring-1 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6 lg:text-2xl';
+    'peer text-lg md:text-xl bg-slate-100 dark:bg-slate-900 autofill:text-slate-900 dark:autofill:text-slate-100 border-0 block w-full rounded-md py-2 pl-4 pr-10 text-gray-900 dark:text-gray-200 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400  focus:ring-1 focus:ring-inset focus:ring-indigo-600 lg:text-2xl';
 
-  const invalidInputStyles = 'text-pink-600 ring-pink-500 focus:text-pink-600 focus:ring-pink-500';
-  const validInputStyles = 'text-emerald-600 ring-emerald-500 focus:text-emerald-600 focus:ring-emerald-500';
+  const invalidInputStyles =
+    'text-pink-600 ring-pink-500 focus:text-pink-600 focus:ring-pink-500 dark:text-pink-500 dark:ring-pink-400 dark:focus:text-pink-500 dark:focus:ring-pink-400';
+  const validInputStyles =
+    'text-emerald-600 ring-emerald-500 focus:text-emerald-600 focus:ring-emerald-500 dark:text-emerald-300 dark:ring-emerald-200 dark:focus:text-emerald-300 dark:focus:ring-emerald-200';
+  const autofillInputStyles =
+    'autofill:shadow-[inset_0_0_0px_1000px_rgb(230,230,230)] dark:autofill:shadow-[inset_0_0_0px_1000px_rgb(200,200,200)]';
   return (
     <>
-      <div>
+      <div className='mb-4 w-10/12'>
         <label
           htmlFor={name}
-          className='block text-base leading-6 text-gray-900 dark:text-gray-100 md:text-base lg:text-2xl'
+          className='mb-2 block text-xl leading-6 text-gray-900 dark:text-gray-100 md:text-2xl'
         >
           {label}
         </label>
@@ -119,6 +134,7 @@ const Input = ({ id, type, className, name, placeholder, label, index, value, se
             value={value}
             className={cn(
               baseStyles,
+              autofillInputStyles,
               error === true ? invalidInputStyles : error === false ? validInputStyles : '',
             )}
             placeholder={placeholder}
@@ -131,7 +147,7 @@ const Input = ({ id, type, className, name, placeholder, label, index, value, se
             ) : null}
           </div>
         </div>
-        {error && <p className='mt-2 text-sm text-red-500'>Please enter a valid phone number</p>}
+        {error && <p className='mt-4 text-sm text-pink-500 dark:text-pink-500 lg:text-xl'>пожалуйста, введите корректный номер телефона</p>}
       </div>
       {index === 1 && (
         <Button type='submit' loading={loading} disabled={error === true || error === null}>
