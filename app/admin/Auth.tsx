@@ -15,7 +15,7 @@ const Auth = ({ children }: IAuthProps) => {
   const [password, setPassword] = useState<string | null>();
 
   const handleLogin = () => {
-    if (password === '265d46cc1c7501afff17aa87030cba8639cb9dbf2fa7d99c4301801da881d42a') {
+    if (password === process.env.NEXT_PUBLIC_ADMIN_PASSWORD) {
       setAuth(true);
     }
   };
