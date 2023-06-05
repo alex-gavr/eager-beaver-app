@@ -10,7 +10,6 @@ export const metadata = {
 const Page = async ({}: IPageProps) => {
   return (
     <>
-      {/* @ts-expect-error Async Server Component */}
       <Schedule />
     </>
   );
