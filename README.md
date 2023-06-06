@@ -1,34 +1,31 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## Getting Started
+# Eager Beaver
 
-First, run the development server:
+This site is has been created for Valeria Evstratova and her language school.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
+Website: https://eager-beaver.ru/
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Tech Stack
 
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
+**Frontend:** React, TailwindCSS, Framer Motion
 
-## Learn More
+**Backend:** NextJS Edge runtime, PlanetScale DB, Drizzle ORM
 
-To learn more about Next.js, take a look at the following resources:
+**Images manipulation via:** Uploadthing 
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
 
-## Deploy on Vercel
+## Features
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- NextJS App router
+- React Server Components
+- React Server Actions
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+
+
+## Loading Speeds ⚡️
+
+![Speed Desktop](https://gyazo.com/fca2648ce1cb9f0bb6580b5a7c3f0058)
+![Speed Mobile](https://gyazo.com/91d1538053b430cfd43788844a33030e)
+
