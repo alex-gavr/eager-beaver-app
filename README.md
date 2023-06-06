@@ -26,6 +26,9 @@ Website: https://eager-beaver.ru/
 
 ## Loading Speeds ⚡️
 
-![Speed Desktop](https://gyazo.com/fca2648ce1cb9f0bb6580b5a7c3f0058)
-![Speed Mobile](https://gyazo.com/91d1538053b430cfd43788844a33030e)
+Desktop
+https://gyazo.com/fca2648ce1cb9f0bb6580b5a7c3f0058
+
+Mobile
+https://gyazo.com/91d1538053b430cfd43788844a33030e
 
